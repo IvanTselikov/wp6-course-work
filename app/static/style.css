@@ -1,0 +1,65 @@
+@media screen and (max-width: 991px) {
+    html {
+        font-size: 12px;
+    }
+}
+
+header {
+    background-color: #F5F5F5;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, .25);
+}
+
+.fs-normal {
+    font-size: 1rem !important;
+}
+
+.fs-large {
+    font-size: 1.3rem !important;
+}
+
+.fs-small {
+    font-size: .8rem !important;
+}
+
+#header-content {
+    width: 90%;
+}
+
+#logo-img {
+    height: 2.5rem !important;
+}
+
+#logo-text {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #A71D2A;
+}
+
+#filter-btn {
+    background-color: white;
+    border-radius: 4px 0 0 4px !important;
+    font-size: .8rem !important;
+}
+
+#filter-btn img {
+    height: .8 rem !important;
+}
+
+#search-input {
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;   
+}
+
+#search-btn {
+    background-color: white;
+    border-radius: 0 4px 4px 0 !important;
+}
+
+#search-btn img {
+    height: 1rem !important;
+}
+
+#profile-img {
+    height: 2.5rem !important;
+}
