@@ -4,13 +4,12 @@
     }
 }
 
-header {
-    background-color: #F5F5F5;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, .25);
-}
-
 .fs-normal {
     font-size: 1rem !important;
+}
+
+.fs-big {
+    font-size: 1.1rem !important;
 }
 
 .fs-large {
@@ -18,7 +17,16 @@ header {
 }
 
 .fs-small {
+    font-size: .9rem !important;
+}
+
+.fs-tiny {
     font-size: .8rem !important;
+}
+
+header {
+    background-color: #F5F5F5;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, .25);
 }
 
 #header-content {
@@ -38,22 +46,23 @@ header {
 #filter-btn {
     background-color: white;
     border-radius: 4px 0 0 4px !important;
-    font-size: .8rem !important;
 }
 
 #filter-btn img {
-    height: .8 rem !important;
+    height: .8rem !important;
 }
 
 #search-input {
     border-radius: 0 !important;
     border-left: none !important;
-    border-right: none !important;   
+    border-right: none !important;
+    border-color:rgb(222, 226, 230) 
 }
 
 #search-btn {
     background-color: white;
     border-radius: 0 4px 4px 0 !important;
+    border-color:rgb(222, 226, 230) 
 }
 
 #search-btn img {
