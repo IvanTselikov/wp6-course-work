@@ -24,6 +24,13 @@
     font-size: .8rem !important;
 }
 
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 header {
     background-color: #F5F5F5;
     box-shadow: 0 4px 4px rgba(0, 0, 0, .25);
@@ -48,9 +55,9 @@ header {
     border-radius: 4px 0 0 4px !important;
 }
 
-#filter-btn img {
+/* #filter-btn img {
     height: .8rem !important;
-}
+} */
 
 #search-input {
     border-radius: 0 !important;
@@ -71,4 +78,9 @@ header {
 
 #profile-img {
     height: 2.5rem !important;
+}
+
+footer {
+    background-color: #F5F5F5;
+    box-shadow: 0 -4px 4px rgba(0, 0, 0, .25);
 }

@@ -21,10 +21,10 @@
                 <span class="ms-3" id="logo-text">AutoAds</span>
             </a>
 
-            <form class="mb-4 mb-md-0 mx-md-5 w-100 flex-md-grow-1 d-flex">
+            <form class="mb-4 mb-md-0 ms-md-5 me-md-4 w-100 flex-md-grow-1 d-flex">
                 <button class="btn border d-flex align-items-center px-3" id="filter-btn">
                     <img src="static/img/filter.svg" alt="filter">
-                    <span class="ms-2 fs-tiny">Фильтры</span>
+                    <span class="ms-2">Фильтры</span>
                 </button>
                 <input type="search" class="form-control d-inline" id="search-input" placeholder="Найти..."
                     aria-label="Search">
@@ -33,32 +33,205 @@
                 </button>
             </form>
 
+            {% if current_user.is_anonymous %}
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                data-bs-target="#login-modal">Вход</button>
+
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                data-bs-target="#signup-modal">Регистрация</button>
+            {% else %}
             <div class="d-flex mb-2 mb-md-0">
                 <div class="dropdown text-end">
                     <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        {% if photo_filename %}
+                        <img src={{ photo_filename }} alt="profile" class="rounded-circle" id="profile-img">
+                        {% else %}
                         <img src="static/img/profile.svg" alt="profile" class="rounded-circle" id="profile-img">
-                        <span class="ms-2 fs-small">John Doe</span>
+                        {% endif %}
+                        <span class="ms-2">{{ current_user.login }}</span>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownUser1">
                         <li><a class="dropdown-item" href="#">Профиль</a></li>
                         <li><a class="dropdown-item" href="#">Сообщения</a></li>
+                        {% if current_user.is_admin %}
+                        <li><a class="dropdown-item" href="#">Модерация</a></li>
+                        {% endif %}
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="#">Выйти</a></li>
+                        <li><a class="dropdown-item" href={{ url_for('logout') }}>Выйти</a></li>
                     </ul>
                 </div>
 
                 <button class="btn btn-danger ms-5 ms-md-4 px-4 text-nowrap">Новое объявление</button>
+                {% endif %}
             </div>
         </div>
     </header>
+
+    <main></main>
+
+    <!-- <div class="container"> -->
+    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+        <hr class="w-100"><br>
+        <div class="col-md-4 d-flex align-items-center">
+            <span class="text-muted">© 2023, КГУ</span>
+        </div>
+
+        <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+            <li class="ms-3">
+                <a class="text-muted" href="https://vk.com">
+                    <img src="static/img/vk.svg" alt="vk">
+                </a>
+            </li>
+            <li class="ms-3">
+                <a class="text-muted" href="https://ok.ru">
+                    <img src="static/img/ok.svg" alt="ok">
+                </a>
+            </li>
+            <li class="ms-3">
+                <a class="text-muted" href="https://youtube.com">
+                    <img src="static/img/youtube.svg" alt="youtube">
+                </a>
+            </li>
+        </ul>
+    </footer>
+    <!-- </div> -->
+
+    {% if login_form %}
+    <!-- Форма авторизации -->
+    <div class="modal fade" id="login-modal" tabindex="-1" aria-labelledby="login-modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="login-modal-label">Вход</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm" novalidate>
+                        {{ login_form.hidden_tag() }}
+                        <div class="error-block text-danger" data-field="csrf_token"></div>
+                        <div class="error-block text-danger" data-field="other"></div>
+
+                        <div class="mb-3">
+                            {{ login_form.login(size=32, class="form-control", placeholder=login_form.login.label.text)
+                            }}
+                            <div class="error-block text-danger" data-field="login"></div>
+                        </div>
+                        <div class="mb-3">
+                            {{ login_form.password(size=32, class="form-control",
+                            placeholder=login_form.password.label.text)
+                            }}
+                            <div class="error-block text-danger" data-field="password"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    {{ login_form.submit(class="btn btn-danger", form="loginForm") }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if signup_form %}
+    <!-- Форма регистрации -->
+    <div class="modal fade" id="signup-modal" tabindex="-1" aria-labelledby="signup-modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="signup-modal-label">Регистрация</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="signupForm" enctype="multipart/form-data" novalidate>
+                        {{ signup_form.hidden_tag() }}
+                        <div class="error-block text-danger" data-field="csrf_token"></div>
+
+                        <div class="mb-3">
+                            {{ signup_form.photo.label() }}
+                            {{ signup_form.photo(class="form-control") }}
+                            <div class="form-text">{{ signup_form.photo.description }}</div>
+                            <div class="error-block text-danger" data-field="photo"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ signup_form.last_name.label() }}
+                            {{ signup_form.last_name(class="form-control", autocomplete="off") }}
+                            <div class="error-block text-danger" data-field="last_name"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ signup_form.first_name.label() }}
+                            {{ signup_form.first_name(class="form-control", autocomplete="off") }}
+                            <div class="error-block text-danger" data-field="first_name"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ signup_form.patronymic.label() }}
+                            {{ signup_form.patronymic(class="form-control", autocomplete="off") }}
+                            <div class="error-block text-danger" data-field="patronymic"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ signup_form.signup_login.label() }}
+                            {{ signup_form.signup_login(class="form-control", autocomplete="off") }}
+                            <div class="form-text">{{ signup_form.signup_login.description }}</div>
+                            <div class="error-block text-danger" data-field="signup_login"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ signup_form.signup_password.label() }}
+                            {{ signup_form.signup_password(class="form-control", autocomplete="off") }}
+                            <div class="form-text">{{ signup_form.signup_password.description }}</div>
+                            <div class="error-block text-danger" data-field="signup_password"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ signup_form.confirm_password.label() }}
+                            {{ signup_form.confirm_password(class="form-control", autocomplete="off") }}
+                            <div class="error-block text-danger" data-field="confirm_password"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ signup_form.email.label() }}
+                            {{ signup_form.email(class="form-control", autocomplete="off") }}
+                            <div class="error-block text-danger" data-field="email"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ signup_form.phone_number.label() }}
+                            {{ signup_form.phone_number(class="form-control", autocomplete="off") }}
+                            <div class="error-block text-danger" data-field="phone_number"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ signup_form.location.label() }}
+                            {{ signup_form.location(class="form-control", autocomplete="off") }}
+                            <div class="error-block text-danger" data-field="location"></div>
+                        </div>
+
+                        <div class="form-text">* - поля, обязательные для заполнения</div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    {{ signup_form.signup_submit(class="btn btn-danger", form="signupForm") }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="static/script.js"></script>
 </body>
 
 </html>
