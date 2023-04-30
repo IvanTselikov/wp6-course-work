@@ -64,7 +64,8 @@
                     </ul>
                 </div>
 
-                <button class="btn btn-danger ms-5 ms-md-4 px-4 text-nowrap">Новое объявление</button>
+                <button class="btn btn-danger ms-5 ms-md-4 px-4 text-nowrap" data-bs-toggle="modal"
+                    data-bs-target="#newAdModal">Новое объявление</button>
                 {% endif %}
             </div>
         </div>
@@ -115,14 +116,13 @@
                         <div class="error-block text-danger" data-field="other"></div>
 
                         <div class="mb-3">
-                            {{ login_form.login(size=32, class="form-control", placeholder=login_form.login.label.text)
-                            }}
+                            {{ login_form.login(size=32, class="form-control", placeholder=login_form.login.label.text,
+                            autocomplete="off")}}
                             <div class="error-block text-danger" data-field="login"></div>
                         </div>
                         <div class="mb-3">
                             {{ login_form.password(size=32, class="form-control",
-                            placeholder=login_form.password.label.text)
-                            }}
+                            placeholder=login_form.password.label.text)}}
                             <div class="error-block text-danger" data-field="password"></div>
                         </div>
                     </form>
@@ -220,6 +220,146 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                     {{ signup_form.signup_submit(class="btn btn-danger", form="signupForm") }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+    {% if not current_user.is_anonymous %}
+    <!-- Форма добавления объявления -->
+    <div class="modal fade" id="newAdModal" tabindex="-1" aria-labelledby="newAdModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="login-modal-label">Создание объявления</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newAdForm" novalidate>
+                        {{ ad_form.hidden_tag() }}
+                        <div class="error-block text-danger" data-field="csrf_token"></div>
+                        <div class="error-block text-danger" data-field="other"></div>
+
+                        <div class="mb-3">
+                            {{ ad_form.transport_type.label() }}
+                            {{ ad_form.transport_type(class="form-control")}}
+                            <div class="error-block text-danger" data-field="transport_type"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.mark.label() }}
+                            {{ ad_form.mark(class="form-control", disabled="true")}}
+                            <div class="error-block text-danger" data-field="transport_type"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.model.label() }}
+                            {{ ad_form.model(class="form-control", disabled="true")}}
+                            <div class="error-block text-danger" data-field="model"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.generation.label() }}
+                            {{ ad_form.generation(class="form-control", disabled="true")}}
+                            <div class="error-block text-danger" data-field="generation"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.serie.label() }}
+                            {{ ad_form.serie(class="form-control", disabled="true")}}
+                            <div class="error-block text-danger" data-field="serie"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.modification.label() }}
+                            {{ ad_form.modification(class="form-control", disabled="true")}}
+                            <div class="error-block text-danger" data-field="serie"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.release_year.label() }}
+                            {{ ad_form.release_year(class="form-control")}}
+                            <div class="error-block text-danger" data-field="serie"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.mileage.label() }}
+                            {{ ad_form.mileage(class="form-control", value="0")}}
+                            <div class="error-block text-danger" data-field="serie"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.pts_type.label() }}
+                            {{ ad_form.pts_type(class="form-control")}}
+                            <div class="error-block text-danger" data-field="serie"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.owners_count.label() }}
+                            {{ ad_form.owners_count(class="form-control", value="1")}}
+                            <div class="error-block text-danger" data-field="serie"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.is_broken.label() }}
+                            {{ ad_form.is_broken(class="form-control")}}
+                            <div class="error-block text-danger" data-field="serie"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="color-other" id="color-square"></div>
+                            {{ ad_form.color.label() }}
+                            {{ ad_form.color(class="form-control")}}
+                            <div class="error-block text-danger" data-field="serie"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.vin.label() }}
+                            {{ ad_form.vin(class="form-control")}}
+                            <div class="error-block text-danger" data-field="serie"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.photo_1.label() }}
+                            {{ ad_form.photo_1(class="form-control") }}
+                            <div class="form-text">{{ ad_form.photo_1.description }}</div>
+                            <div class="error-block text-danger" data-field="photo"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.photo_2.label() }}
+                            {{ ad_form.photo_2(class="form-control") }}
+                            <div class="error-block text-danger" data-field="photo"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.photo_3.label() }}
+                            {{ ad_form.photo_3(class="form-control") }}
+                            <div class="error-block text-danger" data-field="photo"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.location.label() }}
+                            {{ ad_form.location(class="form-control", list="location-datalist") }}
+                            <datalist id="location-datalist">
+                                <option value="Текст1">
+                                <option value="Текст2">
+                            </datalist>
+                            <div class="error-block text-danger" data-field="photo"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.description.label() }}
+                            {{ ad_form.description(class="form-control", rows=10) }}
+                            <div class="error-block text-danger" data-field="photo"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    {{ ad_form.submit(class="btn btn-danger", form="newAdForm") }}
                 </div>
             </div>
         </div>

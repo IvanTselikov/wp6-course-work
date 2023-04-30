@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField
-from wtforms.validators import ValidationError, DataRequired, Email, Length, EqualTo, regexp, Optional
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, SelectField, IntegerField
+from wtforms.validators import ValidationError, DataRequired, Email, Length, EqualTo, regexp, Optional, NumberRange
 from flask_wtf.file import FileAllowed, FileRequired
 from flask_uploads import UploadSet, IMAGES
 
-from app.models import User
+from app.models import User, TransportType, Mark, Model, PtsType
 
 import re
 import phonenumbers
@@ -118,3 +118,106 @@ class SignupForm(FlaskForm):
                 raise ValueError()
         except (phonenumbers.phonenumberutil.NumberParseException, ValueError):
             raise ValidationError('Неправильный номер телефона.')
+
+
+class AdForm(FlaskForm):
+    transport_type = SelectField(
+        'Тип транспорта',
+        choices=[(0, 'не выбрано')],
+        validators=[DataRequired('Пожалуйста, укажите тип транспорта.')]
+    )
+    mark = SelectField(
+        'Марка',
+        choices=[(0, 'не выбрано')],
+        validators=[DataRequired('Пожалуйста, укажите марку автомобиля.')]
+    )
+    model = SelectField(
+        'Модель',
+        choices=[(0, 'не выбрано')],
+        validators=[DataRequired('Пожалуйста, укажите модель автомобиля.')]
+    )
+    generation = SelectField(
+        'Поколение',
+        choices=[(0, 'не выбрано')],
+        validators=[DataRequired('Пожалуйста, укажите поколение.')]
+    )
+    serie = SelectField(
+        'Серия',
+        choices=[(0, 'не выбрано')],
+        validators=[DataRequired('Пожалуйста, укажите серию.')]
+    )
+    modification = SelectField(
+        'Модификация',
+        choices=[(0, 'не выбрано')],
+        validators=[DataRequired('Пожалуйста, укажите модификацию.')]
+    )
+    release_year = IntegerField(
+        'Год выпуска',
+        validators=[
+            DataRequired('Пожалуйста, укажите год выпуска.'),
+            NumberRange(min=1900, max=2100, message='Пожалуйста, укажите корректный год выпуска.')
+        ]
+    )
+    mileage = IntegerField(
+        'Пробег, км',
+        validators=[
+            DataRequired('Пожалуйста, укажите год выпуска.'),
+            NumberRange(min=0, message='Пожалуйста, укажите корректный пробег.')
+        ]
+    )
+    pts_type = SelectField(
+        'Тип ПТС',
+        choices=[(0, 'не выбрано')],
+        validators=[DataRequired('Пожалуйста, укажите тип ПТС.')]
+    )
+    owners_count = IntegerField(
+        'Владельцев по ПТС',
+        validators=[
+            DataRequired('Пожалуйста, укажите количество владельцев по ПТС.'),
+            NumberRange(min=1, message='Пожалуйста, укажите корректное количество владельцев.')
+        ]
+    )
+    is_broken = SelectField(
+        'Состояние',
+        choices=[(0, 'Не битый'), (1, 'Битый')],
+        validators=[DataRequired('Пожалуйста, укажите состояние автомобиля.')]
+    )
+    color = SelectField(
+        'Цвет',
+        choices=[(0, 'другой')],
+    )
+    vin = StringField(
+        'VIN',
+        validators=[
+            DataRequired('Пожалуйста, введите VIN.'),
+            Length(min=17, max=17, message='VIN должен содержать 17 символов.')
+        ]
+    )
+    photo_1 = FileField(
+        label='Главное фото',
+        description='будет отображаться как баннер объявления',
+        validators=[
+            FileAllowed(['png', 'jpg', 'jpeg'], 'Недопустимый формат файла.')
+        ]
+    )
+    photo_2 = FileField(
+        label='Доп. фото 1',
+        validators=[
+            FileAllowed(['png', 'jpg', 'jpeg'], 'Недопустимый формат файла.')
+        ]
+    )
+    photo_3 = FileField(
+        label='Доп. фото 2',
+        validators=[
+            FileAllowed(['png', 'jpg', 'jpeg'], 'Недопустимый формат файла.')
+        ]
+    )
+    location = StringField('Населённый пункт')
+    description = TextAreaField('Описание')
+
+    submit = SubmitField('Создать объявление')
+
+    def __init__(self, *args, **kwargs):
+        super(AdForm, self).__init__(*args, **kwargs)
+        self.transport_type.choices.extend([(tt.id, tt.name) for tt in TransportType.query.all()])
+        self.pts_type.choices.extend([(p.id, p.name) for p in PtsType.query.all()])

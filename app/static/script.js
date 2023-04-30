@@ -43,4 +43,98 @@ $(document).ready(function() {
         }
       })
     })
+
+    carSettings = [
+      { select: $('#transport_type'), queryNext: '/marks' },
+      { select: $('#mark'), queryNext: '/models' },
+      { select: $('#model'), queryNext: '/generations' },
+      { select: $('#generation'), queryNext: '/series' },
+      { select: $('#serie'), queryNext: '/modifications' },
+      { select: $('#modification') }
+    ]
+
+    for (let i = 0; i < carSettings.length - 1; i++) {
+      carSettings[i].select.on('change', function(e) {
+        const value = carSettings[i].select.val()
+        const nextSelect = carSettings[i+1].select
+
+        $.ajax({
+          type: 'get',
+          url: encodeURIComponent(`${carSettings[i].queryNext}/${value}`),
+          beforeSend: () => {
+            nextSelect.children().slice(1).remove()
+          },
+          success: response => {
+            nextSelect.prop('disabled', false)
+
+            for (let key in response) {
+              nextSelect.append(`<option value=${key}>${response[key]}</option>`)
+            }
+          },
+          error: () => {
+            nextSelect.prop('disabled', true)
+          }
+        })
+
+        for (let j = i + 1; j < carSettings.length; j++) {
+          carSettings[j].select.children().slice(1).remove()
+          carSettings[j].select.prop('disabled', true)
+        }
+      })
+    }
+
+    $('#generation').on('change', function(e) {
+      const value = $(this).val()
+
+      $.ajax({
+        type: 'get',
+        url: encodeURIComponent(`/release_years/${value}`),
+        success: response => {
+          const releaseYearInputValue = $('#release_year').val()
+          const yearBegin = response.yearBegin
+          const yearEnd = response.yearEnd
+
+          if (yearBegin) {
+            $('#release_year').attr('min', yearBegin)
+            if (releaseYearInputValue < yearBegin) {
+              $('#release_year').val(yearBegin)
+            }
+          }
+
+          if (yearEnd) {
+            $('#release_year').attr('max', yearEnd)
+            if (releaseYearInputValue > yearEnd) {
+              $('#release_year').val(yearEnd)
+            }
+          }
+        }
+      })
+    })
+
+    // заполнение цветов
+    $.ajax({
+      type: 'get',
+      url: '/colors',
+      success: response => {
+        for (const id in response) {
+          const name = response[id].name,
+                red = response[id].red,
+                green = response[id].green,
+                blue = response[id].blue
+
+          $('#color').append(`<option value=${id} data-color="rgb(${red}, ${green}, ${blue})">${name}</option>`)
+        }
+      }
+    })
+
+    $('#color').on('change', function(e) {
+      const currentColor = $(this).find(':selected').data('color')
+      if (currentColor) {
+        $('#color-square').removeClass('color-other')
+        $('#color-square').css('backgroundColor', currentColor)
+      }
+      else {
+        $('#color-square').addClass('color-other')
+      }
+    })
 })

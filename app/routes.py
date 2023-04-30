@@ -2,13 +2,14 @@
 from flask import render_template, redirect, url_for
 from flask import jsonify, request
 from app import app, db
-from app.forms import LoginForm, SignupForm
+from app.forms import LoginForm, SignupForm, AdForm
 
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 
-from app.models import User
+from app.models import User, Mark, Model, Generation, Serie, Modification, Color
 from flask_login import current_user, login_user, logout_user
+from sqlalchemy import or_, not_
 
 import os
 import pathlib
@@ -31,6 +32,9 @@ def index():
             photo_filename = os.path.join(*(photo_filename.split(os.path.sep)[1:]))
 
             kwargs.update({'photo_filename': photo_filename})
+        
+        ad_form = AdForm()
+        kwargs.update({'ad_form': ad_form})
     else:
         login_form = LoginForm()
         signup_form = SignupForm()
@@ -98,3 +102,60 @@ def signup():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.route('/marks/<transport_type_id>', methods=['get'])
+def marks(transport_type_id):
+    marks = Mark.query.filter(
+        or_(Mark.transport_type_id == transport_type_id, Mark.transport_type_id == None)
+    )
+    return jsonify({ m.id : m.name for m in marks }), 200 if marks.count() else 404
+
+
+@app.route('/models/<mark_id>', methods=['get'])
+def models(mark_id):
+    models = Model.query.filter_by(mark_id=mark_id)
+    return jsonify({ m.id : m.name for m in models }), 200 if models.count() else 404
+
+
+@app.route('/generations/<model_id>', methods=['get'])
+def generations(model_id):
+    generations = Generation.query.filter_by(model_id=model_id)
+    response = {}
+    for g in generations:
+        generation_info = g.name
+        if g.year_begin or g.year_end:
+            generation_info += ' ({} - {})'.format(g.year_begin, g.year_end)
+        response.update({g.id: generation_info})
+    return jsonify(response), 200 if generations.count() else 404
+
+
+@app.route('/series/<generation_id>', methods=['get'])
+def series(generation_id):
+    series = Serie.query.filter_by(generation_id=generation_id)
+    return jsonify({ s.id : s.name for s in series }), 200 if series.count() else 404
+
+
+@app.route('/modifications/<serie_id>', methods=['get'])
+def modifications(serie_id):
+    modifications = Modification.query.filter_by(serie_id=serie_id)
+    return jsonify({ m.id : m.name for m in modifications }), 200 if modifications.count() else 404
+
+@app.route('/release_years/<generation_id>', methods=['get'])
+def release_years(generation_id):
+    generation = Generation.query.filter_by(id=generation_id).first()
+    if generation:
+        return jsonify({ 'yearBegin': generation.year_begin, 'yearEnd': generation.year_end })
+    return {}, 404
+
+@app.route('/colors', methods=['get'])
+def colors():
+    colors = Color.query.all()
+    return jsonify({
+        c.id: {
+            'name': c.name,
+            'red': c.red,
+            'green': c.green,
+            'blue': c.blue
+        } for c in colors
+    })
