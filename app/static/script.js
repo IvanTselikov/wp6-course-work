@@ -10,6 +10,7 @@ $(document).ready(function() {
           url : '/signup',
           success: response => {
             document.write(response)
+            window.location.reload()
           },
           error: response => {
             $(this).find('.error-block').text('')
@@ -31,9 +32,9 @@ $(document).ready(function() {
         url : '/login',
         success: response => {
           document.write(response)
+          window.location.reload()
         },
         error: response => {
-          // console.log($(this))
           $(this).find('.error-block').text('')
 
           errors = response.responseJSON
@@ -94,19 +95,19 @@ $(document).ready(function() {
           const yearBegin = response.yearBegin
           const yearEnd = response.yearEnd
 
-          if (yearBegin) {
-            $('#release_year').attr('min', yearBegin)
-            if (releaseYearInputValue < yearBegin) {
-              $('#release_year').val(yearBegin)
-            }
+          $('#release_year').attr('min', yearBegin)
+          if (releaseYearInputValue < yearBegin) {
+            $('#release_year').val(yearBegin)
           }
 
-          if (yearEnd) {
-            $('#release_year').attr('max', yearEnd)
-            if (releaseYearInputValue > yearEnd) {
-              $('#release_year').val(yearEnd)
-            }
+          $('#release_year').attr('max', yearEnd)
+          if (releaseYearInputValue > yearEnd) {
+            $('#release_year').val(yearEnd)
           }
+        },
+        error: () => {
+          $('#release_year').attr('min', 1900)
+          $('#release_year').attr('max', 2100)
         }
       })
     })
@@ -136,5 +137,44 @@ $(document).ready(function() {
       else {
         $('#color-square').addClass('color-other')
       }
+    })
+
+
+    // подгрузка населённых пунктов
+    $.ajax({
+      type: 'get',
+      url: '/locations',
+      success: response => {
+        for (const id in response) {
+          const name = response[id]
+          $('#location-datalist').append(`<option value="${name}"">`)
+        }
+      }
+    })
+
+
+    $('#newAdForm').on('submit', function(e) {
+      e.preventDefault()
+      
+      $.ajax({
+        processData: false,
+        contentType: false,
+        data : new FormData(this),
+        type : 'post',
+        url : '/create_ad',
+        success: response => {
+          // document.write(response)
+          // window.location.reload()
+          console.log(response)
+        },
+        error: response => {
+          $(this).find('.error-block').text('')
+
+          errors = response.responseJSON
+          for (let key in errors) {
+            $(this).find(`[data-field="${key}"]`).text(errors[key].join('\n'))
+          }
+        }
+      })
     })
 })

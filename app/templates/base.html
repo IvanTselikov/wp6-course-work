@@ -209,7 +209,9 @@
 
                         <div class="mb-3">
                             {{ signup_form.location.label() }}
-                            {{ signup_form.location(class="form-control", autocomplete="off") }}
+                            {{ signup_form.location(class="form-control", list="location-datalist",
+                            autocomplete="off")}}
+                            <datalist id="location-datalist"></datalist>
                             <div class="error-block text-danger" data-field="location"></div>
                         </div>
 
@@ -251,7 +253,7 @@
                         <div class="mb-3">
                             {{ ad_form.mark.label() }}
                             {{ ad_form.mark(class="form-control", disabled="true")}}
-                            <div class="error-block text-danger" data-field="transport_type"></div>
+                            <div class="error-block text-danger" data-field="mark"></div>
                         </div>
 
                         <div class="mb-3">
@@ -275,85 +277,89 @@
                         <div class="mb-3">
                             {{ ad_form.modification.label() }}
                             {{ ad_form.modification(class="form-control", disabled="true")}}
-                            <div class="error-block text-danger" data-field="serie"></div>
+                            <div class="error-block text-danger" data-field="modification"></div>
                         </div>
 
                         <div class="mb-3">
                             {{ ad_form.release_year.label() }}
                             {{ ad_form.release_year(class="form-control")}}
-                            <div class="error-block text-danger" data-field="serie"></div>
+                            <div class="error-block text-danger" data-field="release_year"></div>
                         </div>
 
                         <div class="mb-3">
                             {{ ad_form.mileage.label() }}
                             {{ ad_form.mileage(class="form-control", value="0")}}
-                            <div class="error-block text-danger" data-field="serie"></div>
+                            <div class="error-block text-danger" data-field="mileage"></div>
                         </div>
 
                         <div class="mb-3">
                             {{ ad_form.pts_type.label() }}
                             {{ ad_form.pts_type(class="form-control")}}
-                            <div class="error-block text-danger" data-field="serie"></div>
+                            <div class="error-block text-danger" data-field="pts_type"></div>
                         </div>
 
                         <div class="mb-3">
                             {{ ad_form.owners_count.label() }}
                             {{ ad_form.owners_count(class="form-control", value="1")}}
-                            <div class="error-block text-danger" data-field="serie"></div>
+                            <div class="error-block text-danger" data-field="owners_count"></div>
                         </div>
 
                         <div class="mb-3">
                             {{ ad_form.is_broken.label() }}
                             {{ ad_form.is_broken(class="form-control")}}
-                            <div class="error-block text-danger" data-field="serie"></div>
+                            <div class="error-block text-danger" data-field="is_broken"></div>
                         </div>
 
                         <div class="mb-3">
                             <div class="color-other" id="color-square"></div>
                             {{ ad_form.color.label() }}
                             {{ ad_form.color(class="form-control")}}
-                            <div class="error-block text-danger" data-field="serie"></div>
+                            <div class="error-block text-danger" data-field="color"></div>
                         </div>
 
                         <div class="mb-3">
                             {{ ad_form.vin.label() }}
-                            {{ ad_form.vin(class="form-control")}}
-                            <div class="error-block text-danger" data-field="serie"></div>
+                            {{ ad_form.vin(class="form-control", autocomplete="off")}}
+                            <div class="error-block text-danger" data-field="vin"></div>
                         </div>
 
                         <div class="mb-3">
                             {{ ad_form.photo_1.label() }}
                             {{ ad_form.photo_1(class="form-control") }}
                             <div class="form-text">{{ ad_form.photo_1.description }}</div>
-                            <div class="error-block text-danger" data-field="photo"></div>
+                            <div class="error-block text-danger" data-field="photo_1"></div>
                         </div>
 
                         <div class="mb-3">
                             {{ ad_form.photo_2.label() }}
                             {{ ad_form.photo_2(class="form-control") }}
-                            <div class="error-block text-danger" data-field="photo"></div>
+                            <div class="error-block text-danger" data-field="photo_2"></div>
                         </div>
 
                         <div class="mb-3">
                             {{ ad_form.photo_3.label() }}
                             {{ ad_form.photo_3(class="form-control") }}
-                            <div class="error-block text-danger" data-field="photo"></div>
+                            <div class="error-block text-danger" data-field="photo_3"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ ad_form.price.label() }}
+                            {{ ad_form.price(class="form-control") }}
+                            <div class="error-block text-danger" data-field="price"></div>
                         </div>
 
                         <div class="mb-3">
                             {{ ad_form.location.label() }}
-                            {{ ad_form.location(class="form-control", list="location-datalist") }}
-                            <datalist id="location-datalist">
-                                <option value="Текст1">
-                                <option value="Текст2">
-                            </datalist>
-                            <div class="error-block text-danger" data-field="photo"></div>
+                            {{ ad_form.location(class="form-control", value=current_user.get_location(),
+                            list="location-datalist", autocomplete="off") }}
+                            <datalist id="location-datalist"></datalist>
+                            <div class="error-block text-danger" data-field="location"></div>
                         </div>
 
                         <div class="mb-3">
                             {{ ad_form.description.label() }}
                             {{ ad_form.description(class="form-control", rows=10) }}
-                            <div class="error-block text-danger" data-field="photo"></div>
+                            <div class="error-block text-danger" data-field="description"></div>
                         </div>
                     </form>
                 </div>
@@ -361,6 +367,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                     {{ ad_form.submit(class="btn btn-danger", form="newAdForm") }}
                 </div>
+                <div class="form-text">* - поля, обязательные для заполнения</div>
             </div>
         </div>
     </div>

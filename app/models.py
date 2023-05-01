@@ -33,6 +33,9 @@ class User(UserMixin, db.Model):
     def set_location(self, name):
         self.location_id = Location.get_id_by_name(name)
 
+    def get_location(self):
+        return Location.query.filter_by(id=self.location_id).first().name
+
     def get_chats(self):
         pass
 
@@ -70,11 +73,17 @@ class Ad(db.Model):
     is_broken = db.Column(TINYINT(1), nullable=False)
     mileage = db.Column(INTEGER(), nullable=False)
     seller_id = db.Column(INTEGER(), db.ForeignKey('user.id'), nullable=False)
-    location_id = db.Column(INTEGER(), db.ForeignKey('location.id'), nullable=False)
+    location_id = db.Column(INTEGER(), db.ForeignKey('location.id'))
     price = db.Column(INTEGER(), nullable=False)
     description = db.Column(TEXT())
 
     photos = db.relationship('AdPhoto', backref='ad', lazy='dynamic')
+
+    def set_location(self, name):
+        self.location_id = Location.get_id_by_name(name)
+
+    def get_location(self):
+        return Location.query.filter_by(id=self.location_id).first().name
 
 
 class Location(db.Model):

@@ -7,8 +7,8 @@ from app.forms import LoginForm, SignupForm, AdForm
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 
-from app.models import User, Mark, Model, Generation, Serie, Modification, Color
-from flask_login import current_user, login_user, logout_user
+from app.models import User, Mark, Model, Generation, Serie, Modification, Color, Location, Ad
+from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy import or_, not_
 
 import os
@@ -144,9 +144,15 @@ def modifications(serie_id):
 @app.route('/release_years/<generation_id>', methods=['get'])
 def release_years(generation_id):
     generation = Generation.query.filter_by(id=generation_id).first()
-    if generation:
-        return jsonify({ 'yearBegin': generation.year_begin, 'yearEnd': generation.year_end })
-    return {}, 404
+
+    year_begin = (generation.year_begin if generation else None)
+    year_end = (generation.year_end if generation else None)
+
+    form = AdForm()
+    year_begin, year_end = form.change_release_year_limits(year_begin, year_end)
+
+    return jsonify({ 'yearBegin': year_begin, 'yearEnd': year_end })
+
 
 @app.route('/colors', methods=['get'])
 def colors():
@@ -159,3 +165,66 @@ def colors():
             'blue': c.blue
         } for c in colors
     })
+
+@app.route('/locations', methods=['get'])
+def locations():
+    locations = Location.query.all()
+    return jsonify({ loc.id : loc.name for loc in locations})
+
+@app.route('/create_ad', methods=['post'])
+@login_required
+def create_ad():
+    form = AdForm()
+    if form.validate():
+        ad = Ad(
+            car_id = form.modification.data,
+            release_year = form.release_year.data,
+            vin = form.vin.data,
+            pts_type_id = form.pts_type.data,
+            owners_count = form.owners_count.data,
+            color_id = form.color.data,
+            is_broken = form.is_broken.data,
+            mileage = form.mileage.data,
+            seller_id = current_user.id,
+            price = form.price.data,
+            description = form.description.data.strip()
+        )
+
+        ad.set_location(form.location.data)
+
+        db.session.add(ad)
+        db.session.commit()
+
+        # создание хранилища для фото объявления
+        ad_storage_path = os.path.join(
+            app.config['UPLOADS_FOLDER'],
+            current_user.login,
+            str(ad.id)
+        )
+        os.makedirs(ad_storage_path, exist_ok=True)
+
+        # сохранение фото объявления
+        photos = list(filter(lambda f: f.data is not None, [form.photo_1, form.photo_2, form.photo_3]))
+        for i, photo in enumerate(photos):
+            photo_filename = secure_filename(photo.data.filename)
+            _, file_extension = os.path.splitext(photo_filename)
+            photo_filename = '{}{}'.format(i+1, file_extension)
+            photo.data.save(os.path.join(ad_storage_path, photo_filename))
+
+        return {'gg!': 'gg!'}, 200
+
+        # return jsonify({
+        #     'car_id': form.modification.data,
+        #     'release_year': form.release_year.data,
+        #     'vin': form.vin.data,
+        #     'pts_type_id': form.pts_type.data,
+        #     'owners_count': form.owners_count.data,
+        #     'color_id': form.color.data,
+        #     'is_broken': form.is_broken.data,
+        #     'mileage': form.mileage.data,
+        #     'seller_id': current_user.id,
+        #     'location_id': form.location.data,
+        #     'price': form.price.data,
+        #     'description': form.description.data
+        # })
+    return jsonify(form.errors), 400

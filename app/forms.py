@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, SelectField, IntegerField
-from wtforms.validators import ValidationError, DataRequired, Email, Length, EqualTo, regexp, Optional, NumberRange
+from wtforms.validators import ValidationError, DataRequired, InputRequired, Email, Length, EqualTo, regexp, Optional, NumberRange, NoneOf
 from flask_wtf.file import FileAllowed, FileRequired
 from flask_uploads import UploadSet, IMAGES
 
@@ -122,75 +122,116 @@ class SignupForm(FlaskForm):
 
 class AdForm(FlaskForm):
     transport_type = SelectField(
-        'Тип транспорта',
+        'Тип транспорта*',
         choices=[(0, 'не выбрано')],
-        validators=[DataRequired('Пожалуйста, укажите тип транспорта.')]
+        coerce=int,
+        validate_choice=False,
+        validators=[
+            InputRequired('Пожалуйста, укажите тип транспорта.'),
+            NoneOf([0], 'Пожалуйста, укажите тип транспорта.')
+        ]
     )
     mark = SelectField(
-        'Марка',
+        'Марка*',
         choices=[(0, 'не выбрано')],
-        validators=[DataRequired('Пожалуйста, укажите марку автомобиля.')]
+        coerce=int,
+        validate_choice=False,
+        validators=[
+            InputRequired('Пожалуйста, укажите марку автомобиля.'),
+            NoneOf([0], 'Пожалуйста, укажите марку автомобиля.')
+        ]
     )
     model = SelectField(
-        'Модель',
+        'Модель*',
         choices=[(0, 'не выбрано')],
-        validators=[DataRequired('Пожалуйста, укажите модель автомобиля.')]
+        coerce=int,
+        validate_choice=False,
+        validators=[
+            InputRequired('Пожалуйста, укажите модель автомобиля.'),
+            NoneOf([0], 'Пожалуйста, укажите модель автомобиля.')
+        ]
     )
     generation = SelectField(
-        'Поколение',
+        'Поколение*',
         choices=[(0, 'не выбрано')],
-        validators=[DataRequired('Пожалуйста, укажите поколение.')]
+        coerce=int,
+        validate_choice=False,
+        validators=[
+            InputRequired('Пожалуйста, укажите поколение.'),
+            NoneOf([0], 'Пожалуйста, укажите поколение.')
+        ]
     )
     serie = SelectField(
-        'Серия',
+        'Серия*',
         choices=[(0, 'не выбрано')],
-        validators=[DataRequired('Пожалуйста, укажите серию.')]
+        coerce=int,
+        validate_choice=False,
+        validators=[
+            InputRequired('Пожалуйста, укажите серию.'),
+            NoneOf([0], 'Пожалуйста, укажите серию.')
+        ]
     )
     modification = SelectField(
-        'Модификация',
+        'Модификация*',
         choices=[(0, 'не выбрано')],
-        validators=[DataRequired('Пожалуйста, укажите модификацию.')]
+        coerce=int,
+        validate_choice=False,
+        validators=[
+            InputRequired('Пожалуйста, укажите модификацию.'),
+            NoneOf([0], 'Пожалуйста, укажите модификацию.')
+        ]
     )
     release_year = IntegerField(
-        'Год выпуска',
+        'Год выпуска*',
         validators=[
-            DataRequired('Пожалуйста, укажите год выпуска.'),
+            InputRequired('Пожалуйста, укажите год выпуска.'),
             NumberRange(min=1900, max=2100, message='Пожалуйста, укажите корректный год выпуска.')
         ]
     )
     mileage = IntegerField(
-        'Пробег, км',
+        'Пробег, км*',
         validators=[
-            DataRequired('Пожалуйста, укажите год выпуска.'),
-            NumberRange(min=0, message='Пожалуйста, укажите корректный пробег.')
+            InputRequired('Пожалуйста, укажите пробег.'),
+            NumberRange(min=0, message='Пробег не может быть отрицательным числом.')
         ]
     )
     pts_type = SelectField(
-        'Тип ПТС',
+        'Тип ПТС*',
         choices=[(0, 'не выбрано')],
-        validators=[DataRequired('Пожалуйста, укажите тип ПТС.')]
+        coerce=int,
+        validate_choice=False,
+        validators=[
+            InputRequired('Пожалуйста, укажите тип ПТС.'),
+            NoneOf([0], 'Пожалуйста, укажите тип ПТС.')
+        ]
     )
     owners_count = IntegerField(
-        'Владельцев по ПТС',
+        'Владельцев по ПТС*',
         validators=[
-            DataRequired('Пожалуйста, укажите количество владельцев по ПТС.'),
-            NumberRange(min=1, message='Пожалуйста, укажите корректное количество владельцев.')
+            InputRequired('Пожалуйста, укажите количество владельцев по ПТС.'),
+            NumberRange(min=1, message='Количество владельцев не может быть меньше 1.')
         ]
     )
     is_broken = SelectField(
-        'Состояние',
+        'Состояние*',
         choices=[(0, 'Не битый'), (1, 'Битый')],
-        validators=[DataRequired('Пожалуйста, укажите состояние автомобиля.')]
+        coerce=int,
+        validate_choice=False,
+        validators=[InputRequired('Пожалуйста, укажите состояние автомобиля.')]
     )
     color = SelectField(
         'Цвет',
         choices=[(0, 'другой')],
+        coerce=int,
+        validate_choice=False
     )
     vin = StringField(
-        'VIN',
+        'VIN*',
+        description='состоит из 17 символов (цифры, буквы латинского алфавита)',
         validators=[
             DataRequired('Пожалуйста, введите VIN.'),
-            Length(min=17, max=17, message='VIN должен содержать 17 символов.')
+            Length(min=17, max=17, message='VIN должен содержать 17 символов.'),
+            regexp(r'^[(A-H|J-N|P|R-Z|0-9)]{17}$', message='Указанный VIN имеет некорректный формат.')
         ]
     )
     photo_1 = FileField(
@@ -212,10 +253,34 @@ class AdForm(FlaskForm):
             FileAllowed(['png', 'jpg', 'jpeg'], 'Недопустимый формат файла.')
         ]
     )
+    price = IntegerField(
+        'Цена*',
+        validators=[
+            InputRequired('Пожалуйста, укажите цену.'),
+            NumberRange(min=1, message='Цена должна быть положительным числом.')
+        ]
+    )
     location = StringField('Населённый пункт')
     description = TextAreaField('Описание')
 
     submit = SubmitField('Создать объявление')
+
+    # def validate_release_year(self, field):
+    #     user = User.query.filter_by(login=field.data).first()
+    #     if user is not None:
+    #         raise ValidationError(
+    #             'Пользователь с таким логином уже существует.')
+
+    def change_release_year_limits(self, year_begin, year_end):
+        validators = self.release_year.validators
+        nrange_validator = list(filter(lambda v: isinstance(v, NumberRange), validators))[0]
+
+        year_begin = year_begin or 1900  # TODO: в константу
+        year_end = year_end or 2100
+        nrange_validator.min = year_begin
+        nrange_validator.max = year_end
+        return year_begin, year_end
+
 
     def __init__(self, *args, **kwargs):
         super(AdForm, self).__init__(*args, **kwargs)
