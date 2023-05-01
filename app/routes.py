@@ -7,7 +7,7 @@ from app.forms import LoginForm, SignupForm, AdForm
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 
-from app.models import User, Mark, Model, Generation, Serie, Modification, Color, Location, Ad
+from app.models import User, Mark, Model, Generation, Serie, Modification, Color, Location, Ad, StatusChange
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy import or_, not_
 
@@ -189,6 +189,11 @@ def create_ad():
             price = form.price.data,
             description = form.description.data.strip()
         )
+        status_change = StatusChange(
+            status_id = 3,  # TODO: в константу
+            ad_id = ad.id,
+            admin_id = ad.assign_admin()
+        )
 
         ad.set_location(form.location.data)
 
@@ -212,19 +217,4 @@ def create_ad():
             photo.data.save(os.path.join(ad_storage_path, photo_filename))
 
         return {'gg!': 'gg!'}, 200
-
-        # return jsonify({
-        #     'car_id': form.modification.data,
-        #     'release_year': form.release_year.data,
-        #     'vin': form.vin.data,
-        #     'pts_type_id': form.pts_type.data,
-        #     'owners_count': form.owners_count.data,
-        #     'color_id': form.color.data,
-        #     'is_broken': form.is_broken.data,
-        #     'mileage': form.mileage.data,
-        #     'seller_id': current_user.id,
-        #     'location_id': form.location.data,
-        #     'price': form.price.data,
-        #     'description': form.description.data
-        # })
     return jsonify(form.errors), 400

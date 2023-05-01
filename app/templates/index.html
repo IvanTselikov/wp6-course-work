@@ -1,1 +1,22 @@
 {% extends "base.html" %}
+{% block content %}
+<h3>Новые объявления на сайте</h3>
+{% for ad in current_user.get_recommended_ads() %}
+<pre>{{ ad.get_info() }}</pre>
+<!-- <div class="card mb-3" style="max-width: 540px;">
+    <div class="row g-0">
+        <div class="col-4">
+            <img src="static/uploads/john.doe/3/1.jpg" class="img-fluid rounded-start" alt="banner">
+        </div>
+        <div class="col-8">
+            <div class="card-body">
+                <h5 class="card-title">{{ ad. }}, </h5>
+                <p class="card-text">Это более широкая карта с вспомогательным текстом ниже в качестве естественного
+                    перехода к дополнительному контенту. Этот контент немного длиннее.</p>
+                <p class="card-text"><small class="text-muted">Последнее обновление 3 мин. назад</small></p>
+            </div>
+        </div>
+    </div>
+</div> -->
+{% endfor %}
+{% endblock %}

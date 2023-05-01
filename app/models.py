@@ -3,6 +3,7 @@ from sqlalchemy.dialects.mysql import *
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.sql import func
 from flask_login import UserMixin
+from flask import jsonify, request
 
 from datetime import datetime as dt
 
@@ -41,6 +42,9 @@ class User(UserMixin, db.Model):
 
     def get_chat_messages(self, user_id):
         pass
+
+    def get_recommended_ads(self):
+        Ad.query.filter_by(location_id=self.location_id)
 
     def __repr__(self):
         return '<User {}>'.format(self.login)
@@ -84,6 +88,40 @@ class Ad(db.Model):
 
     def get_location(self):
         return Location.query.filter_by(id=self.location_id).first().name
+    
+    def get_info(self):
+        modification = Modification.query.filter_by(id=self.car_id).first()
+        serie = Serie.query.filter_by(id=modification.serie_id).first()
+        generation = Generation.query.filter_by(id=serie.generation_id).first()
+        model = Model.query.filter_by(id=generation.model_id).first()
+        mark = Model.query.filter_by(id=model.mark_id).first()
+        transport_type = TransportType.query.filter_by(id=mark.transport_type_id).first()
+        body_type = CharacteristicValue.query.filter_by(
+            characteristic_id=2,  # TODO: в константы
+            modification_id=modification.id
+        ).first()
+        drive = CharacteristicValue.query.filter_by(
+            characteristic_id=27,
+            modification_id=modification.id
+        ).first()
+        engine_type = CharacteristicValue.query.filter_by(
+            characteristic_id=12,
+            modification_id=modification.id
+        ).first()
+        location = Location.query.filter_by(id=self.location_id).first()
+        return jsonify({
+            'mark': mark.name,
+            'model': model.name,
+            'releaseYear': self.release_year,
+            'price': self.price,
+            'mileage': self.mileage,
+            'modification': modification.name,
+            'bodyType': body_type.value,
+            'drive': drive.value,
+            'engine_type': engine_type.value,
+            'location': location.name,
+            'updateAt': None
+        })
 
 
 class Location(db.Model):
