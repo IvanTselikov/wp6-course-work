@@ -7,12 +7,11 @@ from app.forms import LoginForm, SignupForm, AdForm
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 
-from app.models import User, Mark, Model, Generation, Serie, Modification, Color, Location, Ad, StatusChange
+from app.models import User, Mark, Model, Generation, Serie, Modification, Color, Location, Ad
 from flask_login import current_user, login_user, logout_user, login_required
-from sqlalchemy import or_, not_
+from sqlalchemy import or_
 
 import os
-import pathlib
 from glob import glob
 
 
@@ -45,10 +44,10 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('index'))
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
     form = LoginForm()
-
     if form.validate():
         user = User.query.filter_by(login=form.login.data).first()
         if user is None or not user.check_password(form.password.data):
@@ -65,6 +64,9 @@ def login():
 
 @app.route('/signup', methods=['POST'])
 def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
     form = SignupForm()
     if form.validate():
         user = User(
@@ -72,16 +74,25 @@ def signup():
             last_name=form.last_name.data,
             patronymic=form.patronymic.data,
             login=form.signup_login.data,
+            password=form.signup_password.data,
             email=form.email.data,
             phone_number=form.phone_number.data,
             is_admin=0
         )
 
-        user.set_location(form.location.data)
-        user.set_password(form.signup_password.data)
-
+        location_name = form.location.data
+        if location_name:
+            location_id = Location.get_id(location_name)
+            if not location_id:
+                new_location = Location(name=location_name)
+                db.session.add(new_location)
+                db.session.commit()
+                location_id = new_location.id
+            user.location_id = location_id
+        
         db.session.add(user)
         db.session.commit()
+
         login_user(user)
 
         # создание хранилища для фото пользователя
@@ -89,10 +100,12 @@ def signup():
         os.makedirs(user_storage_path, exist_ok=True)
 
         # сохранение фото профиля
-        photo_filename = secure_filename(form.photo.data.filename)
-        _, file_extension = os.path.splitext(photo_filename)
-        photo_filename = '{}.{}'.format(app.config['PROFILE_PHOTO_FILENAME'], file_extension)
-        form.photo.data.save(os.path.join(user_storage_path, photo_filename))
+        photo_filename = form.photo.data.filename
+        if photo_filename:
+            photo_filename = secure_filename(form.photo.data.filename)
+            _, file_extension = os.path.splitext(photo_filename)
+            photo_filename = app.config['PROFILE_PHOTO_FILENAME'] + file_extension
+            form.photo.data.save(os.path.join(user_storage_path, photo_filename))
 
         return redirect(url_for('index'))
     return jsonify(form.errors), 400
@@ -141,6 +154,7 @@ def modifications(serie_id):
     modifications = Modification.query.filter_by(serie_id=serie_id)
     return jsonify({ m.id : m.name for m in modifications }), 200 if modifications.count() else 404
 
+
 @app.route('/release_years/<generation_id>', methods=['get'])
 def release_years(generation_id):
     generation = Generation.query.filter_by(id=generation_id).first()
@@ -166,14 +180,16 @@ def colors():
         } for c in colors
     })
 
+
 @app.route('/locations', methods=['get'])
 def locations():
     locations = Location.query.all()
     return jsonify({ loc.id : loc.name for loc in locations})
 
-@app.route('/create_ad', methods=['post'])
+
+@app.route('/ad', methods=['post'])
 @login_required
-def create_ad():
+def ad():
     form = AdForm()
     if form.validate():
         ad = Ad(
@@ -189,13 +205,16 @@ def create_ad():
             price = form.price.data,
             description = form.description.data.strip()
         )
-        status_change = StatusChange(
-            status_id = 3,  # TODO: в константу
-            ad_id = ad.id,
-            admin_id = ad.assign_admin()
-        )
 
-        ad.set_location(form.location.data)
+        location_name = form.location.data
+        if location_name:
+            location_id = Location.get_id(location_name)
+            if not location_id:
+                new_location = Location(name=location_name)
+                db.session.add(new_location)
+                db.session.commit()
+                location_id = new_location.id
+            ad.location_id = location_id
 
         db.session.add(ad)
         db.session.commit()
@@ -209,12 +228,49 @@ def create_ad():
         os.makedirs(ad_storage_path, exist_ok=True)
 
         # сохранение фото объявления
-        photos = list(filter(lambda f: f.data is not None, [form.photo_1, form.photo_2, form.photo_3]))
+        photos = list(
+            filter(
+                lambda f: f.data.filename,
+                [form.photo_1, form.photo_2, form.photo_3]
+            )
+        )
         for i, photo in enumerate(photos):
             photo_filename = secure_filename(photo.data.filename)
             _, file_extension = os.path.splitext(photo_filename)
             photo_filename = '{}{}'.format(i+1, file_extension)
             photo.data.save(os.path.join(ad_storage_path, photo_filename))
 
-        return {'gg!': 'gg!'}, 200
+        return {}, 200
     return jsonify(form.errors), 400
+
+
+@app.route('/images', methods=['get'])
+def images():
+    user_login = request.args.get('user')
+    ad_id = request.args.get('ad')
+    photo_number = request.args.get('photo')
+
+    photo_filename = ''
+    if user_login:
+        # фото профиля
+        photo_filename = glob(os.path.join(
+            app.config['UPLOADS_FOLDER'],
+            user_login,
+            app.config['PROFILE_PHOTO_FILENAME'] + '.*'
+        ))
+    elif ad_id and photo_number:
+        # фото объявления
+        seller_login = Ad.query.filter_by(id=ad_id).first().seller.login
+        photo_filename = glob(os.path.join(
+            app.config['UPLOADS_FOLDER'],
+            seller_login,
+            ad_id,
+            photo_number + '.*'
+        ))
+
+    if photo_filename:
+        photo_filename = photo_filename[0]
+        photo_filename = os.path.join(*(photo_filename.split(os.path.sep)[1:]))
+
+        return redirect(photo_filename)
+    return '', 404

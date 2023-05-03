@@ -353,7 +353,7 @@
 
                         <div class="mb-3">
                             {{ ad_form.location.label() }}
-                            {{ ad_form.location(class="form-control", value=current_user.get_location(),
+                            {{ ad_form.location(class="form-control", value=current_user.location.name,
                             list="location-datalist", autocomplete="off") }}
                             <datalist id="location-datalist"></datalist>
                             <div class="error-block text-danger" data-field="location"></div>

@@ -6,7 +6,7 @@ $(document).ready(function() {
           processData: false,
           contentType: false,
           data : new FormData(this),
-          type : 'POST',
+          type : 'post',
           url : '/signup',
           success: response => {
             document.write(response)
@@ -28,7 +28,7 @@ $(document).ready(function() {
 
       $.ajax({
         data : $(this).serialize(),
-        type : 'POST',
+        type : 'post',
         url : '/login',
         success: response => {
           document.write(response)
@@ -139,7 +139,6 @@ $(document).ready(function() {
       }
     })
 
-
     // подгрузка населённых пунктов
     $.ajax({
       type: 'get',
@@ -152,7 +151,6 @@ $(document).ready(function() {
       }
     })
 
-
     $('#newAdForm').on('submit', function(e) {
       e.preventDefault()
       
@@ -161,11 +159,9 @@ $(document).ready(function() {
         contentType: false,
         data : new FormData(this),
         type : 'post',
-        url : '/create_ad',
+        url : '/ad',
         success: response => {
-          // document.write(response)
-          // window.location.reload()
-          console.log(response)
+          console.log('success')
         },
         error: response => {
           $(this).find('.error-block').text('')
