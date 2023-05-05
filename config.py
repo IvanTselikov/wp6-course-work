@@ -11,3 +11,6 @@ class Config(object):
 
     UPLOADS_FOLDER = os.path.join('app', 'static', 'uploads')
     PROFILE_PHOTO_FILENAME = 'profile'
+    PHOTO_SMALL_PREFIX = '.small'
+    PHOTO_TINY_PREFIX = '.tiny'
+

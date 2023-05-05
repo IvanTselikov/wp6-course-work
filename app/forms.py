@@ -56,11 +56,12 @@ class SignupForm(FlaskForm):
 
     signup_login = StringField(
         label='Логин*',
-        description='длина логина - от 6 до 20 символов',
+        description='длина логина - от 6 до 20 символов (буквы, цифры, подчёркивание)',
         validators=[
             DataRequired('Пожалуйста, введите логин.'),
             Length(min=6, message='Логин слишком короткий.'),
-            Length(max=20, message='Логин слишком длинный.')
+            Length(max=20, message='Логин слишком длинный.'),
+            regexp(r'^\w+$', message='Логин может содержать только буквы, цифры, подчёркивания.')
         ]
     )
 

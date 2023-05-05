@@ -1,0 +1,88 @@
+<div class="modal fade" id="signup-modal" tabindex="-1" aria-labelledby="signup-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signup-modal-label">Регистрация</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="signupForm" enctype="multipart/form-data" novalidate>
+                    {{ signup_form.hidden_tag() }}
+                    <div class="error-block text-danger" data-field="csrf_token"></div>
+
+                    <div class="mb-3">
+                        {{ signup_form.photo.label() }}
+                        {{ signup_form.photo(class="form-control") }}
+                        <div class="form-text">{{ signup_form.photo.description }}</div>
+                        <div class="error-block text-danger" data-field="photo"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ signup_form.last_name.label() }}
+                        {{ signup_form.last_name(class="form-control", autocomplete="off") }}
+                        <div class="error-block text-danger" data-field="last_name"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ signup_form.first_name.label() }}
+                        {{ signup_form.first_name(class="form-control", autocomplete="off") }}
+                        <div class="error-block text-danger" data-field="first_name"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ signup_form.patronymic.label() }}
+                        {{ signup_form.patronymic(class="form-control", autocomplete="off") }}
+                        <div class="error-block text-danger" data-field="patronymic"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ signup_form.signup_login.label() }}
+                        {{ signup_form.signup_login(class="form-control", autocomplete="off") }}
+                        <div class="form-text">{{ signup_form.signup_login.description }}</div>
+                        <div class="error-block text-danger" data-field="signup_login"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ signup_form.signup_password.label() }}
+                        {{ signup_form.signup_password(class="form-control", autocomplete="off") }}
+                        <div class="form-text">{{ signup_form.signup_password.description }}</div>
+                        <div class="error-block text-danger" data-field="signup_password"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ signup_form.confirm_password.label() }}
+                        {{ signup_form.confirm_password(class="form-control", autocomplete="off") }}
+                        <div class="error-block text-danger" data-field="confirm_password"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ signup_form.email.label() }}
+                        {{ signup_form.email(class="form-control", autocomplete="off") }}
+                        <div class="error-block text-danger" data-field="email"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ signup_form.phone_number.label() }}
+                        {{ signup_form.phone_number(class="form-control", autocomplete="off") }}
+                        <div class="error-block text-danger" data-field="phone_number"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ signup_form.location.label() }}
+                        {{ signup_form.location(class="form-control", list="location-datalist",
+                        autocomplete="off")}}
+                        <datalist id="location-datalist"></datalist>
+                        <div class="error-block text-danger" data-field="location"></div>
+                    </div>
+
+                    <div class="form-text">* - поля, обязательные для заполнения</div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                {{ signup_form.signup_submit(class="btn btn-danger", form="signupForm") }}
+            </div>
+        </div>
+    </div>
+</div>

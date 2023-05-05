@@ -1,4 +1,4 @@
-@media screen and (max-width: 991px) {
+@media screen and (max-width: 992px) {
     html {
         font-size: 12px;
     }
@@ -95,4 +95,36 @@ footer {
 .color-other {
     background: linear-gradient(217deg, rgba(255,0,0,.8), rgba(255,0,0,0) 70.71%),            linear-gradient(127deg, rgba(0,255,0,.8), rgba(0,255,0,0) 70.71%),
                 linear-gradient(336deg, rgba(0,0,255,.8), rgba(0,0,255,0) 70.71%);
+}
+
+
+#ads-section {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.ad-item {
+    width: 45%;
+    height: 13rem;
+}
+
+@media screen and (max-width: 768px) {
+    .ad-item {
+        width: 100%;
+    }
+}
+
+.ad-banner {
+    background-size: cover;
+    background-position: center center;
+}
+
+#profile-img {
+    width: 2.5em;
+    padding-bottom: 2.5em;
+    background-size: cover;
+    background-position: center center;
 }

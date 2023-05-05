@@ -31,6 +31,11 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
     
+    def get_recommended_ads(self):
+        if self.location:
+            return self.location.ads
+        return None
+    
     def __repr__(self):
         return '<User {}>'.format(self.login)
 
@@ -53,7 +58,7 @@ class Ad(db.Model):
     location_id = db.Column(INTEGER(), db.ForeignKey('location.id'))
     price = db.Column(INTEGER(), nullable=False)
     description = db.Column(TEXT(), nullable=False, default=dt.utcnow)
-    admin_id = db.Column(INTEGER(), db.ForeignKey('user.id'), nullable=False)
+    admin_id = db.Column(INTEGER(), db.ForeignKey('user.id'))
     status_id = db.Column(TINYINT(), db.ForeignKey('ad_status.id'), nullable=False, default=3)
     admin_message = db.Column(TEXT())
     updated_at = db.Column(DATETIME(), nullable=False, default=dt.utcnow)
@@ -61,20 +66,39 @@ class Ad(db.Model):
     car = db.relationship('Modification', backref=db.backref('ads', lazy='dynamic'))
     seller = db.relationship('User', backref=db.backref('ads', lazy='dynamic'), foreign_keys=[seller_id])
     admin = db.relationship('User', backref=db.backref('moderated_ads', lazy='dynamic'), foreign_keys=[admin_id])
-    location = db.relationship('Location', backref=db.backref('ads', lazy='dynamic'))
+    location = db.relationship('Location', backref=db.backref('ads', lazy='dynamic'), order_by=updated_at)
     status = db.relationship('AdStatus', backref=db.backref('ads', lazy='dynamic'))
     color = db.relationship('Color', backref=db.backref('ads', lazy='dynamic'))
     pts_type = db.relationship('PtsType', backref=db.backref('ads', lazy='dynamic'))
 
     def __init__(self, *args, **kwargs):
         super(Ad, self).__init__(*args, **kwargs)
-        self._assign_admin()
     
-    def _assign_admin(self):
+    def assign_admin(self):
         # администратор назначается на объявление случайным образом
         self.admin_id = User.query.filter(
-            and_(User.is_admin==1, not_(User.id==self.seller_id))
+            and_(User.is_admin == 1, not_(User.id == self.admin_id))
         ).order_by(func.rand()).first().id
+
+    def updated_ago(self):
+        delta = dt.utcnow() - self.updated_at
+
+        time_parts = [
+            {'name': 'нед', 'duration': 60*60*24*7},
+            {'name': 'д', 'duration': 60*60*24},
+            {'name': 'ч', 'duration': 60*60},
+            {'name': 'мин', 'duration': 60},
+            {'name': 'сек', 'duration': 1}
+        ]
+
+        seconds = int(delta.total_seconds())
+
+        for part in time_parts:
+            count = seconds // part['duration']
+            if count:
+                return '{} {} назад'.format(count, part['name'])
+
+        return 'только что'
 
 
 class Location(db.Model):

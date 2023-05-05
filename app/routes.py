@@ -3,6 +3,7 @@ from flask import render_template, redirect, url_for
 from flask import jsonify, request
 from app import app, db
 from app.forms import LoginForm, SignupForm, AdForm
+from app.functions import *
 
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
@@ -33,12 +34,16 @@ def index():
             kwargs.update({'photo_filename': photo_filename})
         
         ad_form = AdForm()
-        kwargs.update({'ad_form': ad_form})
+        kwargs.update({ 'ad_form': ad_form })
     else:
         login_form = LoginForm()
         signup_form = SignupForm()
         kwargs.update({'login_form': login_form, 'signup_form': signup_form})
 
+    kwargs.update({
+        'ads_section_header': 'Новые объявления на сайте',
+        'ads': Ad.query.filter_by().order_by(Ad.updated_at.desc()),
+    })
     return render_template('index.html', **kwargs)
 
 
@@ -104,9 +109,30 @@ def signup():
         if photo_filename:
             photo_filename = secure_filename(form.photo.data.filename)
             _, file_extension = os.path.splitext(photo_filename)
-            photo_filename = app.config['PROFILE_PHOTO_FILENAME'] + file_extension
-            form.photo.data.save(os.path.join(user_storage_path, photo_filename))
 
+            path_origin = os.path.join(
+                user_storage_path,
+                app.config['PROFILE_PHOTO_FILENAME'] + file_extension
+            )
+
+            path_small = os.path.join(
+                user_storage_path,
+                app.config['PROFILE_PHOTO_FILENAME'] + app.config['PHOTO_SMALL_PREFIX'] + file_extension
+            )
+            
+            path_tiny = os.path.join(
+                user_storage_path,
+                app.config['PROFILE_PHOTO_FILENAME'] + app.config['PHOTO_TINY_PREFIX'] + file_extension
+            )
+
+            upload_photo(
+                form.photo.data,
+                path_origin=path_origin,
+                path_small=path_small,
+                path_tiny=path_tiny
+            )
+
+            # form.photo.data.save(os.path.join(user_storage_path, photo_filename))
         return redirect(url_for('index'))
     return jsonify(form.errors), 400
 
@@ -216,6 +242,11 @@ def ad():
                 location_id = new_location.id
             ad.location_id = location_id
 
+        # объявления администраторов публикуются сразу без модерации,
+        # остальные - проходят проверку администратором
+        if not current_user.is_admin:
+            ad.assign_admin()
+        
         db.session.add(ad)
         db.session.commit()
 
@@ -237,8 +268,21 @@ def ad():
         for i, photo in enumerate(photos):
             photo_filename = secure_filename(photo.data.filename)
             _, file_extension = os.path.splitext(photo_filename)
-            photo_filename = '{}{}'.format(i+1, file_extension)
-            photo.data.save(os.path.join(ad_storage_path, photo_filename))
+            # photo_filename = '{}{}'.format(i+1, file_extension)
+
+            path_origin = os.path.join(
+                ad_storage_path,
+                str(i+1) + file_extension
+            )
+            
+            path_small = os.path.join(
+                ad_storage_path,
+                str(i+1) + app.config['PHOTO_SMALL_PREFIX'] + file_extension
+            )
+
+            upload_photo(photo.data, path_origin=path_origin, path_small=path_small)
+
+            # photo.data.save(os.path.join(ad_storage_path, photo_filename))
 
         return {}, 200
     return jsonify(form.errors), 400
@@ -250,13 +294,22 @@ def images():
     ad_id = request.args.get('ad')
     photo_number = request.args.get('photo')
 
+    size_prefixes = {
+        'origin': '',
+        'small': app.config['PHOTO_SMALL_PREFIX'],
+        'tiny': app.config['PHOTO_TINY_PREFIX']
+    }
+
+    size = request.args.get('size')
+    size_prefix = (size_prefixes[size] if size else '')
+
     photo_filename = ''
     if user_login:
         # фото профиля
         photo_filename = glob(os.path.join(
             app.config['UPLOADS_FOLDER'],
             user_login,
-            app.config['PROFILE_PHOTO_FILENAME'] + '.*'
+            app.config['PROFILE_PHOTO_FILENAME'] + size_prefix + '.*'
         ))
     elif ad_id and photo_number:
         # фото объявления
@@ -265,7 +318,7 @@ def images():
             app.config['UPLOADS_FOLDER'],
             seller_login,
             ad_id,
-            photo_number + '.*'
+            photo_number + size_prefix + '.*'
         ))
 
     if photo_filename:
@@ -273,4 +326,11 @@ def images():
         photo_filename = os.path.join(*(photo_filename.split(os.path.sep)[1:]))
 
         return redirect(photo_filename)
+    
+    # изображения по умолчанию
+    if user_login:
+        return redirect('static/img/profile_stock.svg')
+    elif ad_id and photo_number:
+        return redirect('static/img/car_stock.svg')
+
     return '', 404

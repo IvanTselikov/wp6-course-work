@@ -9,7 +9,7 @@ $(document).ready(function() {
           type : 'post',
           url : '/signup',
           success: response => {
-            document.write(response)
+            // document.write(response)
             window.location.reload()
           },
           error: response => {
@@ -172,5 +172,12 @@ $(document).ready(function() {
           }
         }
       })
+    })
+
+    
+    $('.format-number').each(function() {
+      $(this).text(
+        $(this).text().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+      )
     })
 })

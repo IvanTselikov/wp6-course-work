@@ -1,0 +1,32 @@
+<div class="modal fade" id="login-modal" tabindex="-1" aria-labelledby="login-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="login-modal-label">Вход</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm" novalidate>
+                    {{ login_form.hidden_tag() }}
+                    <div class="error-block text-danger" data-field="csrf_token"></div>
+                    <div class="error-block text-danger" data-field="other"></div>
+
+                    <div class="mb-3">
+                        {{ login_form.login(size=32, class="form-control", placeholder=login_form.login.label.text,
+                        autocomplete="off")}}
+                        <div class="error-block text-danger" data-field="login"></div>
+                    </div>
+                    <div class="mb-3">
+                        {{ login_form.password(size=32, class="form-control",
+                        placeholder=login_form.password.label.text)}}
+                        <div class="error-block text-danger" data-field="password"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                {{ login_form.submit(class="btn btn-danger", form="loginForm") }}
+            </div>
+        </div>
+    </div>
+</div>

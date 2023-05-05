@@ -1,19 +1,59 @@
 {% extends "base.html" %}
 {% block content %}
-<h3>Новые объявления на сайте</h3>
-<div class="card mb-3" style="max-width: 540px;">
-    <div class="row g-0">
-        <div class="col-4">
-            <img src={{ url_for('images', ad=5, photo=1) }} class="img-fluid rounded-start" alt="banner">
-        </div>
-        <div class="col-8">
-            <div class="card-body">
-                <h5 class="card-title"></h5>
-                <p class="card-text">Это более широкая карта с вспомогательным текстом ниже в качестве естественного
-                    перехода к дополнительному контенту. Этот контент немного длиннее.</p>
-                <p class="card-text"><small class="text-muted">Последнее обновление 3 мин. назад</small></p>
+
+<h4 class="ms-5 mt-5">{{ ads_section_header }}</h4>
+
+{% if ads.count() %}
+<span class="ms-5 mt-3">Найдено объявлений: {{ ads.count() }}</span>
+<div id="ads-section" class="mt-4">
+    {% for ad in ads %}
+    <div class="card mb-5 ad-item">
+        <div class="row g-0 h-100">
+            <div class="ad-banner col-6 h-100" style="background-image: url('{{ url_for('images', ad=ad.id, photo=1, size='small') }}');"></div>
+
+            <div class="col-6 h-100">
+                <div class="card-body ms-2 h-100">
+                    <div class="d-flex flex-column justify-content-between">
+                        <div>
+                            <h6 class="card-title">
+                                {{ ad.car.serie.generation.model.mark.name }}
+                                {{ ad.car.serie.generation.model.name }},
+                                {{ ad.release_year }}
+                            <h6>
+                            <h6 class="format-number">{{ ad.price }} ₽</h6>
+                        </div>
+                        <p class="fs-tiny my-3">
+                            {% if ad.mileage %}
+                            <span class="format-number">{{ ad.mileage }}</span> км,
+                            {% else %}
+                            <span>без пробега,</span>
+                            {% endif %}
+                            {{ ad.car.name }},
+                            {{ ad.car.get_characteristic_value('тип кузова').lower() }},
+                            {{ ad.car.get_characteristic_value('привод').lower() }},
+                            {{ ad.car.get_characteristic_value('тип двигателя').lower() }}
+                        </p>
+                        <div class="fs-tiny text-muted">
+                            <div class="d-flex flex-row align-items-center">
+                                <img src="/static/img/location.svg" alt="" style="height: 1em;">
+                                <span class="text-muted ms-1">
+                                    {% if ad.location %}
+                                    {{ ad.location.name }}
+                                    {% else %}
+                                    Не указано
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <span>{{ ad.updated_ago() }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    {% endfor %}
 </div>
+{% else %}
+<span class="fs-big text-muted">Объявлений не найдено.</span>
+{% endif %}
 {% endblock %}
