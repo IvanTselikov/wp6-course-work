@@ -322,35 +322,59 @@ class FiltersForm(FlaskForm):
     )
     price_low_limit = IntegerField(
         'От',
-        description='Цена, руб.'
+        description='Цена, руб.',
+        validators=[
+            NumberRange(min=1, message='Цена должна быть положительным числом.')
+        ]
     )
     price_high_limit = IntegerField(
         'До',
-        description='Цена, руб.'
+        description='Цена, руб.',
+        validators=[
+            NumberRange(min=1, message='Цена должна быть положительным числом.')
+        ]
     )
     release_year_low_limit = IntegerField(
         'От',
-        description='Год выпуска'
+        description='Год выпуска',
+        validators=[
+            NumberRange(min=1900, max=2100, message='Пожалуйста, укажите корректный год выпуска.')
+        ]
     )
     release_year_high_limit = IntegerField(
         'До',
-        description='Год выпуска'
+        description='Год выпуска',
+        validators=[
+            NumberRange(min=1900, max=2100, message='Пожалуйста, укажите корректный год выпуска.')
+        ]
     )
     mileage_low_limit = IntegerField(
         'От',
-        description='Пробег, км'
+        description='Пробег, км',
+        validators=[
+            NumberRange(min=0, message='Пробег не может быть отрицательным числом.')
+        ]
     )
     mileage_high_limit = IntegerField(
         'До',
-        description='Пробег, км'
+        description='Пробег, км',
+        validators=[
+            NumberRange(min=0, message='Пробег не может быть отрицательным числом.')
+        ]
     )
     owners_count_low_limit = IntegerField(
         'От',
-        description='Владельцев по ПТС'
+        description='Владельцев по ПТС',
+        validators=[
+            NumberRange(min=1, message='Количество владельцев должно быть положительным числом.')
+        ]
     )
     owners_count_high_limit = IntegerField(
         'До',
-        description='Владельцев по ПТС'
+        description='Владельцев по ПТС',
+        validators=[
+            NumberRange(min=1, message='Количество владельцев должно быть положительным числом.')
+        ]
     )
     color = SelectField(
         'Цвет',
@@ -364,12 +388,6 @@ class FiltersForm(FlaskForm):
         coerce=int,
         validate_choice=False
     )
-    is_broken = SelectField(
-        'Состояние',
-        choices=[(0, 'Не битый'), (1, 'Битый')],
-        coerce=int,
-        validate_choice=False,
-    )
     location = StringField('Населённый пункт')
     page_ads_count = SelectField(
         'Объявлений на странице',
@@ -381,7 +399,7 @@ class FiltersForm(FlaskForm):
         ]
     )
 
-    submit = SubmitField('Применит фильтры')
+    submit = SubmitField('Применить фильтры')
 
     def __init__(self, *args, **kwargs):
         super(FiltersForm, self).__init__(*args, **kwargs)

@@ -52,6 +52,8 @@
 * tiny 100x100
 * заменить infinity qx70 (https://auto.ru/cars/used/sale/infiniti/qx70/1117865901-ccd56622/)
 * отследить изменение value в select/input (не записывать их в бд)
+* https://getbootstrap.ru/docs/5.1/forms/input-group/#кнопки-дополнения
+* цвет выровнять
 
 
 + добавление объявления (назначение админа)

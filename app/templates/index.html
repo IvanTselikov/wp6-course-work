@@ -1,57 +1,59 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h4 class="ms-5 mt-5">{{ ads_section_header }}</h4>
-
 {% if ads.count() %}
-<div class="ms-5 mt-3">Найдено объявлений: {{ ads.count() }}</div>
 <div id="ads-section" class="mt-5">
-    {% for ad in ads %}
-    <div class="card mb-5 ad-item">
-        <div class="row g-0 h-100">
-            <div class="ad-banner col-6 h-100 rounded-start" style="background-image: url('{{ url_for('images', ad=ad.id, photo=1, size='small') }}');"></div>
+    <h4 class="">{{ ads_section_header }}</h4>
+    <div class="mt-3 mb-5">Найдено объявлений: {{ ads.count() }}</div>
+    <div id="ads-list">
+        {% for ad in ads %}
+        <div class="card mb-5 ad-item">
+            <div class="row g-0 h-100">
+                <div class="ad-banner col-6 h-100 rounded-start"
+                    style="background-image: url('{{ url_for('images', ad=ad.id, photo=1, size='small') }}');"></div>
 
-            <div class="col-6 h-100">
-                <div class="card-body ms-2 h-100 d-flex flex-column justify-content-center">
-                    <div class="d-flex flex-column justify-content-between">
-                        <div>
-                            <h6 class="card-title">
-                                {{ ad.car.serie.generation.model.mark.name }}
-                                {{ ad.car.serie.generation.model.name }},
-                                {{ ad.release_year }}
-                            <h6>
-                            <h6 class="format-number">{{ ad.price }} ₽</h6>
-                        </div>
-                        <p class="fs-tiny my-3">
-                            {% if ad.mileage %}
-                            <span class="format-number">{{ ad.mileage }}</span> км,
-                            {% else %}
-                            <span>без пробега,</span>
-                            {% endif %}
-                            {{ ad.car.name }},
-                            {{ ad.car.get_characteristic_value('тип кузова').lower() }},
-                            {{ ad.car.get_characteristic_value('привод').lower() }},
-                            {{ ad.car.get_characteristic_value('тип двигателя').lower() }}
-                        </p>
-                        <div class="fs-tiny text-muted">
-                            <div class="d-flex flex-row align-items-center">
-                                <img src="/static/img/location.svg" alt="" style="height: 1em;">
-                                <span class="text-muted ms-1">
-                                    {% if ad.location %}
-                                    {{ ad.location.name }}
-                                    {% else %}
-                                    Не указано
-                                    {% endif %}
-                                </span>
+                <div class="col-6 h-100">
+                    <div class="card-body ms-2 h-100 d-flex flex-column justify-content-center">
+                        <div class="d-flex flex-column justify-content-between">
+                            <div>
+                                <h6 class="card-title">
+                                    {{ ad.car.serie.generation.model.mark.name }}
+                                    {{ ad.car.serie.generation.model.name }},
+                                    {{ ad.release_year }}
+                                    <h6>
+                                        <h6 class="format-number">{{ ad.price }} ₽</h6>
                             </div>
-                            <span>{{ ad.updated_ago() }}</span>
+                            <p class="fs-tiny my-3">
+                                {% if ad.mileage %}
+                                <span class="format-number">{{ ad.mileage }}</span> км,
+                                {% else %}
+                                <span>без пробега,</span>
+                                {% endif %}
+                                {{ ad.car.name }},
+                                {{ ad.car.get_characteristic_value('тип кузова').lower() }},
+                                {{ ad.car.get_characteristic_value('привод').lower() }},
+                                {{ ad.car.get_characteristic_value('тип двигателя').lower() }}
+                            </p>
+                            <div class="fs-tiny text-muted">
+                                <div class="d-flex flex-row align-items-center">
+                                    <img src="/static/img/location.svg" alt="" style="height: 1em;">
+                                    <span class="text-muted ms-1">
+                                        {% if ad.location %}
+                                        {{ ad.location.name }}
+                                        {% else %}
+                                        Не указано
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <span>{{ ad.updated_ago() }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 {% else %}
 <span class="fs-big text-muted">Объявлений не найдено.</span>

@@ -85,6 +85,20 @@ footer {
     box-shadow: 0 -4px 4px rgba(0, 0, 0, .25);
 }
 
+#footer-content {
+    width: 90%;
+    margin: 0 auto;
+}
+
+#vk-link img, #yt-link img {
+    height: 1.3rem;
+}
+
+#ok-link img {
+    height: 1.5rem;
+}
+
+
 .color-square {
     display: inline-block;
     width: 1em;
@@ -99,11 +113,14 @@ footer {
 
 
 #ads-section {
+    width: 90%;
+    margin: 0 auto;
+}
+
+#ads-list {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    width: 90%;
-    margin: 0 auto;
 }
 
 .ad-item {
@@ -112,6 +129,12 @@ footer {
 }
 
 @media screen and (max-width: 768px) {
+    .ad-item {
+        width: 75%;
+        margin: 0 auto;
+    }
+}
+@media screen and (max-width: 567px) {
     .ad-item {
         width: 100%;
     }
