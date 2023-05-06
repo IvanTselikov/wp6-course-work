@@ -1,0 +1,198 @@
+<div class="modal fade" id="filtersModal" tabindex="-1" aria-labelledby="filtersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="login-modal-label">Фильтрация поиска</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="filtersForm" novalidate>
+                    <div class="container">
+                        <div class="row g-3">
+                            <div class="col-lg-6 mt-4">
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-4 col-lg-5">
+                                            {{ filters_form.transport_type.label() }}
+                                        </div>
+                                        <div class="col-8 col-lg-7">
+                                            {{ filters_form.transport_type(class="form-control") }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-4 col-lg-5">
+                                            {{ filters_form.mark.label() }}
+                                        </div>
+                                        <div class="col-8 col-lg-7">
+                                            {{ filters_form.mark(class="form-control", disabled="true") }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-4 col-lg-5">
+                                            {{ filters_form.model.label() }}
+                                        </div>
+                                        <div class="col-8 col-lg-7">
+                                            {{ filters_form.model(class="form-control", disabled="true") }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-4 col-lg-5">
+                                            {{ filters_form.generation.label() }}
+                                        </div>
+                                        <div class="col-8 col-lg-7">
+                                            {{ filters_form.generation(class="form-control", disabled="true") }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-4 col-lg-5">
+                                            {{ filters_form.serie.label() }}
+                                        </div>
+                                        <div class="col-8 col-lg-7">
+                                            {{ filters_form.serie(class="form-control", disabled="true") }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-4 col-lg-5">
+                                            {{ filters_form.modification.label() }}
+                                        </div>
+                                        <div class="col-8 col-lg-7">
+                                            {{ filters_form.modification(class="form-control", disabled="true") }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-4 col-lg-5">
+                                            <div class="color-other color-square"></div>
+                                            {{ filters_form.color.label() }}
+                                        </div>
+                                        <div class="col-8 col-lg-7">
+                                            {{ filters_form.color(class="form-control")}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 mt-0 mt-lg-4">
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center g-2">
+                                        <div class="col-4">
+                                            <label for="price_low_limit">{{ filters_form.price_low_limit.description
+                                                }}</label>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ filters_form.price_low_limit(class="form-control",
+                                            placeholder=filters_form.price_low_limit.label.text ) }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ filters_form.price_high_limit(class="form-control",
+                                            placeholder=filters_form.price_high_limit.label.text) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center g-2">
+                                        <div class="col-4">
+                                            <label for="price_low_limit">{{
+                                                filters_form.release_year_low_limit.description }}</label>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ filters_form.release_year_low_limit(class="form-control",
+                                            placeholder=filters_form.release_year_low_limit.label.text ) }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ filters_form.release_year_high_limit(class="form-control",
+                                            placeholder=filters_form.release_year_high_limit.label.text) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center g-2">
+                                        <div class="col-4">
+                                            <label for="mileage_low_limit">{{ filters_form.mileage_low_limit.description
+                                                }}</label>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ filters_form.mileage_low_limit(class="form-control",
+                                            placeholder=filters_form.mileage_low_limit.label.text ) }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ filters_form.mileage_high_limit(class="form-control",
+                                            placeholder=filters_form.mileage_high_limit.label.text) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center g-2">
+                                        <div class="col-4 pe-3">
+                                            <label for="owners_count_low_limit">{{
+                                                filters_form.owners_count_low_limit.description }}</label>
+                                        </div>
+                                        <div class="col-4">
+                                            {{ filters_form.owners_count_low_limit(class="form-control",
+                                            placeholder=filters_form.owners_count_low_limit.label.text ) }}
+                                        </div>
+                                        <div class="col-4">
+                                            {{ filters_form.owners_count_high_limit(class="form-control",
+                                            placeholder=filters_form.owners_count_high_limit.label.text) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-5">
+                                            {{ filters_form.location.label() }}
+                                        </div>
+                                        <div class="col-7">
+                                            {{ filters_form.location(
+                                            class="form-control",
+                                            value=(current_user.location.name if not current_user.is_anonymous),
+                                            list="location-datalist",
+                                            autocomplete="off") }}
+                                            <datalist id="location-datalist"></datalist>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-5">
+                                            {{ filters_form.is_broken.label() }}
+                                        </div>
+                                        <div class="col-7">
+                                            {{ filters_form.is_broken(class="form-control") }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container mb-4">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-5">
+                                            {{ filters_form.page_ads_count.label() }}
+                                        </div>
+                                        <div class="col-7">
+                                            {{ filters_form.page_ads_count(class="form-control") }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-secondary" id="resetFilters">Сбросить фильтры</button>
+                {{ filters_form.submit(class="btn btn-danger", form="filtersForm") }}
+            </div>
+        </div>
+    </div>
+</div>

@@ -13,7 +13,7 @@
 
                     <div class="mb-3">
                         {{ ad_form.transport_type.label() }}
-                        {{ ad_form.transport_type(class="form-control")}}
+                        {{ ad_form.transport_type(class="form-control") }}
                         <div class="error-block text-danger" data-field="transport_type"></div>
                     </div>
 
@@ -78,7 +78,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <div class="color-other" id="color-square"></div>
+                        <div class="color-other color-square"></div>
                         {{ ad_form.color.label() }}
                         {{ ad_form.color(class="form-control")}}
                         <div class="error-block text-danger" data-field="color"></div>
@@ -138,3 +138,5 @@
         </div>
     </div>
 </div>
+
+{% include "incs/create_ad_success_modal.html" %}

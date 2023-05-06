@@ -31,7 +31,7 @@ $(document).ready(function() {
         type : 'post',
         url : '/login',
         success: response => {
-          document.write(response)
+          // document.write(response)
           window.location.reload()
         },
         error: response => {
@@ -161,7 +161,8 @@ $(document).ready(function() {
         type : 'post',
         url : '/ad',
         success: response => {
-          console.log('success')
+          $('#newAdModal').modal('hide')
+          $('#createAdSuccessModal').modal('show')
         },
         error: response => {
           $(this).find('.error-block').text('')

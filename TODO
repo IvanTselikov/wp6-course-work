@@ -15,6 +15,7 @@
 * not a valid integer value (numberinput)
 * адаптивность под большие экраны
 * фиксированный header
+* тень для карточек
 
 
 Другое:
@@ -40,13 +41,24 @@
 * vin учитывать тире
 * другая заглушка для баннера
 * изменение размера изображения
+* русские названия для поиска
+* серебряный и золотой на серебристый и золотистый
+* все объявления (ссылки) - в бд/на сайт
+* колёсико загрузки
+* очистка ошибок при успешном создании объявления
+* некорректный формат vin если стоят пробелы (в начале или в конце)
+* перенос текста ошибок (vin length)
+* newAd createAd - выбрать одно
+* tiny 100x100
+* заменить infinity qx70 (https://auto.ru/cars/used/sale/infiniti/qx70/1117865901-ccd56622/)
+* отследить изменение value в select/input (не записывать их в бд)
 
 
 + добавление объявления (назначение админа)
 + получение информации об объявлении (get_info)
 + создание нужных пользователей
-* создание нужных объявлений
-* отображение объявлений (главная)
++ создание нужных объявлений
++ отображение объявлений (главная)
 * отображение только нужных объявлений (модерация, город)
 * страница объявления
 * редактирование объявления
@@ -86,3 +98,12 @@
 
 Объявления:
 https://auto.ru/cars/used/sale/infiniti/ex/1118378754-dae2fc6b/
+https://auto.ru/cars/used/sale/infiniti/fx/1118909928-f4d2bd48/
+https://auto.ru/cars/used/sale/infiniti/q/1089304820-fdda74d5/
+https://auto.ru/cars/used/sale/honda/capa/1118909521-5e97077e/
+https://auto.ru/cars/used/sale/infiniti/g35/1118885471-4d502c85/
+https://auto.ru/cars/used/sale/infiniti/ex/1118872480-01920086/
+https://auto.ru/cars/used/sale/infiniti/qx30/1118144851-b0a4c1cb/
+https://auto.ru/cars/used/sale/honda/airwave/1106181117-7f309677/
+https://auto.ru/cars/used/sale/honda/domani/1118951486-1820a476/
+https://auto.ru/cars/used/sale/infiniti/qx70/1106044080-a729f6b0/

@@ -2,7 +2,7 @@
 from flask import render_template, redirect, url_for
 from flask import jsonify, request
 from app import app, db
-from app.forms import LoginForm, SignupForm, AdForm
+from app.forms import LoginForm, SignupForm, AdForm, FiltersForm
 from app.functions import *
 
 from werkzeug.utils import secure_filename
@@ -40,7 +40,9 @@ def index():
         signup_form = SignupForm()
         kwargs.update({'login_form': login_form, 'signup_form': signup_form})
 
+    filters_form = FiltersForm()
     kwargs.update({
+        'filters_form': filters_form,
         'ads_section_header': 'Новые объявления на сайте',
         'ads': Ad.query.filter_by().order_by(Ad.updated_at.desc()),
     })

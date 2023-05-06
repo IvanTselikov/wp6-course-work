@@ -255,7 +255,7 @@ class AdForm(FlaskForm):
         ]
     )
     price = IntegerField(
-        'Цена*',
+        'Цена, руб.*',
         validators=[
             InputRequired('Пожалуйста, укажите цену.'),
             NumberRange(min=1, message='Цена должна быть положительным числом.')
@@ -265,12 +265,6 @@ class AdForm(FlaskForm):
     description = TextAreaField('Описание')
 
     submit = SubmitField('Создать объявление')
-
-    # def validate_release_year(self, field):
-    #     user = User.query.filter_by(login=field.data).first()
-    #     if user is not None:
-    #         raise ValidationError(
-    #             'Пользователь с таким логином уже существует.')
 
     def change_release_year_limits(self, year_begin, year_end):
         validators = self.release_year.validators
@@ -287,3 +281,108 @@ class AdForm(FlaskForm):
         super(AdForm, self).__init__(*args, **kwargs)
         self.transport_type.choices.extend([(tt.id, tt.name) for tt in TransportType.query.all()])
         self.pts_type.choices.extend([(p.id, p.name) for p in PtsType.query.all()])
+
+
+class FiltersForm(FlaskForm):
+    transport_type = SelectField(
+        'Тип транспорта',
+        choices=[(0, 'любой')],
+        coerce=int,
+        validate_choice=False
+    )
+    mark = SelectField(
+        'Марка',
+        choices=[(0, 'любая')],
+        coerce=int,
+        validate_choice=False
+    )
+    model = SelectField(
+        'Модель',
+        choices=[(0, 'любая')],
+        coerce=int,
+        validate_choice=False
+    )
+    generation = SelectField(
+        'Поколение',
+        choices=[(0, 'любое')],
+        coerce=int,
+        validate_choice=False
+    )
+    serie = SelectField(
+        'Серия',
+        choices=[(0, 'любая')],
+        coerce=int,
+        validate_choice=False
+    )
+    modification = SelectField(
+        'Модификация',
+        choices=[(0, 'любая')],
+        coerce=int,
+        validate_choice=False
+    )
+    price_low_limit = IntegerField(
+        'От',
+        description='Цена, руб.'
+    )
+    price_high_limit = IntegerField(
+        'До',
+        description='Цена, руб.'
+    )
+    release_year_low_limit = IntegerField(
+        'От',
+        description='Год выпуска'
+    )
+    release_year_high_limit = IntegerField(
+        'До',
+        description='Год выпуска'
+    )
+    mileage_low_limit = IntegerField(
+        'От',
+        description='Пробег, км'
+    )
+    mileage_high_limit = IntegerField(
+        'До',
+        description='Пробег, км'
+    )
+    owners_count_low_limit = IntegerField(
+        'От',
+        description='Владельцев по ПТС'
+    )
+    owners_count_high_limit = IntegerField(
+        'До',
+        description='Владельцев по ПТС'
+    )
+    color = SelectField(
+        'Цвет',
+        choices=[(0, 'любой')],
+        coerce=int,
+        validate_choice=False
+    )
+    is_broken = SelectField(
+        'Состояние',
+        choices=[(-1, 'Любое'), (0, 'Не битый'), (1, 'Битый')],
+        coerce=int,
+        validate_choice=False
+    )
+    is_broken = SelectField(
+        'Состояние',
+        choices=[(0, 'Не битый'), (1, 'Битый')],
+        coerce=int,
+        validate_choice=False,
+    )
+    location = StringField('Населённый пункт')
+    page_ads_count = SelectField(
+        'Объявлений на странице',
+        choices=[(10, '10'), (50, '50'), (100, '100')],
+        coerce=int,
+        validate_choice=False,
+        validators=[
+            InputRequired('Пожалуйста, укажите количество объявлений на странице.'),
+        ]
+    )
+
+    submit = SubmitField('Применит фильтры')
+
+    def __init__(self, *args, **kwargs):
+        super(FiltersForm, self).__init__(*args, **kwargs)
+        self.transport_type.choices.extend([(tt.id, tt.name) for tt in TransportType.query.all()])
