@@ -4,7 +4,7 @@
 * эффекты
 * паддинг шапка
 * button type="button"
-* id camelCase
+* id kebab-case
 * Flask-Modals
 * input (подсказка вверх)
 * формы - подсказки к инпутам
@@ -54,6 +54,10 @@
 * отследить изменение value в select/input (не записывать их в бд)
 * https://getbootstrap.ru/docs/5.1/forms/input-group/#кнопки-дополнения
 * цвет выровнять
+* create_ad_success_modal в new_ad_forms
+* js let const
+* Honda Stepwgn минивэн
+* настроить форматтер js
 
 
 + добавление объявления (назначение админа)

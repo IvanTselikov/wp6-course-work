@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    // запрос на регистрацию
     $('#signupForm').on('submit', function(e) {
         e.preventDefault()
 
@@ -23,6 +24,7 @@ $(document).ready(function() {
         })
     })
 
+    // запрос на авторизацию
     $('#loginForm').on('submit', function(e) {
       e.preventDefault()
 
@@ -45,72 +47,111 @@ $(document).ready(function() {
       })
     })
 
-    carSettings = [
-      { select: $('#transport_type'), queryNext: '/marks' },
-      { select: $('#mark'), queryNext: '/models' },
-      { select: $('#model'), queryNext: '/generations' },
-      { select: $('#generation'), queryNext: '/series' },
-      { select: $('#serie'), queryNext: '/modifications' },
-      { select: $('#modification') }
-    ]
+    // заполнение информации об автомобиле на формах
+    $('#newAdForm, #filtersForm').each(function() {
+      const selects = $(this).find('.car-info-select')
 
-    for (let i = 0; i < carSettings.length - 1; i++) {
-      carSettings[i].select.on('change', function(e) {
-        const value = carSettings[i].select.val()
-        const nextSelect = carSettings[i+1].select
+      for (let i = 0; i < selects.length - 1; i++) {
+        selects.eq(i).on('change', function(e) {
+          const value = $(this).val()
+          const nextSelect = selects.eq(i+1)
 
-        $.ajax({
-          type: 'get',
-          url: encodeURIComponent(`${carSettings[i].queryNext}/${value}`),
-          beforeSend: () => {
-            nextSelect.children().slice(1).remove()
-          },
-          success: response => {
-            nextSelect.prop('disabled', false)
+          $.ajax({
+            type: 'get',
+            url: encodeURIComponent(`${$(this).data('fill-next-method')}/${value}`),
+            beforeSend: () => {
+              nextSelect.children().slice(1).remove()
+            },
+            success: response => {
+              nextSelect.prop('disabled', false)
 
-            for (let key in response) {
-              nextSelect.append(`<option value=${key}>${response[key]}</option>`)
+              for (let key in response) {
+                nextSelect.append(`<option value=${key}>${response[key]}</option>`)
+              }
+            },
+            error: () => {
+              nextSelect.prop('disabled', true)
             }
-          },
-          error: () => {
-            nextSelect.prop('disabled', true)
+          })
+
+          for (let j = i + 1; j < selects.length; j++) {
+            selects.eq(j).children().slice(1).remove()
+            selects.eq(j).prop('disabled', true)
           }
         })
+      }
+    })
 
-        for (let j = i + 1; j < carSettings.length; j++) {
-          carSettings[j].select.children().slice(1).remove()
-          carSettings[j].select.prop('disabled', true)
-        }
-      })
-    }
+    // установка ограничений на год выпуска
+    $('.generation-select').on('change', function(e) {
+      const generationId = $(this).val()
 
-    $('#generation').on('change', function(e) {
-      const value = $(this).val()
+      const yearInputsIds = {
+        // новое объявление, год выпуска
+        yearCreateAd: $(this).data('year'),
 
+        // фильтрация поиска, год выпуска (нижняя граница)
+        yearBeginFilters: $(this).data('year-begin'),
+
+        // фильтрация поиска, год выпуска (верхняя граница)
+        yearEndFilters: $(this).data('year-end'),
+      }
+
+      // запрашиваем годы выпуска, соответствующие поколению авто
       $.ajax({
         type: 'get',
-        url: encodeURIComponent(`/release_years/${value}`),
+        url: encodeURIComponent(`/release_years/${generationId}`),
         success: response => {
-          const releaseYearInputValue = $('#release_year').val()
           const yearBegin = response.yearBegin
           const yearEnd = response.yearEnd
-
-          $('#release_year').attr('min', yearBegin)
-          if (releaseYearInputValue < yearBegin) {
-            $('#release_year').val(yearBegin)
+    
+          // устанавливаем верхнюю и нижнюю границу года выпуска на инпуты
+          for (let key of Object.keys(yearInputsIds)) {
+            $(yearInputsIds[key]).attr({
+              min: yearBegin,
+              max: yearEnd
+            })
           }
-
-          $('#release_year').attr('max', yearEnd)
-          if (releaseYearInputValue > yearEnd) {
-            $('#release_year').val(yearEnd)
+    
+          const currentValue = $(yearInputsIds.yearCreateAd).val()
+    
+          if (currentValue < yearBegin || currentValue > yearEnd) {
+            $(yearInputsIds.yearCreateAd).val(yearBegin)
           }
-        },
-        error: () => {
-          $('#release_year').attr('min', 1900)
-          $('#release_year').attr('max', 2100)
+    
+          $(yearInputsIds.yearBeginFilters).val(yearBegin)
+          $(yearInputsIds.yearEndFilters).val(yearEnd)
         }
       })
     })
+
+    // $('#generation').on('change', function(e) {
+    //   const value = $(this).val()
+
+    //   $.ajax({
+    //     type: 'get',
+    //     url: encodeURIComponent(`/release_years/${value}`),
+    //     success: response => {
+    //       const releaseYearInputValue = $('#release_year').val()
+    //       const yearBegin = response.yearBegin
+    //       const yearEnd = response.yearEnd
+
+    //       $('#release_year').attr('min', yearBegin)
+    //       if (releaseYearInputValue < yearBegin) {
+    //         $('#release_year').val(yearBegin)
+    //       }
+
+    //       $('#release_year').attr('max', yearEnd)
+    //       if (releaseYearInputValue > yearEnd) {
+    //         $('#release_year').val(yearEnd)
+    //       }
+    //     },
+    //     error: () => {
+    //       $('#release_year').attr('min', 1900)
+    //       $('#release_year').attr('max', 2100)
+    //     }
+    //   })
+    // })
 
     // заполнение цветов
     $.ajax({
@@ -123,19 +164,23 @@ $(document).ready(function() {
                 green = response[id].green,
                 blue = response[id].blue
 
-          $('#color').append(`<option value=${id} data-color="rgb(${red}, ${green}, ${blue})">${name}</option>`)
+          $('.color-picker').append(
+            `<option value=${id} data-color="rgb(${red}, ${green}, ${blue})">${name}</option>`
+          )
         }
       }
     })
 
-    $('#color').on('change', function(e) {
+    $('.color-picker').on('change', function(e) {
       const currentColor = $(this).find(':selected').data('color')
+      const colorSquare = $($(this).data('square'))
+
       if (currentColor) {
-        $('#color-square').removeClass('color-other')
-        $('#color-square').css('backgroundColor', currentColor)
+        colorSquare.removeClass('color-other')
+        colorSquare.css('backgroundColor', currentColor)
       }
       else {
-        $('#color-square').addClass('color-other')
+        colorSquare.addClass('color-other')
       }
     })
 
@@ -144,13 +189,16 @@ $(document).ready(function() {
       type: 'get',
       url: '/locations',
       success: response => {
-        for (const id in response) {
-          const name = response[id]
-          $('#location-datalist').append(`<option value="${name}"">`)
-        }
+        $('.location-datalist').each(function() {
+          for (const id in response) {
+            const name = response[id]
+            $(this).append(`<option value="${name}">`)
+          }
+        })
       }
     })
 
+    // запрос на добавление объявления
     $('#newAdForm').on('submit', function(e) {
       e.preventDefault()
       
@@ -175,7 +223,7 @@ $(document).ready(function() {
       })
     })
 
-    
+    // форматирование чисел в input type="number" (отделение разрядов пробелами)    
     $('.format-number').each(function() {
       $(this).text(
         $(this).text().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')

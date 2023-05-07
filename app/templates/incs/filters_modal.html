@@ -16,7 +16,12 @@
                                             {{ filters_form.transport_type.label() }}
                                         </div>
                                         <div class="col-8 col-lg-7">
-                                            {{ filters_form.transport_type(class="form-control") }}
+                                            {{ filters_form.transport_type(
+                                            class="form-control car-info-select",
+                                            id="transport-type-filters",
+                                            data_next_select="#mark-filters",
+                                            data_fill_next_method="/marks"
+                                            ) }}
                                         </div>
                                     </div>
                                 </div>
@@ -26,7 +31,13 @@
                                             {{ filters_form.mark.label() }}
                                         </div>
                                         <div class="col-8 col-lg-7">
-                                            {{ filters_form.mark(class="form-control", disabled="true") }}
+                                            {{ filters_form.mark(
+                                            class="form-control car-info-select",
+                                            id="mark-filters",
+                                            data_next_select="#model-filters",
+                                            data_fill_next_method="/models",
+                                            disabled="true"
+                                            ) }}
                                         </div>
                                     </div>
                                 </div>
@@ -36,7 +47,13 @@
                                             {{ filters_form.model.label() }}
                                         </div>
                                         <div class="col-8 col-lg-7">
-                                            {{ filters_form.model(class="form-control", disabled="true") }}
+                                            {{ filters_form.model(
+                                            class="form-control car-info-select",
+                                            id="model-filters",
+                                            data_next_select="#generation-filters",
+                                            data_fill_next_method="/generations",
+                                            disabled="true"
+                                            ) }}
                                         </div>
                                     </div>
                                 </div>
@@ -46,7 +63,15 @@
                                             {{ filters_form.generation.label() }}
                                         </div>
                                         <div class="col-8 col-lg-7">
-                                            {{ filters_form.generation(class="form-control", disabled="true") }}
+                                            {{ filters_form.generation(
+                                            class="form-control car-info-select generation-select",
+                                            id="generation-filters",
+                                            data_next_select="#serie-filters",
+                                            data_fill_next_method="/series",
+                                            data_year_begin="#year-begin-filters",
+                                            data_year_end="#year-end-filters",
+                                            disabled="true"
+                                            ) }}
                                         </div>
                                     </div>
                                 </div>
@@ -56,7 +81,13 @@
                                             {{ filters_form.serie.label() }}
                                         </div>
                                         <div class="col-8 col-lg-7">
-                                            {{ filters_form.serie(class="form-control", disabled="true") }}
+                                            {{ filters_form.serie(
+                                            class="form-control car-info-select",
+                                            id="serie-filters",
+                                            data_next_select="#modification-filters",
+                                            data_fill_next_method="/modifications",
+                                            disabled="true"
+                                            ) }}
                                         </div>
                                     </div>
                                 </div>
@@ -66,18 +97,26 @@
                                             {{ filters_form.modification.label() }}
                                         </div>
                                         <div class="col-8 col-lg-7">
-                                            {{ filters_form.modification(class="form-control", disabled="true") }}
+                                            {{ filters_form.modification(
+                                            class="form-control car-info-select",
+                                            id="modification-filters",
+                                            disabled="true"
+                                            ) }}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="container mb-4">
                                     <div class="row d-flex align-items-center">
                                         <div class="col-4 col-lg-5 d-flex align-items-center">
-                                            <div class="color-other color-square me-2"></div>
+                                            <div class="color-other color-square me-2" id="color-square-filters"></div>
                                             {{ filters_form.color.label() }}
                                         </div>
                                         <div class="col-8 col-lg-7">
-                                            {{ filters_form.color(class="form-control")}}
+                                            {{ filters_form.color(
+                                                class="form-control color-picker",
+                                                id="color-filters",
+                                                data_square="#color-square-filters"
+                                            ) }}
                                         </div>
                                     </div>
                                 </div>
@@ -87,16 +126,16 @@
                                 <div class="container mb-4">
                                     <div class="row d-flex align-items-center g-2">
                                         <div class="col-4">
-                                            <label for="price_low_limit">{{ filters_form.price_low_limit.description
+                                            <label for="price_low_limit">{{ filters_form.price_begin.description
                                                 }}</label>
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.price_low_limit(class="form-control",
-                                            placeholder=filters_form.price_low_limit.label.text ) }}
+                                            {{ filters_form.price_begin(class="form-control",
+                                            placeholder=filters_form.price_begin.label.text ) }}
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.price_high_limit(class="form-control",
-                                            placeholder=filters_form.price_high_limit.label.text) }}
+                                            {{ filters_form.price_end(class="form-control",
+                                            placeholder=filters_form.price_end.label.text) }}
                                         </div>
                                     </div>
                                 </div>
@@ -104,31 +143,37 @@
                                     <div class="row d-flex align-items-center g-2">
                                         <div class="col-4">
                                             <label for="price_low_limit">{{
-                                                filters_form.release_year_low_limit.description }}</label>
+                                                filters_form.release_year_begin.description }}</label>
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.release_year_low_limit(class="form-control",
-                                            placeholder=filters_form.release_year_low_limit.label.text ) }}
+                                            {{ filters_form.release_year_begin(
+                                            class="form-control",
+                                            id="year-begin-filters",
+                                            placeholder=filters_form.release_year_begin.label.text
+                                            ) }}
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.release_year_high_limit(class="form-control",
-                                            placeholder=filters_form.release_year_high_limit.label.text) }}
+                                            {{ filters_form.release_year_end(
+                                            class="form-control",
+                                            id="year-end-filters",
+                                            placeholder=filters_form.release_year_end.label.text
+                                            ) }}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="container mb-4">
                                     <div class="row d-flex align-items-center g-2">
                                         <div class="col-4">
-                                            <label for="mileage_low_limit">{{ filters_form.mileage_low_limit.description
+                                            <label for="mileage_low_limit">{{ filters_form.mileage_begin.description
                                                 }}</label>
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.mileage_low_limit(class="form-control",
-                                            placeholder=filters_form.mileage_low_limit.label.text ) }}
+                                            {{ filters_form.mileage_begin(class="form-control",
+                                            placeholder=filters_form.mileage_begin.label.text ) }}
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.mileage_high_limit(class="form-control",
-                                            placeholder=filters_form.mileage_high_limit.label.text) }}
+                                            {{ filters_form.mileage_end(class="form-control",
+                                            placeholder=filters_form.mileage_end.label.text) }}
                                         </div>
                                     </div>
                                 </div>
@@ -136,15 +181,15 @@
                                     <div class="row d-flex align-items-center g-2">
                                         <div class="col-4 pe-3">
                                             <label for="owners_count_low_limit">{{
-                                                filters_form.owners_count_low_limit.description }}</label>
+                                                filters_form.owners_count_begin.description }}</label>
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.owners_count_low_limit(class="form-control",
-                                            placeholder=filters_form.owners_count_low_limit.label.text ) }}
+                                            {{ filters_form.owners_count_begin(class="form-control",
+                                            placeholder=filters_form.owners_count_begin.label.text ) }}
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.owners_count_high_limit(class="form-control",
-                                            placeholder=filters_form.owners_count_high_limit.label.text) }}
+                                            {{ filters_form.owners_count_end(class="form-control",
+                                            placeholder=filters_form.owners_count_end.label.text) }}
                                         </div>
                                     </div>
                                 </div>
@@ -166,10 +211,14 @@
                                         <div class="col-7">
                                             {{ filters_form.location(
                                             class="form-control",
-                                            value=(current_user.location.name if not current_user.is_anonymous),
-                                            list="location-datalist",
-                                            autocomplete="off") }}
-                                            <datalist id="location-datalist"></datalist>
+                                            id="locationFilters",
+                                            value=(current_user.location.name
+                                            if not current_user.is_anonymous),
+                                            list="location-datalist-filters",
+                                            autocomplete="off"
+                                            ) }}
+                                            <datalist class="location-datalist"
+                                                id="location-datalist-filters"></datalist>
                                         </div>
                                     </div>
                                 </div>
@@ -191,7 +240,11 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                 <button type="button" class="btn btn-secondary" id="resetFilters">Сбросить фильтры</button>
-                {{ filters_form.submit(class="btn btn-danger", form="filtersForm") }}
+                {{ filters_form.submit(
+                class="btn btn-danger",
+                id="submitFilters",
+                form="filtersForm"
+                ) }}
             </div>
         </div>
     </div>

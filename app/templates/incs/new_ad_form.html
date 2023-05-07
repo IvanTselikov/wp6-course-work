@@ -13,43 +13,80 @@
 
                     <div class="mb-3">
                         {{ ad_form.transport_type.label() }}
-                        {{ ad_form.transport_type(class="form-control") }}
+                        {{ ad_form.transport_type(
+                        class="form-control car-info-select",
+                        id="transportTypeCreateAd",
+                        data_next_select="#markCreateAd",
+                        data_fill_next_method="/marks"
+                        ) }}
                         <div class="error-block text-danger" data-field="transport_type"></div>
                     </div>
 
                     <div class="mb-3">
                         {{ ad_form.mark.label() }}
-                        {{ ad_form.mark(class="form-control", disabled="true")}}
+                        {{ ad_form.mark(
+                        class="form-control car-info-select",
+                        id="markCreateAd",
+                        data_next_select="#modelCreateAd",
+                        data_fill_next_method="/models",
+                        disabled="true"
+                        ) }}
                         <div class="error-block text-danger" data-field="mark"></div>
                     </div>
 
                     <div class="mb-3">
                         {{ ad_form.model.label() }}
-                        {{ ad_form.model(class="form-control", disabled="true")}}
+                        {{ ad_form.model(
+                        class="form-control car-info-select",
+                        id="modelCreateAd",
+                        data_next_select="#generationCreateAd",
+                        data_fill_next_method="/generations",
+                        disabled="true"
+                        ) }}
                         <div class="error-block text-danger" data-field="model"></div>
                     </div>
 
                     <div class="mb-3">
                         {{ ad_form.generation.label() }}
-                        {{ ad_form.generation(class="form-control", disabled="true")}}
+                        {{ ad_form.generation(
+                        class="form-control car-info-select generation-select",
+                        id="generationCreateAd",
+                        data_next_select="#serieCreateAd",
+                        data_fill_next_method="/series",
+                        data_year="#year-create-ad",
+                        disabled="true"
+                        ) }}
                         <div class="error-block text-danger" data-field="generation"></div>
                     </div>
 
                     <div class="mb-3">
                         {{ ad_form.serie.label() }}
-                        {{ ad_form.serie(class="form-control", disabled="true")}}
+                        {{ ad_form.serie(
+                        class="form-control car-info-select",
+                        id="serieCreateAd",
+                        data_next_select="#modificationCreateAd",
+                        data_fill_next_method="/modifications",
+                        disabled="true"
+                        ) }}
                         <div class="error-block text-danger" data-field="serie"></div>
                     </div>
 
                     <div class="mb-3">
                         {{ ad_form.modification.label() }}
-                        {{ ad_form.modification(class="form-control", disabled="true")}}
+                        {{ ad_form.modification(
+                        class="form-control car-info-select",
+                        id="modificationCreateAd",
+                        disabled="true"
+                        ) }}
                         <div class="error-block text-danger" data-field="modification"></div>
                     </div>
 
                     <div class="mb-3">
                         {{ ad_form.release_year.label() }}
-                        {{ ad_form.release_year(class="form-control")}}
+                        {{ ad_form.release_year(
+                        class="form-control",
+                        id="year-create-ad"
+                        ) }}
                         <div class="error-block text-danger" data-field="release_year"></div>
                     </div>
 
@@ -78,9 +115,13 @@
                     </div>
 
                     <div class="mb-3">
-                        <div class="color-other color-square"></div>
+                        <div class="color-other color-square" id="color-square-create-ad"></div>
                         {{ ad_form.color.label() }}
-                        {{ ad_form.color(class="form-control")}}
+                        {{ ad_form.color(
+                            class="form-control color-picker",
+                            id="color-create-ad",
+                            data_square="#color-square-create-ad"
+                        ) }}
                         <div class="error-block text-danger" data-field="color"></div>
                     </div>
 
@@ -117,9 +158,14 @@
 
                     <div class="mb-3">
                         {{ ad_form.location.label() }}
-                        {{ ad_form.location(class="form-control", value=current_user.location.name,
-                        list="location-datalist", autocomplete="off") }}
-                        <datalist id="location-datalist"></datalist>
+                        {{ ad_form.location(
+                        class="form-control",
+                        id="locationCreateAd",
+                        value=current_user.location.name,
+                        list="location-datalist-create-ad",
+                        autocomplete="off"
+                        ) }}
+                        <datalist class="location-datalist" id="location-datalist-create-ad"></datalist>
                         <div class="error-block text-danger" data-field="location"></div>
                     </div>
 
@@ -129,14 +175,33 @@
                         <div class="error-block text-danger" data-field="description"></div>
                     </div>
                 </form>
+                <div class="form-text">* - поля, обязательные для заполнения</div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                 {{ ad_form.submit(class="btn btn-danger", form="newAdForm") }}
             </div>
-            <div class="form-text">* - поля, обязательные для заполнения</div>
         </div>
     </div>
 </div>
 
-{% include "incs/create_ad_success_modal.html" %}
+
+<div class="modal fade" id="createAdSuccessModal" tabindex="-1" aria-labelledby="creadeAdSuccessModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="creadeAdSuccessModalLabel">Создание объявления</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body d-flex flex-column justify-content-center align-items-center my-3">
+                <img src="static/img/success.svg" alt="success" class="my-3">
+                <div class="mt-3" style="width: 90%;">Ваше объявление отправлено на проверку. После её прохождения оно
+                    будет опубликовано на сайте.</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Вернуться на сайт</button>
+            </div>
+        </div>
+    </div>
+</div>

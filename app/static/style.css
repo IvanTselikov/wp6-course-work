@@ -55,11 +55,13 @@ header {
     border-width: 1px;
 }
 
+#search-bar .btn-outline-secondary:not(:hover) {
+    color: rgb(33, 37, 41)
+}
+
 .btn-outline-secondary:not(:hover) {
     background-color: white !important;
 }
-
-
 
 #profile-img {
     height: 2.5rem !important;
@@ -135,4 +137,13 @@ footer {
     padding-bottom: 2.5em;
     background-size: cover;
     background-position: center center;
+}
+
+.page-item:not(.disabled, .active) .page-link {
+    color: #dc3545;
+}
+
+.page-item.active .page-link {
+    background-color: #dc3545;
+    border-color: #dc3545;
 }

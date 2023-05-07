@@ -4,7 +4,8 @@ from wtforms.validators import ValidationError, DataRequired, InputRequired, Ema
 from flask_wtf.file import FileAllowed, FileRequired
 from flask_uploads import UploadSet, IMAGES
 
-from app.models import User, TransportType, Mark, Model, PtsType
+from app.models import User, TransportType, Mark, Model, PtsType, Generation
+from app.functions import *
 
 import re
 import phonenumbers
@@ -54,7 +55,7 @@ class SignupForm(FlaskForm):
         ]
     )
 
-    signup_login = StringField(
+    login = StringField(
         label='Логин*',
         description='длина логина - от 6 до 20 символов (буквы, цифры, подчёркивание)',
         validators=[
@@ -65,7 +66,7 @@ class SignupForm(FlaskForm):
         ]
     )
 
-    signup_password = PasswordField(
+    password = PasswordField(
         label='Пароль*',
         description='длина пароля - от 8 до 20 символов',
         validators=[
@@ -94,13 +95,9 @@ class SignupForm(FlaskForm):
 
     location = StringField('Населённый пункт')
 
-    signup_submit = SubmitField('Зарегистрироваться')
-
-    # def validate_photo(form, field):
-    #     if field.data:
-    #         field.data = re.sub(r'[^a-z0-9_.-]', '_', field.data)
+    submit = SubmitField('Зарегистрироваться')
     
-    def validate_signup_login(self, field):
+    def validate_login(self, field):
         user = User.query.filter_by(login=field.data).first()
         if user is not None:
             raise ValidationError(
@@ -186,7 +183,11 @@ class AdForm(FlaskForm):
         'Год выпуска*',
         validators=[
             InputRequired('Пожалуйста, укажите год выпуска.'),
-            NumberRange(min=1900, max=2100, message='Пожалуйста, укажите корректный год выпуска.')
+            NumberRange(
+                min=EARLIEST_RELEASE_YEAR,
+                max=get_current_year(),
+                message='Пожалуйста, укажите корректный год выпуска.'
+            )
         ]
     )
     mileage = IntegerField(
@@ -266,7 +267,18 @@ class AdForm(FlaskForm):
 
     submit = SubmitField('Создать объявление')
 
-    def change_release_year_limits(self, year_begin, year_end):
+    def validate_release_year(self, field):
+        generation = Generation.query.filter_by(id=self.generation.data).first()
+        if generation:
+            year_begin = generation.year_begin
+            year_end = generation.year_end
+
+            if field.data < year_begin or field.data > year_end:
+                raise ValidationError(
+                    'Пожалуйста, укажите корректный год выпуска.'
+                )
+        
+    def change_release_year_limits(self, year_begin, year_end): # TODO: в интерфейс (без повторения кода)
         validators = self.release_year.validators
         nrange_validator = list(filter(lambda v: isinstance(v, NumberRange), validators))[0]
 
@@ -320,56 +332,56 @@ class FiltersForm(FlaskForm):
         coerce=int,
         validate_choice=False
     )
-    price_low_limit = IntegerField(
+    price_begin = IntegerField(
         'От',
         description='Цена, руб.',
         validators=[
             NumberRange(min=1, message='Цена должна быть положительным числом.')
         ]
     )
-    price_high_limit = IntegerField(
+    price_end = IntegerField(
         'До',
         description='Цена, руб.',
         validators=[
             NumberRange(min=1, message='Цена должна быть положительным числом.')
         ]
     )
-    release_year_low_limit = IntegerField(
+    release_year_begin = IntegerField(
         'От',
         description='Год выпуска',
         validators=[
             NumberRange(min=1900, max=2100, message='Пожалуйста, укажите корректный год выпуска.')
         ]
     )
-    release_year_high_limit = IntegerField(
+    release_year_end = IntegerField(
         'До',
         description='Год выпуска',
         validators=[
             NumberRange(min=1900, max=2100, message='Пожалуйста, укажите корректный год выпуска.')
         ]
     )
-    mileage_low_limit = IntegerField(
+    mileage_begin = IntegerField(
         'От',
         description='Пробег, км',
         validators=[
             NumberRange(min=0, message='Пробег не может быть отрицательным числом.')
         ]
     )
-    mileage_high_limit = IntegerField(
+    mileage_end = IntegerField(
         'До',
         description='Пробег, км',
         validators=[
             NumberRange(min=0, message='Пробег не может быть отрицательным числом.')
         ]
     )
-    owners_count_low_limit = IntegerField(
+    owners_count_begin = IntegerField(
         'От',
         description='Владельцев по ПТС',
         validators=[
             NumberRange(min=1, message='Количество владельцев должно быть положительным числом.')
         ]
     )
-    owners_count_high_limit = IntegerField(
+    owners_count_end = IntegerField(
         'До',
         description='Владельцев по ПТС',
         validators=[
@@ -404,3 +416,32 @@ class FiltersForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(FiltersForm, self).__init__(*args, **kwargs)
         self.transport_type.choices.extend([(tt.id, tt.name) for tt in TransportType.query.all()])
+    
+    def validate_release_year(self, field):
+        generation = Generation.query.filter_by(id=self.generation.data).first()
+        if generation:
+            year_begin = generation.year_begin
+            year_end = generation.year_end
+
+            if field.data < year_begin or field.data > year_end:
+                raise ValidationError(
+                    'Пожалуйста, укажите корректный год выпуска.'
+                )
+    
+    def change_release_year_limits(self, year_begin, year_end):
+        year_fields = [self.release_year_begin, self.release_year_end]
+
+        for field in year_fields:
+            validators = field.validators
+
+            nrange_validator = list(
+                filter(lambda v: isinstance(v, NumberRange),
+                       validators)
+            )[0]
+
+            year_begin = year_begin or 1900
+            year_end = year_end or 2100
+            nrange_validator.min = year_begin
+            nrange_validator.max = year_end
+        
+        return year_begin, year_end

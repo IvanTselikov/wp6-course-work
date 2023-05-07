@@ -34,11 +34,13 @@
             </div>
 
             {% if current_user.is_anonymous %}
-            <button type="button" class="btn btn-secondary me-2 px-3" data-bs-toggle="modal"
-                data-bs-target="#login-modal">Вход</button>
+            <div class="d-flex flex-row">
+                <button type="button" class="btn btn-secondary me-4 me-md-2 px-4 px-md-3" data-bs-toggle="modal"
+                    data-bs-target="#login-modal">Вход</button>
 
-            <button type="button" class="btn btn-danger px-4" data-bs-toggle="modal"
-                data-bs-target="#signup-modal">Регистрация</button>
+                <button type="button" class="btn btn-danger px-4" data-bs-toggle="modal"
+                    data-bs-target="#signup-modal">Регистрация</button>
+            </div>
             {% else %}
             <div class="d-flex mb-2 mb-md-0">
                 <div class="dropdown text-end">

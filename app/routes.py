@@ -41,10 +41,22 @@ def index():
         kwargs.update({'login_form': login_form, 'signup_form': signup_form})
 
     filters_form = FiltersForm()
+
+
+    try:
+        page = int(request.args.get('page'))
+    except:
+        page = 1
+
+
+    ads = Ad.query.filter_by().order_by(Ad.updated_at.desc()).paginate(
+        page=page, per_page=1, error_out=False
+    )
+
     kwargs.update({
         'filters_form': filters_form,
         'ads_section_header': 'Новые объявления на сайте',
-        'ads': Ad.query.filter_by().order_by(Ad.updated_at.desc()),
+        'ads': ads
     })
     return render_template('index.html', **kwargs)
 
@@ -187,11 +199,19 @@ def modifications(serie_id):
 def release_years(generation_id):
     generation = Generation.query.filter_by(id=generation_id).first()
 
-    year_begin = (generation.year_begin if generation else None)
-    year_end = (generation.year_end if generation else None)
+    if generation:
+        year_begin = generation.year_begin or EARLIEST_RELEASE_YEAR
+        year_end = generation.year_end or get_current_year()
+    else:
+        return {}, 404
 
-    form = AdForm()
-    year_begin, year_end = form.change_release_year_limits(year_begin, year_end)
+    # form = request.args.get('form')
+    # if form:
+    #     if form == 'createAd':  # TODO: в константы
+    #         form = AdForm()
+    #     elif form == 'filters':
+    #         form = FiltersForm()
+    #     year_begin, year_end = form.change_release_year_limits(year_begin, year_end)
 
     return jsonify({ 'yearBegin': year_begin, 'yearEnd': year_end })
 

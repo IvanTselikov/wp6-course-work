@@ -7,7 +7,7 @@
             </div>
             <div class="modal-body">
                 <form id="signupForm" enctype="multipart/form-data" novalidate>
-                    {{ signup_form.hidden_tag() }}
+                    {{ login_form.csrf_token(id="csrfTokenSignup") }}
                     <div class="error-block text-danger" data-field="csrf_token"></div>
 
                     <div class="mb-3">
@@ -36,17 +36,25 @@
                     </div>
 
                     <div class="mb-3">
-                        {{ signup_form.signup_login.label() }}
-                        {{ signup_form.signup_login(class="form-control", autocomplete="off") }}
-                        <div class="form-text">{{ signup_form.signup_login.description }}</div>
-                        <div class="error-block text-danger" data-field="signup_login"></div>
+                        {{ signup_form.login.label() }}
+                        {{ signup_form.login(
+                            class="form-control",
+                            id="signupLogin",
+                            autocomplete="off"
+                        ) }}
+                        <div class="form-text">{{ signup_form.login.description }}</div>
+                        <div class="error-block text-danger" data-field="login"></div>
                     </div>
 
                     <div class="mb-3">
-                        {{ signup_form.signup_password.label() }}
-                        {{ signup_form.signup_password(class="form-control", autocomplete="off") }}
-                        <div class="form-text">{{ signup_form.signup_password.description }}</div>
-                        <div class="error-block text-danger" data-field="signup_password"></div>
+                        {{ signup_form.password.label() }}
+                        {{ signup_form.password(
+                            class="form-control",
+                            id="signupPassword",
+                            autocomplete="off"
+                        ) }}
+                        <div class="form-text">{{ signup_form.password.description }}</div>
+                        <div class="error-block text-danger" data-field="password"></div>
                     </div>
 
                     <div class="mb-3">
@@ -69,9 +77,13 @@
 
                     <div class="mb-3">
                         {{ signup_form.location.label() }}
-                        {{ signup_form.location(class="form-control", list="location-datalist",
-                        autocomplete="off")}}
-                        <datalist id="location-datalist"></datalist>
+                        {{ signup_form.location(
+                            class="form-control",
+                            id="locationSignup",
+                            list="location-datalist-signup",
+                            autocomplete="off"
+                        )}}
+                        <datalist class="location-datalist" id="location-datalist-signup"></datalist>
                         <div class="error-block text-danger" data-field="location"></div>
                     </div>
 
@@ -81,7 +93,11 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                {{ signup_form.signup_submit(class="btn btn-danger", form="signupForm") }}
+                {{ signup_form.submit(
+                    class="btn btn-danger",
+                    id="signupSubmit",
+                    form="signupForm"
+                ) }}
             </div>
         </div>
     </div>
