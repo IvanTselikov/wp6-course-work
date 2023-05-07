@@ -21,18 +21,17 @@
                 <span class="ms-3" id="logo-text">AutoAds</span>
             </a>
 
-            <form class="mb-4 mb-md-0 ms-md-5 me-md-4 w-100 flex-md-grow-1 d-flex">
-                <button type="button" class="btn border d-flex align-items-center px-3" id="filter-btn"
+            <div class="input-group mb-4 mb-md-0 ms-md-5 me-md-4 w-100 flex-md-grow-1 d-flex" id="search-bar">
+                <button type="button" class="btn btn-outline-secondary d-flex align-items-center px-3" id="filters-btn"
                     data-bs-toggle="modal" data-bs-target="#filtersModal">
-                    <img src="static/img/filter.svg" alt="filter">
+                    <i class="fa fa-filter" aria-hidden="true"></i>
                     <span class="ms-2">Фильтры</span>
                 </button>
-                <input type="search" class="form-control d-inline" id="search-input" placeholder="Найти..."
-                    aria-label="Search">
-                <button class="btn border" id="search-btn">
-                    <img src="static/img/loupe.svg" alt="loupe">
+                <input type="text" class="form-control" placeholder="Найти..." aria-label="Поиск">
+                <button type="button" class="btn btn-outline-secondary" id="search-btn">
+                    <i class="fa fa-search" aria-hidden="true"></i>
                 </button>
-            </form>
+            </div>
 
             {% if current_user.is_anonymous %}
             <button type="button" class="btn btn-secondary me-2 px-3" data-bs-toggle="modal"
@@ -45,7 +44,9 @@
                 <div class="dropdown text-end">
                     <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="rounded-circle" id="profile-img" style="background-image: url('{{ url_for('images', user=current_user.login, size='tiny') }}');"></div>
+                        <div class="rounded-circle" id="profile-img"
+                            style="background-image: url('{{ url_for('images', user=current_user.login, size='tiny') }}');">
+                        </div>
                         <span class="ms-2">{{ current_user.login }}</span>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownUser1">
@@ -79,7 +80,7 @@
             <div class="col-md-4 d-flex align-items-center">
                 <span class="text-muted">© 2023, КГУ</span>
             </div>
-    
+
             <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
                 <li class="ms-4">
                     <a href="https://vk.com" class="text-muted" id="vk-link">
@@ -98,7 +99,7 @@
                 </li>
             </ul>
         </div>
-        
+
     </footer>
 
     {% if login_form %}
@@ -119,6 +120,7 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://kit.fontawesome.com/3f0ebccfe4.js" crossorigin="anonymous"></script>
     <script src="static/script.js"></script>
 </body>
 

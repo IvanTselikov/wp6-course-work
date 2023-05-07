@@ -50,31 +50,16 @@ header {
     color: #A71D2A;
 }
 
-#filter-btn {
-    background-color: white;
-    border-radius: 4px 0 0 4px !important;
+#search-bar .btn-outline-secondary {
+    border-color: rgb(206, 212, 218);
+    border-width: 1px;
 }
 
-/* #filter-btn img {
-    height: .8rem !important;
-} */
-
-#search-input {
-    border-radius: 0 !important;
-    border-left: none !important;
-    border-right: none !important;
-    border-color:rgb(222, 226, 230) 
+.btn-outline-secondary:not(:hover) {
+    background-color: white !important;
 }
 
-#search-btn {
-    background-color: white;
-    border-radius: 0 4px 4px 0 !important;
-    border-color:rgb(222, 226, 230) 
-}
 
-#search-btn img {
-    height: 1rem !important;
-}
 
 #profile-img {
     height: 2.5rem !important;
@@ -95,7 +80,7 @@ footer {
 }
 
 #ok-link img {
-    height: 1.5rem;
+    height: 1.6rem;
 }
 
 
