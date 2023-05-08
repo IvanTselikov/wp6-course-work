@@ -7,8 +7,8 @@
             </div>
             <div class="modal-body">
                 <form id="loginForm" novalidate>
-                    {{ login_form.csrf_token(id="csrfTokenLogin") }}
-                    <div class="error-block text-danger" data-field="csrf_token"></div>
+                    {{ login_form.csrf_token(id="csrf-token-login") }}
+                    <div class="error-block text-danger" data-field="csrf-token-login"></div>
                     <div class="error-block text-danger" data-field="other"></div>
 
                     <div class="mb-3">

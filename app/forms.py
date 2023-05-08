@@ -336,6 +336,7 @@ class FiltersForm(FlaskForm):
         'От',
         description='Цена, руб.',
         validators=[
+            Optional(),
             NumberRange(min=1, message='Цена должна быть положительным числом.')
         ]
     )
@@ -343,6 +344,7 @@ class FiltersForm(FlaskForm):
         'До',
         description='Цена, руб.',
         validators=[
+            Optional(),
             NumberRange(min=1, message='Цена должна быть положительным числом.')
         ]
     )
@@ -350,6 +352,7 @@ class FiltersForm(FlaskForm):
         'От',
         description='Год выпуска',
         validators=[
+            Optional(),
             NumberRange(min=1900, max=2100, message='Пожалуйста, укажите корректный год выпуска.')
         ]
     )
@@ -357,6 +360,7 @@ class FiltersForm(FlaskForm):
         'До',
         description='Год выпуска',
         validators=[
+            Optional(),
             NumberRange(min=1900, max=2100, message='Пожалуйста, укажите корректный год выпуска.')
         ]
     )
@@ -364,6 +368,7 @@ class FiltersForm(FlaskForm):
         'От',
         description='Пробег, км',
         validators=[
+            Optional(),
             NumberRange(min=0, message='Пробег не может быть отрицательным числом.')
         ]
     )
@@ -371,13 +376,15 @@ class FiltersForm(FlaskForm):
         'До',
         description='Пробег, км',
         validators=[
-            NumberRange(min=0, message='Пробег не может быть отрицательным числом.')
+            Optional(),
+            NumberRange(min=0, message='Пробег не может быть отрицательным числом.'),
         ]
     )
     owners_count_begin = IntegerField(
         'От',
         description='Владельцев по ПТС',
         validators=[
+            Optional(),
             NumberRange(min=1, message='Количество владельцев должно быть положительным числом.')
         ]
     )
@@ -385,6 +392,7 @@ class FiltersForm(FlaskForm):
         'До',
         description='Владельцев по ПТС',
         validators=[
+            Optional(),
             NumberRange(min=1, message='Количество владельцев должно быть положительным числом.')
         ]
     )
@@ -405,10 +413,7 @@ class FiltersForm(FlaskForm):
         'Объявлений на странице',
         choices=[(10, '10'), (50, '50'), (100, '100')],
         coerce=int,
-        validate_choice=False,
-        validators=[
-            InputRequired('Пожалуйста, укажите количество объявлений на странице.'),
-        ]
+        validate_choice=False
     )
 
     submit = SubmitField('Применить фильтры')
@@ -416,32 +421,3 @@ class FiltersForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(FiltersForm, self).__init__(*args, **kwargs)
         self.transport_type.choices.extend([(tt.id, tt.name) for tt in TransportType.query.all()])
-    
-    def validate_release_year(self, field):
-        generation = Generation.query.filter_by(id=self.generation.data).first()
-        if generation:
-            year_begin = generation.year_begin
-            year_end = generation.year_end
-
-            if field.data < year_begin or field.data > year_end:
-                raise ValidationError(
-                    'Пожалуйста, укажите корректный год выпуска.'
-                )
-    
-    def change_release_year_limits(self, year_begin, year_end):
-        year_fields = [self.release_year_begin, self.release_year_end]
-
-        for field in year_fields:
-            validators = field.validators
-
-            nrange_validator = list(
-                filter(lambda v: isinstance(v, NumberRange),
-                       validators)
-            )[0]
-
-            year_begin = year_begin or 1900
-            year_end = year_end or 2100
-            nrange_validator.min = year_begin
-            nrange_validator.max = year_end
-        
-        return year_begin, year_end

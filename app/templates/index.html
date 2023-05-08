@@ -2,6 +2,7 @@
 {% block content %}
 
 {% if ads.total %}
+<!-- <h1>{#  request.args.get('page') #}</h1> -->
 <div id="ads-section" class="mt-5">
     <h4 class="">{{ ads_section_header }}</h4>
     <div class="mt-3 mb-5">Найдено объявлений: {{ ads.total }} ()</div>
@@ -58,14 +59,19 @@
     <nav aria-label="Пагинация" class="mt-3 mb-5">
         <ul class="pagination justify-content-center">
             <li class="page-item {% if not ads.has_prev %} disabled {% endif %}">
-                <a class="page-link" href="?page={{ ads.prev_num }}">Предыдущая</a>
+                <a class="page-link" href="?page={{ ads.prev_num }}">
+                    <span class="d-none d-md-inline">Предыдущая</span>
+                    <span class="d-inline d-md-none">&#60&#60</span>
+                </a>
             </li>
             {% for i in ads.iter_pages(
-                left_edge=2, left_current=2, right_current=4, right_edge=2
+                left_edge=1, left_current=2, right_current=2, right_edge=1
             ) %}
                 {% if i %}
                 <li class="page-item {% if i == ads.page %} active {% endif %}">
-                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                    <a class="page-link" href={{
+                        url_for('index', **update_params(request, page=i))
+                    }}>{{ i }}</a>
                 </li>
                 {% else %}
                 <li class="page-item disabled">
@@ -74,7 +80,10 @@
                 {% endif %}
             {% endfor %}
             <li class="page-item {% if not ads.has_next %} disabled {% endif %}">
-                <a class="page-link" href="?page={{ ads.next_num }}">Следующая</a>
+                <a class="page-link" href="">
+                    <span class="d-none d-md-inline">Следующая</span>
+                    <span class="d-inline d-md-none">&#62&#62</span>
+                </a>
             </li>
         </ul>
     </nav>

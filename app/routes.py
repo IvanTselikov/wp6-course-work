@@ -8,9 +8,9 @@ from app.functions import *
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 
-from app.models import User, Mark, Model, Generation, Serie, Modification, Color, Location, Ad
+from app.models import *
 from flask_login import current_user, login_user, logout_user, login_required
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 import os
 from glob import glob
@@ -40,25 +40,54 @@ def index():
         signup_form = SignupForm()
         kwargs.update({'login_form': login_form, 'signup_form': signup_form})
 
-    filters_form = FiltersForm()
-
-
     try:
         page = int(request.args.get('page'))
     except:
         page = 1
+    
+    filters_form = FiltersForm()
 
+    ads = Ad.query\
+        .join(Modification).join(Serie).join(Generation)\
+        .join(Model).join(Mark).join(TransportType)\
+        .filter(and_(
+            Modification.id == request.args.get('modification')
+                if request.args.get('modification') else True,
 
-    ads = Ad.query.filter_by().order_by(Ad.updated_at.desc()).paginate(
-        page=page, per_page=1, error_out=False
-    )
+            Serie.id == request.args.get('serie')
+                if request.args.get('serie') else True,
 
+            Generation.id == request.args.get('generation')
+                if request.args.get('generation') else True,
+                
+            Model.id == request.args.get('model')
+                if request.args.get('model') else True,
+        
+            Mark.id == request.args.get('mark')
+                if request.args.get('mark') else True,
+            
+            TransportType.id == request.args.get('transport_type')
+                if request.args.get('transport_type') else True,
+
+            
+        ))\
+        .order_by(Ad.updated_at.desc())\
+        .paginate(page=page, per_page=1, error_out=False)
     kwargs.update({
         'filters_form': filters_form,
         'ads_section_header': 'Новые объявления на сайте',
         'ads': ads
     })
     return render_template('index.html', **kwargs)
+    
+
+@app.route('/filter', methods=['post'])
+def filter():
+    filters_form = FiltersForm()
+    print(filters_form.data)
+    if filters_form.validate():
+        return redirect(url_for('index'))
+    return jsonify(filters_form.errors), 400
 
 
 @app.route('/login', methods=['POST'])

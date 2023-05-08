@@ -9,6 +9,8 @@ class Config(object):
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # WTF_CSRF_ENABLED = False
+
     UPLOADS_FOLDER = os.path.join('app', 'static', 'uploads')
     PROFILE_PHOTO_FILENAME = 'profile'
     PHOTO_SMALL_PREFIX = '.small'

@@ -1,3 +1,5 @@
+from app import app
+
 from PIL import Image
 from datetime import datetime as dt
 
@@ -23,3 +25,7 @@ def upload_photo(file_storage, path_origin, path_small=None, path_tiny=None):
 
 def get_current_year():
     return dt.now().year
+
+def update_params(request, **kwargs):
+    return request.args.to_dict() | kwargs
+app.jinja_env.globals.update(update_params=update_params)

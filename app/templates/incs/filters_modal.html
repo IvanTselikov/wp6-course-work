@@ -7,6 +7,8 @@
             </div>
             <div class="modal-body">
                 <form id="filtersForm" novalidate>
+                    {{ filters_form.csrf_token(id="csrf-token-filters") }}
+                    <div class="error-block text-danger" data-field="csrf_token"></div>
                     <div class="container">
                         <div class="row g-3">
                             <div class="col-lg-6 mt-4">
@@ -22,6 +24,7 @@
                                             data_next_select="#mark-filters",
                                             data_fill_next_method="/marks"
                                             ) }}
+                                            <div class="error-block text-danger" data-field="transport_type"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -38,6 +41,7 @@
                                             data_fill_next_method="/models",
                                             disabled="true"
                                             ) }}
+                                            <div class="error-block text-danger" data-field="mark"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -54,6 +58,7 @@
                                             data_fill_next_method="/generations",
                                             disabled="true"
                                             ) }}
+                                            <div class="error-block text-danger" data-field="model"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -72,6 +77,7 @@
                                             data_year_end="#year-end-filters",
                                             disabled="true"
                                             ) }}
+                                            <div class="error-block text-danger" data-field="generation"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -88,6 +94,7 @@
                                             data_fill_next_method="/modifications",
                                             disabled="true"
                                             ) }}
+                                            <div class="error-block text-danger" data-field="serie"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -102,6 +109,7 @@
                                             id="modification-filters",
                                             disabled="true"
                                             ) }}
+                                            <div class="error-block text-danger" data-field="modification"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -113,10 +121,11 @@
                                         </div>
                                         <div class="col-8 col-lg-7">
                                             {{ filters_form.color(
-                                                class="form-control color-picker",
-                                                id="color-filters",
-                                                data_square="#color-square-filters"
+                                            class="form-control color-picker",
+                                            id="color-filters",
+                                            data_square="#color-square-filters"
                                             ) }}
+                                            <div class="error-block text-danger" data-field="color"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -137,6 +146,8 @@
                                             {{ filters_form.price_end(class="form-control",
                                             placeholder=filters_form.price_end.label.text) }}
                                         </div>
+                                        <div class="error-block text-danger" data-field="price_begin"></div>
+                                        <div class="error-block text-danger" data-field="price_end"></div>
                                     </div>
                                 </div>
                                 <div class="container mb-4">
@@ -159,6 +170,8 @@
                                             placeholder=filters_form.release_year_end.label.text
                                             ) }}
                                         </div>
+                                        <div class="error-block text-danger" data-field="release_year_begin"></div>
+                                        <div class="error-block text-danger" data-field="release_year_end"></div>
                                     </div>
                                 </div>
                                 <div class="container mb-4">
@@ -175,6 +188,8 @@
                                             {{ filters_form.mileage_end(class="form-control",
                                             placeholder=filters_form.mileage_end.label.text) }}
                                         </div>
+                                        <div class="error-block text-danger" data-field="mileage_begin"></div>
+                                        <div class="error-block text-danger" data-field="mileage_end"></div>
                                     </div>
                                 </div>
                                 <div class="container mb-4">
@@ -191,6 +206,8 @@
                                             {{ filters_form.owners_count_end(class="form-control",
                                             placeholder=filters_form.owners_count_end.label.text) }}
                                         </div>
+                                        <div class="error-block text-danger" data-field="owners_count_begin"></div>
+                                        <div class="error-block text-danger" data-field="owners_count_end"></div>
                                     </div>
                                 </div>
                                 <div class="container mb-4">
@@ -201,6 +218,7 @@
                                         <div class="col-7">
                                             {{ filters_form.is_broken(class="form-control") }}
                                         </div>
+                                        <div class="error-block text-danger" data-field="is_broken"></div>
                                     </div>
                                 </div>
                                 <div class="container mb-4">
@@ -220,6 +238,7 @@
                                             <datalist class="location-datalist"
                                                 id="location-datalist-filters"></datalist>
                                         </div>
+                                        <div class="error-block text-danger" data-field="location"></div>
                                     </div>
                                 </div>
                                 <div class="container mb-4">
@@ -230,6 +249,7 @@
                                         <div class="col-7">
                                             {{ filters_form.page_ads_count(class="form-control") }}
                                         </div>
+                                        <div class="error-block text-danger" data-field="page_ads_count"></div>
                                     </div>
                                 </div>
                             </div>
