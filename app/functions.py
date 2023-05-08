@@ -29,3 +29,10 @@ def get_current_year():
 def update_params(request, **kwargs):
     return request.args.to_dict() | kwargs
 app.jinja_env.globals.update(update_params=update_params)
+
+
+def parse_int_or_skip(s):
+    try:
+        return int(s)
+    except:
+        return s

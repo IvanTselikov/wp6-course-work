@@ -409,12 +409,13 @@ class FiltersForm(FlaskForm):
         validate_choice=False
     )
     location = StringField('Населённый пункт')
-    page_ads_count = SelectField(
+    per_page = SelectField(
         'Объявлений на странице',
         choices=[(10, '10'), (50, '50'), (100, '100')],
         coerce=int,
         validate_choice=False
     )
+    search = StringField('Найти...')
 
     submit = SubmitField('Применить фильтры')
 
