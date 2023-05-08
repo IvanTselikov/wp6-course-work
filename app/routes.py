@@ -197,23 +197,25 @@ def modifications(serie_id):
 
 @app.route('/release_years/<generation_id>', methods=['get'])
 def release_years(generation_id):
+    response = {
+        'yearBegin': { 'value': EARLIEST_RELEASE_YEAR, 'isDefault': True },
+        'yearEnd': { 'value': get_current_year(), 'isDefault': True },
+    }
+
     generation = Generation.query.filter_by(id=generation_id).first()
-
     if generation:
-        year_begin = generation.year_begin or EARLIEST_RELEASE_YEAR
-        year_end = generation.year_end or get_current_year()
-    else:
-        return {}, 404
+        if generation.year_begin:
+            response['yearBegin'] = {
+                'value': generation.year_begin,
+                'isDefault': False
+            }
+        if generation.year_end:
+            response['yearEnd'] = {
+                'value': generation.year_end,
+                'isDefault': False
+            }
 
-    # form = request.args.get('form')
-    # if form:
-    #     if form == 'createAd':  # TODO: в константы
-    #         form = AdForm()
-    #     elif form == 'filters':
-    #         form = FiltersForm()
-    #     year_begin, year_end = form.change_release_year_limits(year_begin, year_end)
-
-    return jsonify({ 'yearBegin': year_begin, 'yearEnd': year_end })
+    return jsonify(response)
 
 
 @app.route('/colors', methods=['get'])

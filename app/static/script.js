@@ -77,6 +77,10 @@ $(document).ready(function() {
           for (let j = i + 1; j < selects.length; j++) {
             selects.eq(j).children().slice(1).remove()
             selects.eq(j).prop('disabled', true)
+
+            if (selects.eq(j).hasClass('generation-select')) {
+              selects.eq(j).trigger('change')
+            }
           }
         })
       }
@@ -102,8 +106,8 @@ $(document).ready(function() {
         type: 'get',
         url: encodeURIComponent(`/release_years/${generationId}`),
         success: response => {
-          const yearBegin = response.yearBegin
-          const yearEnd = response.yearEnd
+          const yearBegin = response.yearBegin.value
+          const yearEnd = response.yearEnd.value
     
           // устанавливаем верхнюю и нижнюю границу года выпуска на инпуты
           for (let key of Object.keys(yearInputsIds)) {
@@ -113,45 +117,22 @@ $(document).ready(function() {
             })
           }
     
-          const currentValue = $(yearInputsIds.yearCreateAd).val()
+          if (!response.yearBegin.isDefault) {
+            const currentValue = $(yearInputsIds.yearCreateAd).val()
     
-          if (currentValue < yearBegin || currentValue > yearEnd) {
-            $(yearInputsIds.yearCreateAd).val(yearBegin)
+            if (currentValue < yearBegin || currentValue > yearEnd) {
+              $(yearInputsIds.yearCreateAd).val(yearBegin)
+            }
+      
+            $(yearInputsIds.yearBeginFilters).val(yearBegin)
           }
-    
-          $(yearInputsIds.yearBeginFilters).val(yearBegin)
-          $(yearInputsIds.yearEndFilters).val(yearEnd)
+
+          if (!response.yearBegin.isDefault) {
+            $(yearInputsIds.yearEndFilters).val(yearEnd)
+          }
         }
       })
     })
-
-    // $('#generation').on('change', function(e) {
-    //   const value = $(this).val()
-
-    //   $.ajax({
-    //     type: 'get',
-    //     url: encodeURIComponent(`/release_years/${value}`),
-    //     success: response => {
-    //       const releaseYearInputValue = $('#release_year').val()
-    //       const yearBegin = response.yearBegin
-    //       const yearEnd = response.yearEnd
-
-    //       $('#release_year').attr('min', yearBegin)
-    //       if (releaseYearInputValue < yearBegin) {
-    //         $('#release_year').val(yearBegin)
-    //       }
-
-    //       $('#release_year').attr('max', yearEnd)
-    //       if (releaseYearInputValue > yearEnd) {
-    //         $('#release_year').val(yearEnd)
-    //       }
-    //     },
-    //     error: () => {
-    //       $('#release_year').attr('min', 1900)
-    //       $('#release_year').attr('max', 2100)
-    //     }
-    //   })
-    // })
 
     // заполнение цветов
     $.ajax({
