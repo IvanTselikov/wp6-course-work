@@ -21,7 +21,6 @@
                                             {{ filters_form.transport_type(
                                             class="form-control car-info-select",
                                             id="transport-type-filters",
-                                            data_next_select="#mark-filters",
                                             data_fill_next_method="/marks"
                                             ) }}
                                             <div class="error-block text-danger" data-field="transport_type"></div>
@@ -139,12 +138,18 @@
                                                 }}</label>
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.price_begin(class="form-control",
-                                            placeholder=filters_form.price_begin.label.text ) }}
+                                            {{ filters_form.price_begin(
+                                                class="form-control",
+                                                value=request.args.get('price_begin'),
+                                                placeholder=filters_form.price_begin.label.text
+                                            ) }}
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.price_end(class="form-control",
-                                            placeholder=filters_form.price_end.label.text) }}
+                                            {{ filters_form.price_end(
+                                                class="form-control",
+                                                value=request.args.get('price_end'),
+                                                placeholder=filters_form.price_end.label.text
+                                            ) }}
                                         </div>
                                         <div class="error-block text-danger" data-field="price_begin"></div>
                                         <div class="error-block text-danger" data-field="price_end"></div>
@@ -158,16 +163,18 @@
                                         </div>
                                         <div class="col-4">
                                             {{ filters_form.release_year_begin(
-                                            class="form-control",
-                                            id="year-begin-filters",
-                                            placeholder=filters_form.release_year_begin.label.text
+                                                class="form-control",
+                                                id="year-begin-filters",
+                                                value=request.args.get('release_year_begin'),
+                                                placeholder=filters_form.release_year_begin.label.text
                                             ) }}
                                         </div>
                                         <div class="col-4">
                                             {{ filters_form.release_year_end(
-                                            class="form-control",
-                                            id="year-end-filters",
-                                            placeholder=filters_form.release_year_end.label.text
+                                                class="form-control",
+                                                id="year-end-filters",
+                                                value=request.args.get('release_year_end'),
+                                                placeholder=filters_form.release_year_end.label.text
                                             ) }}
                                         </div>
                                         <div class="error-block text-danger" data-field="release_year_begin"></div>
@@ -181,12 +188,17 @@
                                                 }}</label>
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.mileage_begin(class="form-control",
-                                            placeholder=filters_form.mileage_begin.label.text ) }}
+                                            {{ filters_form.mileage_begin(
+                                                class="form-control",
+                                                value=request.args.get('mileage_begin'),
+                                                placeholder=filters_form.mileage_begin.label.text ) }}
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.mileage_end(class="form-control",
-                                            placeholder=filters_form.mileage_end.label.text) }}
+                                            {{ filters_form.mileage_end(
+                                                class="form-control",
+                                                value=request.args.get('mileage_end'),
+                                                placeholder=filters_form.mileage_end.label.text
+                                            ) }}
                                         </div>
                                         <div class="error-block text-danger" data-field="mileage_begin"></div>
                                         <div class="error-block text-danger" data-field="mileage_end"></div>
@@ -199,12 +211,17 @@
                                                 filters_form.owners_count_begin.description }}</label>
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.owners_count_begin(class="form-control",
-                                            placeholder=filters_form.owners_count_begin.label.text ) }}
+                                            {{ filters_form.owners_count_begin(
+                                                class="form-control",
+                                                value=request.args.get('owners_count_begin'),
+                                                placeholder=filters_form.owners_count_begin.label.text ) }}
                                         </div>
                                         <div class="col-4">
-                                            {{ filters_form.owners_count_end(class="form-control",
-                                            placeholder=filters_form.owners_count_end.label.text) }}
+                                            {{ filters_form.owners_count_end(
+                                                class="form-control",
+                                                value=request.args.get('owners_count_end'),
+                                                placeholder=filters_form.owners_count_end.label.text
+                                            ) }}
                                         </div>
                                         <div class="error-block text-danger" data-field="owners_count_begin"></div>
                                         <div class="error-block text-danger" data-field="owners_count_end"></div>
@@ -216,7 +233,9 @@
                                             {{ filters_form.is_broken.label() }}
                                         </div>
                                         <div class="col-7">
-                                            {{ filters_form.is_broken(class="form-control") }}
+                                            {{ filters_form.is_broken(
+                                                class="form-control"
+                                            ) }}
                                         </div>
                                         <div class="error-block text-danger" data-field="is_broken"></div>
                                     </div>
@@ -228,12 +247,14 @@
                                         </div>
                                         <div class="col-7">
                                             {{ filters_form.location(
-                                            class="form-control",
-                                            id="locationFilters",
-                                            value=(current_user.location.name
-                                            if not current_user.is_anonymous),
-                                            list="location-datalist-filters",
-                                            autocomplete="off"
+                                                class="form-control",
+                                                id="locationFilters",
+                                                value=request.args.get('location')
+                                                    if 'location' in request.args
+                                                    else current_user.location.name
+                                                    if current_user.is_authenticated,
+                                                list="location-datalist-filters",
+                                                autocomplete="off"
                                             ) }}
                                             <datalist class="location-datalist"
                                                 id="location-datalist-filters"></datalist>

@@ -142,6 +142,7 @@ class TransportType(db.Model):
 class Mark(db.Model):
     id = db.Column(SMALLINT(), primary_key=True)
     name = db.Column(VARCHAR(255), nullable=False)
+    name_rus = db.Column(VARCHAR(255))
     transport_type_id = db.Column(TINYINT(), db.ForeignKey('transport_type.id'))
 
     transport_type = db.relationship('TransportType', backref=db.backref('marks', lazy='dynamic'))
@@ -150,6 +151,7 @@ class Mark(db.Model):
 class Model(db.Model):
     id = db.Column(INTEGER(), primary_key=True)
     name = db.Column(VARCHAR(255), nullable=False)
+    name_rus = db.Column(VARCHAR(255))
     mark_id = db.Column(SMALLINT(), db.ForeignKey('mark.id'), nullable=False)
 
     mark = db.relationship('Mark', backref=db.backref('models', lazy='dynamic'))

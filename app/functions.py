@@ -3,7 +3,6 @@ from app import app
 from PIL import Image
 from datetime import datetime as dt
 
-
 EARLIEST_RELEASE_YEAR = 1900
 
 
@@ -31,8 +30,8 @@ def update_params(request, **kwargs):
 app.jinja_env.globals.update(update_params=update_params)
 
 
-def parse_int_or_skip(s):
+def parse_int_or_skip(s, default=None):
     try:
         return int(s)
     except:
-        return s
+        return default or s

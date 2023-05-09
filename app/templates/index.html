@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 
-{% if ads.total %}
-<!-- <h1>{#  request.args.get('page') #}</h1> -->
 <div id="ads-section" class="mt-5">
     <h4 class="">{{ ads_section_header }}</h4>
+    {% if ads.total %}
     <div class="mt-3 mb-5">Найдено объявлений: <b>{{ ads.total }}</b> ({{ ads.items | length }} на текущей странице)</div>
     <div id="ads-list">
         {% for ad in ads.items %}
@@ -92,9 +91,8 @@
         </ul>
     </nav>
     {% endif %}
+    {% else %}
+    <span class="mt-3 mb-5 fs-big text-muted">Объявлений не найдено.</span>
+    {% endif %}
 </div>
-
-{% else %}
-<span class="fs-big text-muted">Объявлений не найдено.</span>
-{% endif %}
 {% endblock %}

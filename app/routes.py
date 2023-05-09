@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 from flask import render_template, redirect, url_for
 from flask import jsonify, request
+
 from app import app, db
 from app.forms import LoginForm, SignupForm, AdForm, FiltersForm
 from app.functions import *
+from app.models import *
 
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 
-from app.models import *
 from flask_login import current_user, login_user, logout_user, login_required
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, func
 
 import os
 from glob import glob
@@ -40,86 +41,117 @@ def index():
         signup_form = SignupForm()
         kwargs.update({'login_form': login_form, 'signup_form': signup_form})
 
-    try:
-        page = int(request.args.get('page'))
-    except:
-        page = 1
     
     filters_form = FiltersForm()
 
     filter_params = { k: parse_int_or_skip(v) for k, v in request.args.items() }
 
-    if len(filter_params) == 0 or len(filter_params) == 1 and filter_params.get('page'):
+    # значения по умолчанию для пропущенных параметров
+    filter_params.update({
+        'page': parse_int_or_skip(request.args.get('page'), default=1),
+        'per_page': parse_int_or_skip(request.args.get('per_page'), default=10),
+    })
+
+    if current_user.is_authenticated \
+        and not filter_params.keys() - ['page', 'per_page']:
         # по умолчанию - объявления в текущем регионе
         filter_params.update({ 'location': current_user.location.name })
-
-    ads = Ad.query\
-        .join(Modification).join(Serie).join(Generation)\
-        .join(Model).join(Mark).join(TransportType)\
-        .join(Color, isouter=True).join(Location, isouter=True)\
-        .filter(and_(
-            (Modification.id == filter_params.get('modification') 
-                if filter_params.get('modification') else True),
-
-            (Serie.id == filter_params.get('serie')
-                if filter_params.get('serie') else True),
-
-            (Generation.id == filter_params.get('generation')
-                if filter_params.get('generation') else True),
-                
-            (Model.id == filter_params.get('model')
-                if filter_params.get('model') else True),
-        
-            (Mark.id == filter_params.get('mark')
-                if filter_params.get('mark') else True),
-            
-            (TransportType.id == filter_params.get('transport_type')
-                if filter_params.get('transport_type') else True),
-
-            (Color.id == filter_params.get('color')
-                if filter_params.get('color') else True),
-
-            (Ad.price >= filter_params.get('price_begin')
-                if filter_params.get('price_begin') else True),
-            
-            (Ad.price <= filter_params.get('price_end')
-                if filter_params.get('price_end') else True),
-
-            (Ad.release_year >= filter_params.get('release_year_begin')
-                if filter_params.get('release_year_begin') else True),
-            
-            (Ad.release_year <= filter_params.get('release_year_end')
-                if filter_params.get('release_year_end') else True),
-
-            (Ad.mileage >= filter_params.get('mileage_begin')
-                if filter_params.get('mileage_begin') else True),
-            
-            (Ad.mileage <= filter_params.get('mileage_end')
-                if filter_params.get('mileage_end') else True),
-
-            (Ad.owners_count >= filter_params.get('owners_count_begin')
-                if filter_params.get('owners_count_begin') else True),
-
-            (Ad.owners_count <= filter_params.get('owners_count_end')
-                if filter_params.get('owners_count_end') else True),
-            
-            (Ad.is_broken == filter_params.get('is_broken')
-                if filter_params.get('is_broken') in [0,1] else True),
-            
-            (Location.name == filter_params.get('location')
-                if filter_params.get('location') else True),
-        ))\
-        .order_by(Ad.updated_at.desc())\
-        .paginate(page=page, per_page=filter_params.get('per_page'), error_out=False)
     
+    # разбиваем запрос в поисковой строке на отдельные слова
+    search_params = (
+        list(map(lambda s: s.lower(), filter_params.get('search').split()))
+            if filter_params.get('search') else []
+    )
+    
+    ads = Ad.query\
+            .join(Modification).join(Serie).join(Generation)\
+            .join(Model).join(Mark).join(TransportType)\
+            .join(Color, isouter=True).join(Location, isouter=True)\
+            .filter(and_(
+                # фильтрация по запросу в поисковой строке
+                *[or_(
+                    func.lower(TransportType.name) == param,
+                    func.lower(Mark.name) == param,
+                    func.lower(Mark.name_rus) == param,
+                    func.lower(Model.name) == param,
+                    func.lower(Model.name_rus) == param,
+                    func.lower(Generation.name) == param,
+                    func.lower(Serie.name) == param,
+                    func.lower(Modification.name) == param,
+                    func.lower(Location.name) == param,
+                    Ad.release_year == param
+                ) for param in search_params]
+            ))\
+            .filter(and_(
+                # фильтрация по основным параметрам поиска
+                (Modification.id == filter_params.get('modification') 
+                    if filter_params.get('modification') else True),
+
+                (Serie.id == filter_params.get('serie')
+                    if filter_params.get('serie') else True),
+
+                (Generation.id == filter_params.get('generation')
+                    if filter_params.get('generation') else True),
+                    
+                (Model.id == filter_params.get('model')
+                    if filter_params.get('model') else True),
+            
+                (Mark.id == filter_params.get('mark')
+                    if filter_params.get('mark') else True),
+                
+                (TransportType.id == filter_params.get('transport_type')
+                    if filter_params.get('transport_type') else True)
+            ))\
+            .filter(and_(
+                # фильтрация по дополнительным параметрам поиска
+                (Color.id == filter_params.get('color')
+                    if filter_params.get('color') else True),
+
+                (Ad.price >= filter_params.get('price_begin')
+                    if filter_params.get('price_begin') else True),
+                
+                (Ad.price <= filter_params.get('price_end')
+                    if filter_params.get('price_end') else True),
+
+                (Ad.release_year >= filter_params.get('release_year_begin')
+                    if filter_params.get('release_year_begin') else True),
+                
+                (Ad.release_year <= filter_params.get('release_year_end')
+                    if filter_params.get('release_year_end') else True),
+
+                (Ad.mileage >= filter_params.get('mileage_begin')
+                    if filter_params.get('mileage_begin') else True),
+                
+                (Ad.mileage <= filter_params.get('mileage_end')
+                    if filter_params.get('mileage_end') else True),
+
+                (Ad.owners_count >= filter_params.get('owners_count_begin')
+                    if filter_params.get('owners_count_begin') else True),
+
+                (Ad.owners_count <= filter_params.get('owners_count_end')
+                    if filter_params.get('owners_count_end') else True),
+                
+                (Ad.is_broken == filter_params.get('is_broken')
+                    if filter_params.get('is_broken') in [0,1] else True),
+                
+                (Location.name == filter_params.get('location')
+                    if filter_params.get('location') else True),
+            ))\
+            .order_by(Ad.updated_at.desc())\
+            .paginate(
+                page=filter_params.get('page'),
+                per_page=filter_params.get('per_page'),
+                error_out=False
+    )
+
     if current_user.is_authenticated:
         ads_section_header = 'Рекомендуемые объявления'
     else:
         ads_section_header = 'Новые объявления на сайте'
 
-    if filter_params.get('search'):
+    if request.args.get('search'):
         ads_section_header = 'Результаты поиска по запросу: "{}"'.format(
-            filter_params.get('search')
+            request.args.get('search').strip()
         )
 
     kwargs.update({
