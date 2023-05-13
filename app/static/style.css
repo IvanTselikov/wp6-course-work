@@ -147,3 +147,50 @@ footer {
     background-color: #dc3545;
     border-color: #dc3545;
 }
+
+.ad-link, .ad-link:hover, .ad-link:visited {
+    color: inherit;
+    text-decoration: none;
+    width: 100%;
+    height: 100%;
+}
+
+.ad-about {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.carousel-item {
+    background-size: cover;
+    background-position: center center;
+    height: 23rem;
+}
+
+@media screen and (max-width: 567px) {
+    .carousel-item {
+        height: 15rem;
+    }
+}
+
+.ad-page-description {
+    white-space: pre-line;
+}
+
+.dropdown-toggle::after{
+    display: none;
+}
+
+.ad-dropdown {
+    height: 1em;
+}
+
+.ad-option-blocked {
+    opacity: 60%;
+}
+
+.ad-seller-profile-photo {
+    height: 5rem;
+    width: 5rem;
+    background-size: cover;
+    background-position: center center;
+}

@@ -53,6 +53,7 @@ def index():
     })
 
     if current_user.is_authenticated \
+        and current_user.location\
         and not filter_params.keys() - ['page', 'per_page']:
         # по умолчанию - объявления в текущем регионе
         filter_params.update({ 'location': current_user.location.name })
@@ -469,3 +470,35 @@ def images():
         return redirect('static/img/car_stock.svg')
 
     return '', 404
+
+
+@app.route('/ads/<int:ad_id>', methods=['get'])
+def ads(ad_id):
+    kwargs = {}
+    if current_user.is_authenticated:
+        photo_filename = glob(os.path.join(
+            app.config['UPLOADS_FOLDER'],
+            current_user.login,
+            app.config['PROFILE_PHOTO_FILENAME'] + '.*'
+        ))
+
+        if photo_filename:
+            photo_filename = photo_filename[0]
+            photo_filename = os.path.join(*(photo_filename.split(os.path.sep)[1:]))
+
+            kwargs.update({'photo_filename': photo_filename})
+        
+        ad_form = AdForm()
+        kwargs.update({ 'ad_form': ad_form })
+    else:
+        login_form = LoginForm()
+        signup_form = SignupForm()
+        kwargs.update({'login_form': login_form, 'signup_form': signup_form})
+
+    filters_form = FiltersForm()
+    kwargs.update({ 'filters_form': filters_form })
+
+    ad = Ad.query.filter_by(id=ad_id).first()
+    kwargs.update({ 'ad': ad })
+
+    return render_template('ad.html', **kwargs)

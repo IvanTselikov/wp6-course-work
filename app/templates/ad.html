@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="ad-about my-5">
+    <div class="breadcrum text-muted">
+        <a href="javascript:history.back()" class="link-secondary">Главная</a>
+        <span>&#62</span>
+        <span>
+            {{ ad.car.serie.generation.model.mark.name }}
+            {{ ad.car.serie.generation.model.name }},
+            {{ ad.release_year }}
+        </span>
+    </div>
+    <div class="container w-100 mx-0">
+        <div class="row gx-5 mt-5">
+            <div class="col-8 col-md-6">
+                <h2>
+                    {{ ad.car.serie.generation.model.mark.name }}
+                    {{ ad.car.serie.generation.model.name }},
+                    {{ ad.release_year }}
+                </h2>
+                {% include "incs/ad_photos_slider.html" %}
+                <h5 class="mt-5">Описание</h5>
+                {% if ad.description %}
+                <div class="ad-page-description mt-3">{{ ad.description }}</div>
+                {% else %}
+                <div class="ad-page-description mt-3 text-muted">Описание отсутствует.</div>
+                {% endif %}
+            </div>
+            <div class="col-4 col-md-6">
+                <div class="d-md-flex flex-row justify-content-between align-items-center">
+                    <h2 class="format-number">{{ ad.price }} ₽</h2>
+                    <div class="fs-big d-flex align-items-center justify-content-end mt-4 mt-md-0">
+                        <span class="text-secondary me-2 d-none d-md-inline">Статус:</span>
+                        <span class="me-md-3 {{ " text-success" if ad.status_id==1 else "text-danger" if ad.status_id in
+                            [2, 5] else "text-warning" }}">
+                            {{ ad.status.name }}
+                        </span>
+                        {% include "incs/ad_actions_dropdown.html" %}
+                    </div>
+                </div>
+                <div class="card mt-3 mt-md-5 w-100">
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-md-row align-items-center justify-content-around">
+                            <div class="rounded-circle ad-seller-profile-photo"
+                                style="background-image: url('{{ url_for('images', user=ad.seller.login, size='small') }}');">
+                            </div>
+
+                            <div class="mt-4 mt-md-0 text-center">
+                                <div class="fs-big">
+                                    <div class="mb-2">
+                                        {{ ad.seller.first_name }} {{ ad.seller.patronymic }}
+                                    </div>
+                                    <div>+7 (920) 222 22-22{# ad.seller.phone_number #}
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-danger mt-3 mt-md-0 px-3 px-md-5">Профиль</button>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-row align-items-center mt-4">
+                    <img src="/static/img/location.svg" alt="" style="height: 1em;">
+                    <span class="text-muted ms-1">Населённый пункт:</span>
+                    <span class="ms-2">
+                        {% if ad.location %}
+                        {{ ad.location.name }}
+                        {% else %}
+                        Не указано
+                        {% endif %}
+                    </span>
+                </div>
+
+                <h5 class="mt-5 mb-4">Характеристики:</h5>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="mb-3">
+                            <span class="text-muted">Марка: </span>
+                            <span>{{ ad.car.serie.generation.model.mark.name }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-muted">Модель: </span>
+                            <span>{{ ad.car.serie.generation.model.name }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-muted">Поколение: </span>
+                            <span>{{ ad.car.serie.generation.name }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-3">
+                            <span class="text-muted">Серия: </span>
+                            <span>{{ ad.car.serie.name }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-muted">Модификация: </span>
+                            <span>{{ ad.car.name }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-muted">Год выпуска: </span>
+                            <span>{{ ad.release_year }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+                <div class="d-flex flex-row justify-content-between mt-5">
+                    <div>
+                        <div class="mb-3">
+                            <span class="text-muted">Пробег, км: </span>
+                            <span>{{ ad.mileage }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-muted">ПТС: </span>
+                            <span>{{ ad.pts_type.name }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-muted">Владельцев по ПТС: </span>
+                            <span>{{ ad.owners_count }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-muted">Состояние: </span>
+                            <span>
+                                {% if ad.is_broken %}
+                                Битый
+                                {% else %}
+                                Не битый
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-3">
+                            <span class="text-muted">Привод: </span>
+                            <span>{{ ad.car.get_characteristic_value('привод').lower() }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-muted">Кузов: </span>
+                            <span>{{ ad.car.get_characteristic_value('тип кузова').lower() }}</span>
+                        </div>
+                        <div class="mb-3 d-flex">
+                            <span class="text-muted">Цвет: </span>
+                            <div class="d-flex align-items-center ms-2">
+                                {% if ad.color %}
+                                <div class="color-square me-1" style="background-color: rgb(
+                                {{ ad.color.red }}, {{ ad.color.green }}, {{ ad.color.blue }}
+                                );"></div>
+                                <span>{{ ad.color.name }}</span>
+                                {% else %}
+                                <div class="color-other color-square me-1"></div>
+                                <span>Не указано</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <span class="text-muted">VIN: </span>
+                            <span>{{ ad.vin }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
