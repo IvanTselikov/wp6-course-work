@@ -189,8 +189,15 @@ footer {
 }
 
 .ad-seller-profile-photo {
-    height: 5rem;
     width: 5rem;
+    padding-bottom: 5rem;
     background-size: cover;
     background-position: center center;
+}
+
+@media screen and (max-width: 567px) {
+    .ad-seller-profile-photo {
+        /* width: 50%;
+        padding-bottom: 50%; */
+    }
 }
