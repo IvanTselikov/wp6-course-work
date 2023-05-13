@@ -1,5 +1,8 @@
 from app import app
 
+from flask import jsonify, request
+from app.models import *
+
 from PIL import Image
 from datetime import datetime as dt
 
@@ -35,3 +38,18 @@ def parse_int_or_skip(s, default=None):
         return int(s)
     except:
         return default or s
+
+
+def view_ad_dlc(*args, **kwargs):
+    ad_id = request.view_args['ad_id']
+    ad = Ad.query.get(ad_id)
+    return [
+        {
+            'text': '{} {}, {}'.format(
+                ad.car.serie.generation.model.mark.name,
+                ad.car.serie.generation.model.name,
+                ad.release_year
+            ),
+            'url': ''
+        }
+    ]

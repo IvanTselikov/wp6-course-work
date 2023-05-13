@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
 
 from flask_login import current_user, login_user, logout_user, login_required
+from flask_breadcrumbs import register_breadcrumb
 from sqlalchemy import or_, and_, func
 
 import os
@@ -19,6 +20,7 @@ from glob import glob
 
 @app.route('/')
 @app.route('/index')
+@register_breadcrumb(app, '.', 'Главная')
 def index():
     kwargs = {}
     if current_user.is_authenticated:
@@ -473,6 +475,8 @@ def images():
 
 
 @app.route('/ads/<int:ad_id>', methods=['get'])
+@register_breadcrumb(app, '.ad', '',
+                    dynamic_list_constructor=view_ad_dlc)
 def ads(ad_id):
     kwargs = {}
     if current_user.is_authenticated:

@@ -3,13 +3,10 @@
 
 <div class="ad-about my-5">
     <div class="breadcrum text-muted">
-        <a href="javascript:history.back()" class="link-secondary">Главная</a>
-        <span>&#62</span>
-        <span>
-            {{ ad.car.serie.generation.model.mark.name }}
-            {{ ad.car.serie.generation.model.name }},
-            {{ ad.release_year }}
-        </span>
+        {%- for breadcrumb in breadcrumbs -%}
+        <a class="link-secondary" href="{{ breadcrumb.url }}">{{ breadcrumb.text }}</a>
+        {{ '/' if not loop.last }}
+        {%- endfor -%}
     </div>
 
     <div class="container-fluid mt-5">
@@ -60,7 +57,8 @@
                                     </div>
                                 </div>
                                 <div class="col-4 col-md-4 d-flex align-items-center">
-                                    <button type="button" class="btn btn-danger d-block w-100 text-nowrap">Профиль</button>
+                                    <button type="button"
+                                        class="btn btn-danger d-block w-100 text-nowrap">Профиль</button>
                                 </div>
                             </div>
                         </div>

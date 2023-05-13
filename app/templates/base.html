@@ -28,12 +28,12 @@
                     <span class="ms-2">Фильтры</span>
                 </button>
                 {{ filters_form.search(
-                    class="form-control",
-                    value=request.args.get('search').strip() if request.args.get('search'),
-                    placeholder=filters_form.search.label.text,
-                    autocomplete="off",
-                    aria_label="Поиск",
-                    form="filtersForm"
+                class="form-control",
+                value=request.args.get('search').strip() if request.args.get('search'),
+                placeholder=filters_form.search.label.text,
+                autocomplete="off",
+                aria_label="Поиск",
+                form="filtersForm"
                 ) }}
                 <button type="submit" form="filtersForm" class="btn btn-outline-secondary" id="search-btn">
                     <i class="fa fa-search" aria-hidden="true"></i>
