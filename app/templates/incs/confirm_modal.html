@@ -1,0 +1,22 @@
+<div class="modal fade" id="confirm-modal" tabindex="-1" aria-labelledby="confirm-modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirm-modal-label"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <div class="confirm-annotation"></div>
+                <form action="" method="post" id="ad-action-confirm-form" class="d-none" novalidate>
+                    {{ ad_action_confirm_form.csrf_token(id="csrf-token-ad-action-confirm") }}
+                    {{ ad_action_confirm_form.message(class="form-control my-3", rows=5) }}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" form="ad-action-confirm-form" class="btn btn-danger"
+                    data-bs-dismiss="modal"></button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -63,7 +63,7 @@ $(document).ready(function() {
     })
 
     // заполнение информации об автомобиле на формах
-    $('#newAdForm, #filtersForm').each(function() {
+    $('#newAdForm, #filtersForm, #edit-ad-form').each(function() {
       const selects = $(this).find('.car-info-select')
 
       for (let i = 0; i < selects.length - 1; i++) {
@@ -73,7 +73,7 @@ $(document).ready(function() {
 
           $.ajax({
             type: 'get',
-            url: encodeURIComponent(`${$(this).data('fill-next-method')}/${value}`),
+            url: `${$(this).data('fill-next-method')}/${value}`,
             beforeSend: () => {
               nextSelect.children().slice(1).remove()
             },
@@ -91,6 +91,8 @@ $(document).ready(function() {
                   urlParamName=nextSelect.attr('name'),
                   needToTrigger=true
                 )
+              } else if ($(this).closest('form').attr('id') === 'edit-ad-form') {
+                resetEditAdSelect(nextSelect.attr('name'))
               }
             },
             error: () => {
@@ -128,7 +130,7 @@ $(document).ready(function() {
       // запрашиваем годы выпуска, соответствующие поколению авто
       $.ajax({
         type: 'get',
-        url: encodeURIComponent(`/release_years/${generationId}`),
+        url: `/release_years/${generationId}`,
         success: response => {
           const yearBegin = response.yearBegin.value
           const yearEnd = response.yearEnd.value
@@ -287,4 +289,104 @@ $(document).ready(function() {
     $('#resetFilters').on('click', function(e) {
       window.location = '/?location='
     })
+
+    // действия с объявлениями
+
+    function createConfirmModal(
+      title, annotation, action, submitText, showMessageInput=false
+    ) {
+      modal = $('#confirm-modal')
+
+      modal.find('.modal-title').text(title)
+      modal.find('.confirm-annotation').text(annotation)
+      modal.find('form').attr('action', action)
+      modal.find('button[type="submit"]').text(submitText)
+
+      if (showMessageInput) {
+        modal.find('form').removeClass('d-none')
+      } else {
+        modal.find('form').addClass('d-none')
+      }
+
+      return modal
+    }
+
+
+    $('.publish-ad-button').on('click', function() {
+      ad_id = $(this).closest('.dropdown').data('ad-id') // TODO: предотвратить ошибку
+      status_id = 1
+
+      modal = createConfirmModal(
+        title='Публикация объявления',
+        annotation='Вы уверены, что хотите разрешить публикацию данного объявления?',
+        action=`/ads/${ad_id}/status/${status_id}`,
+        submitText='Опубликовать',
+        showMessageInput=false
+      )
+
+      modal.modal('show')
+    })
+
+    $('.ad-to-revision-button').on('click', function() {
+      ad_id = $(this).closest('.dropdown').data('ad-id')
+      status_id = 4
+
+      modal = createConfirmModal(
+        title='Отправка объявления на доработку',
+        annotation='Причина (сообщение для владельца объявления):',
+        action=`/ads/${ad_id}/status/${status_id}`,
+        submitText='Отправить на доработку',
+        showMessageInput=true
+      )
+
+      modal.modal('show')
+    })
+
+    $('.block-ad-button').on('click', function() {
+      ad_id = $(this).closest('.dropdown').data('ad-id')
+      status_id = 5
+
+      modal = createConfirmModal(
+        title='Заблокировать объявление',
+        annotation='Причина (сообщение для владельца объявления):',
+        action=`/ads/${ad_id}/status/${status_id}`,
+        submitText='Заблокировать',
+        showMessageInput=true
+      )
+
+      modal.modal('show')
+    })
+
+
+    // заполнение формы редактирования объявления
+    let selectValues
+
+    const ad_id = window.location.pathname.substring(
+      window.location.pathname.lastIndexOf('/') + 1
+    )
+
+    $.ajax({
+      type: 'get',
+      url: `/ad_json/${ad_id}`,
+      success: response => {
+        selectValues = response
+        resetEditAdSelect('transport_type')
+        resetEditAdSelect('color')
+        resetEditAdSelect('pts_type')
+
+        // установка описания
+        $('#edit-ad-form [name="description"]').text(response['description'])
+      }
+    })
+
+    function resetEditAdSelect(selectName) {      
+      const select = $(`#edit-ad-form [name="${selectName}"]`)
+
+      if (select.length) {
+        const index = select.find(`option[value="${selectValues[selectName]}"]`).index()
+        select.prop('selectedIndex', index)
+  
+        select.trigger('change')
+      }
+    }
 })

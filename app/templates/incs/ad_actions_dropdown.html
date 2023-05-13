@@ -1,63 +1,68 @@
 {% if current_user.id == ad.seller.id or current_user.is_admin %}
-<div class="dropdown d-inline">
-    <a class="dropdown-toggle link-dark h-100" href="#" role="button" data-bs-toggle="dropdown"
-        aria-expanded="false">
+<div class="dropdown d-inline" data-ad-id={{ ad.id }}>
+    <a class="dropdown-toggle link-dark h-100" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="fas fa-ellipsis-v h-100"></i>
-        <!-- <img src="/static/img/dots.svg" class="h-100" /> -->
     </a>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
         {% if current_user.id == ad.seller.id %}
-        {% if ad.status_id == 2 %}
-        <li><button class="dropdown-item text-success">Открыть</button></li>
-        {% else %}
         <li>
-            <button class="dropdown-item text-success ad-option-blocked" disabled>Открыть</button>
+            <form action={{ url_for('ad_status', ad_id=ad.id, status_id=1) }} method="post">
+                {% if ad.status_id == 2 %}
+                <button type="submit" class="open-ad-button dropdown-item text-success">Открыть</button>
+                {% else %}
+                <button type="submit" class="open-ad-button dropdown-item text-success ad-option-blocked"
+                    disabled>Открыть</button>
+                {% endif %}
+            </form>
+        </li>
+
+        {% if ad.status_id == 5 %}
+        <li><button class="edit-ad-button dropdown-item text-success ad-option-blocked" disabled>Редактировать</button>
+        </li>
+        {% else %}
+        <li><button class="edit-ad-button dropdown-item text-success" data-bs-toggle="modal" data-bs-target="#edit-ad-modal">Редактировать</button>
         </li>
         {% endif %}
-        <li><button class="dropdown-item text-success">Редактировать</button></li>
-        {% if ad.status_id == 1 %}
-        <li><button class="dropdown-item text-danger">Закрыть</button></li>
-        {% else %}
+
         <li>
-            <button class="dropdown-item text-danger ad-option-blocked" disabled>Закрыть</button>
+            <form action={{ url_for('ad_status', ad_id=ad.id, status_id=2) }} method="post">
+                {% if ad.status_id == 1 %}
+                <button type="submit" class="close-ad-button dropdown-item text-danger">Закрыть</button>
+                {% else %}
+                <button type="submit" class="close-ad-button dropdown-item text-danger ad-option-blocked"
+                    disabled>Закрыть</button>
+                {% endif %}
+            </form>
         </li>
-        {% endif %}
         <li>
             <hr class="dropdown-divider my-1">
         </li>
-        <li><button class="dropdown-item text-danger">Удалить</button></li>
+        <li><button class="delete-ad-button dropdown-item text-danger">Удалить</button></li>
 
         {% else %}
         {% if ad.status_id in [3, 4, 5] %}
-        <li><button class="dropdown-item text-success">Разрешить публикацию</button></li>
+        <li><button class="publish-ad-button dropdown-item text-success">Разрешить публикацию</button></li>
         {% else %}
         <li>
-            <button class="dropdown-item text-success ad-option-blocked" disabled>
+            <button class="publish-ad-button dropdown-item text-success ad-option-blocked" disabled>
                 Разрешить публикацию
             </button>
         </li>
         {% endif %}
-        <li><button class="dropdown-item text-danger">Отправить на доработку</button></li>
+        <li><button class="ad-to-revision-button dropdown-item text-danger">Отправить на доработку</button></li>
         <li>
             <hr class="dropdown-divider my-1">
         </li>
         {% if ad.status_id == 5 %}
         <li>
-            <button class="dropdown-item text-danger ad-option-blocked" disabled>
+            <button class="block-ad-button dropdown-item text-danger ad-option-blocked" disabled>
                 Заблокировать
             </button>
         </li>
         {% else %}
-        <li><button class="dropdown-item text-danger">Заблокировать</button></li>
+        <li><button class="block-ad-button dropdown-item text-danger">Заблокировать</button></li>
         {% endif %}
         {% endif %}
-
-
-        <!-- <li>
-                                    <form action="#" method="POST">
-                                        <button type="submit" class="dropdown-item remove-post-btn">Удалить</button>
-                                    </form>
-                                </li> -->
     </ul>
 </div>
 {% endif %}

@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for
 from flask import jsonify, request
 
 from app import app, db
-from app.forms import LoginForm, SignupForm, AdForm, FiltersForm
+from app.forms import *
 from app.functions import *
 from app.models import *
 
@@ -505,4 +505,48 @@ def ads(ad_id):
     ad = Ad.query.filter_by(id=ad_id).first()
     kwargs.update({ 'ad': ad })
 
+    ad_action_confirm_form = AdActionConfirmForm()
+    kwargs.update({ 'ad_action_confirm_form': ad_action_confirm_form })
+
     return render_template('ad.html', **kwargs)
+
+
+@app.route('/ads/<ad_id>/status/<status_id>', methods=['get','post'])
+@login_required
+def ad_status(ad_id, status_id):
+    ad_id = parse_int_or_skip(ad_id, default=None)
+    status_id = parse_int_or_skip(status_id, default=None)
+
+    ad = Ad.query.filter_by(id=ad_id).first()
+    status = AdStatus.query.filter_by(id=status_id).first()
+
+    form = AdActionConfirmForm()
+    admin_message = form.message.data if form.data else None
+
+    if ad and status and ad.change_status(
+        current_user.id, int(status_id), admin_message
+    ):
+        db.session.add(ad)
+        db.session.commit()
+        return redirect(url_for('ads', ad_id=ad_id))
+
+    return {'error': 'Некорректный id объявления или статуса.'}, 405
+
+
+@app.route('/ad_json/<ad_id>', methods=['get','post'])
+def ad_json(ad_id):
+    ad = Ad.query.filter_by(id=ad_id).first()
+    if ad:
+        return jsonify({
+            'transport_type': ad.car.serie.generation.model.mark.transport_type.id,
+            'mark': ad.car.serie.generation.model.mark.id,
+            'model': ad.car.serie.generation.model.id,
+            'generation': ad.car.serie.generation.id,
+            'serie': ad.car.serie.id,
+            'modification': ad.car_id,
+            'color': ad.color_id,
+            'location': ad.location_id,
+            'description': ad.description,
+            'pts_type': ad.pts_type_id
+        })
+    return {}, 404

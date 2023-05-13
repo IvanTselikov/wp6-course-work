@@ -79,6 +79,40 @@ class Ad(db.Model):
         self.admin_id = User.query.filter(
             and_(User.is_admin == 1, not_(User.id == self.admin_id))
         ).order_by(func.rand()).first().id
+    
+    def change_status(self, user_id, status_id, admin_message=None):
+        user = User.query.filter_by(id=user_id).first()
+
+        if user:
+            if status_id == AdStatus.OPENED:
+                if user_id == self.admin_id and self.status_id in \
+                    [AdStatus.ON_CHECKING, AdStatus.ON_REVISION, AdStatus.BLOCKED]:
+                    # разрешить публикацию объявления (администратор)
+                    self.status_id = status_id
+                    self.admin_message = admin_message
+                    return True
+                elif user_id == self.seller_id and self.status_id == AdStatus.CLOSED:
+                    # открыть закрытое объявление (владелец)
+                    self.status_id = status_id
+                    return True
+            elif status_id == AdStatus.CLOSED and self.status_id == AdStatus.OPENED \
+                and user_id == self.seller_id:
+                # закрыть открытое объявление (владелец)
+                self.status_id = status_id
+                return True
+            elif status_id == AdStatus.ON_REVISION and user_id == self.admin_id:
+                # отравить на доработку (администратор)
+                self.status_id = status_id
+                self.admin_message = admin_message
+                return True
+            elif status_id == AdStatus.BLOCKED and user_id == self.admin_id and \
+                self.status_id != AdStatus.BLOCKED:
+                # заблокировать объявление (администратор)
+                self.status_id = status_id
+                self.admin_message = admin_message
+                return True
+
+        return False
 
     def updated_ago(self):
         delta = dt.utcnow() - self.updated_at
@@ -117,6 +151,12 @@ class Location(db.Model):
 
 
 class AdStatus(db.Model):
+    OPENED = 1
+    CLOSED = 2
+    ON_CHECKING = 3
+    ON_REVISION = 4
+    BLOCKED = 5
+
     id = db.Column(TINYINT(), primary_key=True)
     name = db.Column(VARCHAR(100), nullable=False)
 

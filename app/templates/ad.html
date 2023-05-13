@@ -9,6 +9,13 @@
         {%- endfor -%}
     </div>
 
+    {% if ad.admin_message %}
+    <div class="alert alert-warning mt-3" role="alert">
+        <strong>Сообщение от администратора:</strong>
+        <div>{{ ad.admin_message }}</div>
+    </div>
+    {% endif %}
+
     <div class="container-fluid mt-5">
         <div class="row gx-5">
             <div class="col-7 col-md-6">
@@ -180,5 +187,8 @@
     <div class="ad-page-description mt-3 text-muted">Описание отсутствует.</div>
     {% endif %}
 </div>
+
+{% include "incs/confirm_modal.html" %}
+{% include "incs/edit_ad_form.html" %}
 
 {% endblock %}

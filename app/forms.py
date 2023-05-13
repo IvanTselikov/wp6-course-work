@@ -422,3 +422,7 @@ class FiltersForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(FiltersForm, self).__init__(*args, **kwargs)
         self.transport_type.choices.extend([(tt.id, tt.name) for tt in TransportType.query.all()])
+    
+
+class AdActionConfirmForm(FlaskForm):
+    message = TextAreaField('Описание')
