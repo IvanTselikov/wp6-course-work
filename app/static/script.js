@@ -361,24 +361,28 @@ $(document).ready(function() {
     // заполнение формы редактирования объявления
     let selectValues
 
-    const ad_id = window.location.pathname.substring(
-      window.location.pathname.lastIndexOf('/') + 1
-    )
+    resetEditAdForm()
 
-    $.ajax({
-      type: 'get',
-      url: `/ad_json/${ad_id}`,
-      success: response => {
-        selectValues = response
-        resetEditAdSelect('transport_type')
-        resetEditAdSelect('color')
-        resetEditAdSelect('pts_type')
-
-        // установка описания
-        $('#edit-ad-form [name="description"]').text(response['description'])
-      }
-    })
-
+    function resetEditAdForm() {
+      const ad_id = window.location.pathname.substring(
+        window.location.pathname.lastIndexOf('/') + 1
+      )
+  
+      $.ajax({
+        type: 'get',
+        url: `/ad_json/${ad_id}`,
+        success: response => {
+          selectValues = response
+          resetEditAdSelect('transport_type')
+          resetEditAdSelect('color')
+          resetEditAdSelect('pts_type')
+  
+          // установка описания
+          $('#edit-ad-form [name="description"]').text(response['description'])
+        }
+      })  
+    }
+    
     function resetEditAdSelect(selectName) {      
       const select = $(`#edit-ad-form [name="${selectName}"]`)
 
@@ -389,4 +393,29 @@ $(document).ready(function() {
         select.trigger('change')
       }
     }
+
+    // запрос на обновление объявления
+    $('#edit-ad-form').on('submit', function(e) {
+      e.preventDefault()
+      
+      $.ajax({
+        processData: false,
+        contentType: false,
+        data : new FormData(this),
+        type : 'put',
+        url : '/ad',
+        success: response => {
+          $('#edit-ad-modal').modal('hide')
+          $('#editAdSuccessModal').modal('show')
+        },
+        error: response => {
+          $(this).find('.error-block').text('')
+
+          errors = response.responseJSON
+          for (let key in errors) {
+            $(this).find(`[data-field="${key}"]`).text(errors[key].join('\n'))
+          }
+        }
+      })
+    })
 })

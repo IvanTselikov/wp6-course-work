@@ -6,6 +6,12 @@ from app.models import *
 from PIL import Image
 from datetime import datetime as dt
 
+from werkzeug.utils import secure_filename
+
+import os
+from glob import glob
+
+
 EARLIEST_RELEASE_YEAR = 1900
 
 
@@ -53,3 +59,14 @@ def view_ad_dlc(*args, **kwargs):
             'url': ''
         }
     ]
+
+def remove_ad_photo(ad, photo_number):
+    photo_filenames = glob(os.path.join(
+        app.config['UPLOADS_FOLDER'],
+        ad.seller.login,
+        str(ad.id),
+        '{}.*'.format(photo_number)
+    ))
+
+    for filename in photo_filenames:
+        os.remove(filename)

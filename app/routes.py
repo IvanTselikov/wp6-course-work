@@ -397,12 +397,9 @@ def ad():
         os.makedirs(ad_storage_path, exist_ok=True)
 
         # сохранение фото объявления
-        photos = list(
-            filter(
-                lambda f: f.data.filename,
-                [form.photo_1, form.photo_2, form.photo_3]
-            )
-        )
+        photos = [f for f in [form.photo_1, form.photo_2, form.photo_3]
+                  if f.data.filename]
+
         for i, photo in enumerate(photos):
             photo_filename = secure_filename(photo.data.filename)
             _, file_extension = os.path.splitext(photo_filename)
@@ -500,7 +497,8 @@ def ads(ad_id):
         kwargs.update({'login_form': login_form, 'signup_form': signup_form})
 
     filters_form = FiltersForm()
-    kwargs.update({ 'filters_form': filters_form })
+    edit_ad_form = AdForm()
+    kwargs.update({ 'filters_form': filters_form, 'edit_ad_form': edit_ad_form })
 
     ad = Ad.query.filter_by(id=ad_id).first()
     kwargs.update({ 'ad': ad })
@@ -550,3 +548,61 @@ def ad_json(ad_id):
             'pts_type': ad.pts_type_id
         })
     return {}, 404
+
+@app.route('/ad', methods=['put'])
+@login_required
+def update_ad():
+    form = AdForm()
+    if form.validate():
+        ad = Ad.query.filter_by(id=form.ad_id.data).first()
+        if ad:
+            ad.car_id = form.modification.data
+            ad.release_year = form.release_year.data
+            ad.vin = form.vin.data
+            ad.pts_type_id = form.pts_type.data
+            ad.owners_count = form.owners_count.data
+            ad.color_id = form.color.data
+            ad.is_broken = form.is_broken.data
+            ad.mileage = form.mileage.data
+            ad.seller_id = current_user.id
+            ad.price = form.price.data
+            ad.description = form.description.data.strip()
+            db.session.add(ad)
+            db.session.commit()
+
+            if form.delete_photo_1.data or form.photo_1.data.filename:
+                remove_ad_photo(ad, 1)
+            if form.delete_photo_2.data or form.photo_2.data.filename:
+                remove_ad_photo(ad, 2)
+            if form.delete_photo_3.data or form.photo_3.data.filename:
+                remove_ad_photo(ad, 3)
+
+            ad_storage_path = os.path.join(
+                app.config['UPLOADS_FOLDER'],
+                current_user.login,
+                str(ad.id)
+            )
+            
+            photos = [f for f in [form.photo_1, form.photo_2, form.photo_3]
+                  if f.data.filename]
+
+            for i, photo in enumerate(photos):
+                photo_filename = secure_filename(photo.data.filename)
+                _, file_extension = os.path.splitext(photo_filename)
+                # photo_filename = '{}{}'.format(i+1, file_extension)
+
+                path_origin = os.path.join(
+                    ad_storage_path,
+                    str(i+1) + file_extension
+                )
+                
+                path_small = os.path.join(
+                    ad_storage_path,
+                    str(i+1) + app.config['PHOTO_SMALL_PREFIX'] + file_extension
+                )
+
+                upload_photo(photo.data, path_origin=path_origin, path_small=path_small)
+            
+            return {}, 200
+        return jsonify({'ad_id': 'Объявление не найдено.'}), 400
+    return jsonify(form.errors), 400

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, SelectField, IntegerField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, FileField, SelectField, IntegerField, BooleanField, HiddenField
 from wtforms.validators import ValidationError, DataRequired, InputRequired, Email, Length, EqualTo, regexp, Optional, NumberRange, NoneOf
 from flask_wtf.file import FileAllowed, FileRequired
 from flask_uploads import UploadSet, IMAGES
@@ -119,6 +119,7 @@ class SignupForm(FlaskForm):
 
 
 class AdForm(FlaskForm):
+    ad_id = HiddenField()
     transport_type = SelectField(
         'Тип транспорта*',
         choices=[(0, 'не выбрано')],
@@ -255,6 +256,11 @@ class AdForm(FlaskForm):
             FileAllowed(['png', 'jpg', 'jpeg'], 'Недопустимый формат файла.')
         ]
     )
+
+    delete_photo_1 = BooleanField(label='Удалить главное фото')
+    delete_photo_2 = BooleanField(label='Удалить доп. фото 1')
+    delete_photo_3 = BooleanField(label='Удалить доп. фото 2')
+
     price = IntegerField(
         'Цена, руб.*',
         validators=[
