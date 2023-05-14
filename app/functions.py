@@ -5,11 +5,14 @@ from app.models import *
 
 from PIL import Image
 from datetime import datetime as dt
+import time
 
 from werkzeug.utils import secure_filename
 
 import os
 from glob import glob
+
+import locale
 
 
 EARLIEST_RELEASE_YEAR = 1900
@@ -60,6 +63,16 @@ def view_ad_dlc(*args, **kwargs):
         }
     ]
 
+def view_user_dlc(*args, **kwargs):
+    user_login = request.view_args['user_login']
+    user = User.query.filter_by(login=user_login).first()
+    return [
+        {
+            'text': user_login,
+            'url': ''
+        }
+    ]
+
 def remove_ad_photo(ad, photo_number):
     photo_filenames = glob(os.path.join(
         app.config['UPLOADS_FOLDER'],
@@ -70,3 +83,8 @@ def remove_ad_photo(ad, photo_number):
 
     for filename in photo_filenames:
         os.remove(filename)
+
+def format_registration_date(registration_date):
+    locale.setlocale(locale.LC_TIME, 'ru_RU')
+
+    return registration_date.strftime('%d %b %Y').title()

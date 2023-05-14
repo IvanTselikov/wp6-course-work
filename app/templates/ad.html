@@ -5,12 +5,12 @@
     <div class="breadcrum text-muted">
         {%- for breadcrumb in breadcrumbs -%}
         <a class="link-secondary" href="{{ breadcrumb.url }}">{{ breadcrumb.text }}</a>
-        {{ '/' if not loop.last }}
+        {{ '> ' if not loop.last }}
         {%- endfor -%}
     </div>
 
     {% if ad.admin_message %}
-    <div class="alert alert-warning mt-3" role="alert">
+    <div class="alert {{ " alert-warning" if ad.status_id in [4, 5] else "alert-secondary" }} mt-3" role="alert">
         <strong>Сообщение от администратора:</strong>
         <div>{{ ad.admin_message }}</div>
     </div>
@@ -51,9 +51,11 @@
                         <div class="container-fluid px-2">
                             <div class="row">
                                 <div class="col-3 col-md-3">
-                                    <div class="rounded-circle ad-seller-profile-photo"
-                                        style="background-image: url('{{ url_for('images', user=ad.seller.login, size='small') }}');">
-                                    </div>
+                                    <a href={{ url_for('open_user_page', user_login=ad.seller.login) }}>
+                                        <div class="rounded-circle ad-seller-profile-photo"
+                                            style="background-image: url('{{ url_for('images', user=ad.seller.login, size='small') }}');">
+                                        </div>
+                                    </a>
                                 </div>
                                 <div
                                     class="col-5 col-md-5 text-center d-flex flex-wrap justify-content-center align-items-center">
@@ -64,8 +66,8 @@
                                     </div>
                                 </div>
                                 <div class="col-4 col-md-4 d-flex align-items-center">
-                                    <button type="button"
-                                        class="btn btn-danger d-block w-100 text-nowrap">Профиль</button>
+                                    <a href={{ url_for('open_user_page', user_login=ad.seller.login) }}
+                                        class="btn btn-danger d-block w-100 text-nowrap">Профиль</a>
                                 </div>
                             </div>
                         </div>

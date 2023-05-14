@@ -621,3 +621,61 @@ def delete_ad(ad_id):
             return redirect(url_for('index'))
         return {'errors': ['Удалить объявление может только его владелец.']}, 405
     return {'errors': ['Объявление не найдено.']}, 400
+
+
+@app.route('/user/<user_login>', methods=['get'])
+@register_breadcrumb(app, '.user', '',
+                    dynamic_list_constructor=view_user_dlc)
+def open_user_page(user_login):
+    user = User.query.filter_by(login=user_login).first()
+    if user:
+        kwargs = {
+            'user': user,
+            'registration_date': format_registration_date(user.registration_date)
+        }
+
+        if current_user.is_authenticated:
+            ad_form = AdForm()
+            kwargs.update({ 'ad_form': ad_form })
+
+            ads = {
+                'opened': [], 'closed': [], 'on_checking': [], 'on_revision': [], 'blocked': [],
+                'me_opened': [], 'me_checking': [], 'me_revision': [], 'me_blocked': []
+            }
+
+            for ad in user.ads:
+                if ad.status_id == AdStatus.OPENED:
+                    ads['opened'].append(ad)
+                elif ad.status_id == AdStatus.CLOSED:
+                    ads['closed'].append(ad)
+                elif ad.status_id == AdStatus.ON_CHECKING:
+                    ads['on_checking'].append(ad)
+                elif ad.status_id == AdStatus.ON_REVISION:
+                    ads['on_revision'].append(ad)
+                elif ad.status_id == AdStatus.BLOCKED:
+                    ads['blocked'].append(ad)
+
+            for ad in user.moderated_ads:
+                if ad.status_id == AdStatus.OPENED:
+                    ads['me_opened'].append(ad)
+                elif ad.status_id == AdStatus.ON_CHECKING:
+                    ads['me_checking'].append(ad)
+                elif ad.status_id == AdStatus.ON_REVISION:
+                    ads['me_revision'].append(ad)
+                elif ad.status_id == AdStatus.BLOCKED:
+                    ads['me_blocked'].append(ad)
+            
+            kwargs.update({ 'ads': ads })
+        else:
+            login_form = LoginForm()
+            signup_form = SignupForm()
+            kwargs.update({ 'login_form': login_form, 'signup_form': signup_form })
+    
+        filters_form = FiltersForm()
+
+        kwargs.update({ 'filters_form': filters_form })
+
+        return render_template('profile.html', **kwargs)
+
+    return {}, 404
+

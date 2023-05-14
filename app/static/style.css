@@ -110,19 +110,24 @@ footer {
     flex-wrap: wrap;
 }
 
-.ad-item {
-    width: 45%;
+.ad-card {
+    /* width: 90%; */
+    /* margin: 0 auto; */
     height: 13rem;
 }
 
+#ads-list .ad-card {
+    width: 45%;
+}
+
 @media screen and (max-width: 768px) {
-    .ad-item {
+    #ads-list .ad-card {
         width: 75%;
         margin: 0 auto;
     }
 }
 @media screen and (max-width: 567px) {
-    .ad-item {
+    #ads-list .ad-card {
         width: 100%;
     }
 }
@@ -131,6 +136,7 @@ footer {
     background-size: cover;
     background-position: center center;
 }
+
 
 #profile-img {
     width: 2.5em;
@@ -195,9 +201,19 @@ footer {
     background-position: center center;
 }
 
-@media screen and (max-width: 567px) {
-    .ad-seller-profile-photo {
-        /* width: 50%;
-        padding-bottom: 50%; */
-    }
+.profile-about {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.profile-image-about {
+    width: 75%;
+    padding-bottom: 75%;
+    margin: 0 auto;
+    background-size: cover;
+    background-position: center center;
+}
+
+#user-ads-tab .nav-link:not(.active) {
+    
 }

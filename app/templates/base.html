@@ -59,10 +59,7 @@
                         <span class="ms-2">{{ current_user.login }}</span>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownUser1">
-                        <li><a class="dropdown-item" href="#">Профиль</a></li>
-                        {% if current_user.is_admin %}
-                        <li><a class="dropdown-item" href="#">Модерация</a></li>
-                        {% endif %}
+                        <li><a class="dropdown-item" href={{ url_for('open_user_page', user_login=current_user.login) }}>Профиль</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

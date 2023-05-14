@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="profile-about my-5">
+    <div class="breadcrum text-muted">
+        {%- for breadcrumb in breadcrumbs -%}
+        <a class="link-secondary" href="{{ breadcrumb.url }}">{{ breadcrumb.text }}</a>
+        {{ '> ' if not loop.last }}
+        {%- endfor -%}
+    </div>
+    <div class="container-fluid mt-5">
+        <div class="row gx-5">
+            <div class="col-md-4 d-flex flex-column">
+                <div class="rounded-circle profile-image-about"
+                    style="background-image: url('{{ url_for('images', user=user.login, size='small') }}');">
+                </div>
+                <h3 class="text-center mt-3">{{ user.login }}</h3>
+                <div class="d-inline-block mx-auto">
+                    <div class="mb-3 mt-4">
+                        <span class="text-muted">Дата регистрации:</span>
+                        <span class="ms-2">{{ registration_date }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-muted">ФИО:</span>
+                        <span class="ms-2">{{ user.last_name }} {{ user.first_name }} {{ user.patronymic }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-muted">Email:</span>
+                        <span class="ms-2">{{ user.email }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-muted">Номер телефона:</span>
+                        <span class="ms-2">{{ user.phone_number }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <span class="text-muted">Населённый пункт:</span>
+                        <span class="ms-2">
+                            {% if user.location %}
+                            {{ user.location.name }}
+                            {% else %}
+                            не указан
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% if current_user.id == user.id %}
+                <div class="d-grid grow-2 mt-4 mx-5 mx-md-0">
+                    <button class="btn btn-danger">Редактировать профиль</button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-md-8 mt-5 mt-md-0 ps-md-5">
+                <h4 class="ms-3 d-inline">Объявления ({{
+                    (ads.opened + ads.closed) | count
+                    }})</h4>
+
+                {% if current_user.id == user.id %}
+                {% set private_ads_count = (
+                ads.on_checking + ads.on_revision + ads.blocked
+                ) | count %}
+                {% if private_ads_count %}
+                <sup class="text-danger">+{{ private_ads_count }}</sup>
+                {% endif %}
+                {% endif %}
+
+                <ul class="nav nav-tabs mt-4" id="user-ads-tab-panel" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-danger active {{
+                            'disabled' if not ads.opened
+                            }}" id=" user-ads-opened-tab" data-bs-toggle="tab"
+                            data-bs-target="#user-ads-opened-content" type="button" role="tab"
+                            aria-controls="user-ads-opened" aria-selected="true">Открытые (
+                            {{ ads.opened | count }}
+                            )</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-danger {{
+                            'disabled' if not ads.closed
+                            }} " id="user-ads-closed-tab" data-bs-toggle="tab"
+                            data-bs-target="#user-ads-closed-content" type="button" role="tab"
+                            aria-controls="user-ads-closed" aria-selected="false">Закрытые (
+                            {{ ads.closed | count }}
+                            )</button>
+                    </li>
+                    {% if current_user.is_authenticated and (current_user.id == user.id or current_user.is_admin) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-danger {{
+                            'disabled' if not ads.on_checking
+                            }}" id="user-ads-on-checking-tab" data-bs-toggle="tab"
+                            data-bs-target="#user-ads-on-checking-content" type="button" role="tab"
+                            aria-controls="user-ads-on-checking" aria-selected="false">Проверяются (
+                            {{ ads.on_checking | count }}
+                            )</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-danger {{
+                            'disabled' if not ads.on_revision
+                            }}" id="user-ads-on-revision-tab" data-bs-toggle="tab"
+                            data-bs-target="#user-ads-on-revision-content" type="button" role="tab"
+                            aria-controls="user-ads-on-revision" aria-selected="false">На доработке (
+                            {{ ads.on_revision | count }}
+                            )</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-danger {{
+                            'disabled' if not ads.blocked
+                            }}" id="user-ads-blocked-tab" data-bs-toggle="tab"
+                            data-bs-target="#user-ads-blocked-content" type="button" role="tab"
+                            aria-controls="user-ads-blocked" aria-selected="false">Заблокированные (
+                            {{ ads.blocked | count }}
+                            )</button>
+                    </li>
+                    {% if current_user.is_admin and current_user.id == user.id %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-danger {{
+                            'disabled' if not ads.me_opened
+                            }}" id="user-ads-me-opened-tab" data-bs-toggle="tab"
+                            data-bs-target="#user-ads-me-opened-content" type="button" role="tab"
+                            aria-controls="user-ads-me-opened" aria-selected="false">Разрешил публикацию (
+                            {{ ads.me_opened | count }}
+                            )</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-danger {{
+                            'disabled' if not ads.me_checking
+                            }}" id="user-ads-me-checking-tab" data-bs-toggle="tab"
+                            data-bs-target="#user-ads-me-checking-content" type="button" role="tab"
+                            aria-controls="user-ads-me-checking" aria-selected="false">Проверяются мной (
+                            {{ ads.me_checking | count }}
+                            )</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-danger {{
+                            'disabled' if not ads.me_revision
+                            }}" id="user-ads-me-revision-tab" data-bs-toggle="tab"
+                            data-bs-target="#user-ads-me-revision-content" type="button" role="tab"
+                            aria-controls="user-ads-me-revision" aria-selected="false">Отправил на доработку (
+                            {{ ads.me_revision | count }}
+                            )</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link link-danger {{
+                            'disabled' if not ads.me_blocked
+                            }}" id="user-ads-me-blocked-tab" data-bs-toggle="tab"
+                            data-bs-target="#user-ads-me-blocked-content" type="button" role="tab"
+                            aria-controls="user-ads-me-blocked" aria-selected="false">Заблокировал (
+                            {{ ads.me_blocked | count }}
+                            )</button>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+                <div class="tab-content mt-4" id="user-ads-tab-content">
+                    <div class="tab-pane fade show active" id="user-ads-opened-content" role="tabpanel"
+                        aria-labelledby="user-ads-opened-tab">
+                        {% if ads.opened %}
+                        {% for ad in ads.opened %}
+                        {% include "incs/ad_card.html" %}
+                        {% endfor %}
+                        {% else %}
+                        <div class="text-muted ms-2">Ничего не найдено.</div>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="user-ads-closed-content" role="tabpanel"
+                        aria-labelledby="user-ads-closed-tab">
+                        {% if ads.closed %}
+                        {% for ad in ads.closed %}
+                        {% include "incs/ad_card.html" %}
+                        {% endfor %}
+                        {% else %}
+                        <div class="text-muted ms-2">Ничего не найдено.</div>
+                        {% endif %}
+                    </div>
+                    {% if current_user.is_authenticated and (current_user.id == user.id or current_user.is_admin) %}
+                    <div class="tab-pane fade" id="user-ads-on-checking-content" role="tabpanel"
+                        aria-labelledby="user-ads-on-checking-tab">
+                        {% if ads.on_checking %}
+                        {% for ad in ads.on_checking %}
+                        {% include "incs/ad_card.html" %}
+                        {% endfor %}
+                        {% else %}
+                        <div class="text-muted ms-2">Ничего не найдено.</div>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="user-ads-on-revision-content" role="tabpanel"
+                        aria-labelledby="user-ads-on-revision-tab">
+                        {% if ads.on_revision %}
+                        {% for ad in ads.on_revision %}
+                        {% include "incs/ad_card.html" %}
+                        {% endfor %}
+                        {% else %}
+                        <div class="text-muted ms-2">Ничего не найдено.</div>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="user-ads-blocked-content" role="tabpanel"
+                        aria-labelledby="user-ads-blocked-tab">
+                        {% if ads.blocked %}
+                        {% for ad in ads.blocked %}
+                        {% include "incs/ad_card.html" %}
+                        {% endfor %}
+                        {% else %}
+                        <div class="text-muted ms-2">Ничего не найдено.</div>
+                        {% endif %}
+                    </div>
+                    {% if current_user.is_admin and current_user.id == user.id %}
+                    <div class="tab-pane fade" id="user-ads-me-opened-content" role="tabpanel"
+                        aria-labelledby="user-ads-me-opened-tab">
+                        {% if ads.me_opened %}
+                        {% for ad in ads.me_opened %}
+                        {% include "incs/ad_card.html" %}
+                        {% endfor %}
+                        {% else %}
+                        <div class="text-muted ms-2">Ничего не найдено.</div>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="user-ads-me-checking-content" role="tabpanel"
+                        aria-labelledby="user-ads-me-checking-tab">
+                        {% if ads.me_checking %}
+                        {% for ad in ads.me_checking %}
+                        {% include "incs/ad_card.html" %}
+                        {% endfor %}
+                        {% else %}
+                        <div class="text-muted ms-2">Ничего не найдено.</div>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="user-ads-me-revision-content" role="tabpanel"
+                        aria-labelledby="user-ads-me-revision-tab">
+                        {% if ads.me_revision %}
+                        {% for ad in ads.me_revision %}
+                        {% include "incs/ad_card.html" %}
+                        {% endfor %}
+                        {% else %}
+                        <div class="text-muted ms-2">Ничего не найдено.</div>
+                        {% endif %}
+                    </div>
+                    <div class="tab-pane fade" id="user-ads-me-blocked-content" role="tabpanel"
+                        aria-labelledby="user-ads-me-blocked-tab">
+                        {% if ads.me_blocked %}
+                        {% for ad in ads.me_blocked %}
+                        {% include "incs/ad_card.html" %}
+                        {% endfor %}
+                        {% else %}
+                        <div class="text-muted ms-2">Ничего не найдено.</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
