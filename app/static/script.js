@@ -293,7 +293,13 @@ $(document).ready(function() {
     // действия с объявлениями
 
     function createConfirmModal(
-      title, annotation, action, submitText, showMessageInput=false
+      title,
+      annotation,
+      action,
+      submitText,
+      showMessageInput=false,
+      method='post',
+      queryBody=undefined
     ) {
       modal = $('#confirm-modal')
 
@@ -308,6 +314,19 @@ $(document).ready(function() {
         modal.find('form').addClass('d-none')
       }
 
+      if (method.toLowerCase().trim() !== 'post') {
+        modal.find('form').on('submit', function(e) {
+          e.preventDefault()
+
+          fetch(action, {
+            method: method, body: queryBody
+          }).then(res => {
+            if (res.redirected) {
+                document.location = res.url;
+            }
+          })
+        })
+      }
       return modal
     }
 
@@ -417,5 +436,21 @@ $(document).ready(function() {
           }
         }
       })
+    })
+
+    // удаление объявления
+    $('.delete-ad-button').on('click', function() {
+      ad_id = $('#edit-ad-form input[name="ad_id"]').val()
+
+      modal = createConfirmModal(
+        title='Удаление объявления',
+        annotation='Вы уверены, что хотите безвозвратно удалить объявление?',
+        action=`/ad/${ad_id}`,
+        submitText='Удалить',
+        showMessageInput=false,
+        method='delete',
+      )
+
+      modal.modal('show')
     })
 })

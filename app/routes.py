@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, flash
 from flask import jsonify, request
 
 from app import app, db
@@ -567,6 +567,7 @@ def update_ad():
             ad.seller_id = current_user.id
             ad.price = form.price.data
             ad.description = form.description.data.strip()
+            ad.status_id = AdStatus.ON_CHECKING
             db.session.add(ad)
             db.session.commit()
 
@@ -606,3 +607,17 @@ def update_ad():
             return {}, 200
         return jsonify({'ad_id': 'Объявление не найдено.'}), 400
     return jsonify(form.errors), 400
+
+
+@app.route('/ad/<ad_id>', methods=['delete'])
+@login_required
+def delete_ad(ad_id):
+    ad = Ad.query.filter_by(id=ad_id).first()
+    if ad:
+        if current_user.id == ad.seller_id:
+            db.session.delete(ad)
+            db.session.commit()
+            flash('Объявление успешно удалено.')
+            return redirect(url_for('index'))
+        return {'errors': ['Удалить объявление может только его владелец.']}, 405
+    return {'errors': ['Объявление не найдено.']}, 400

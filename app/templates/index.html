@@ -2,6 +2,16 @@
 {% block content %}
 
 <div id="ads-section" class="mt-5">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
     <h4 class="">{{ ads_section_header }}</h4>
     {% if ads.total %}
     <div class="mt-3 mb-5">Найдено объявлений: <b>{{ ads.total }}</b> ({{ ads.items | length }} на текущей странице)
@@ -22,8 +32,8 @@
                                         {{ ad.car.serie.generation.model.mark.name }}
                                         {{ ad.car.serie.generation.model.name }},
                                         {{ ad.release_year }}
-                                    <h6>
-                                    <h6 class="format-number">{{ ad.price }} ₽</h6>
+                                        <h6>
+                                            <h6 class="format-number">{{ ad.price }} ₽</h6>
                                 </div>
                                 <p class="fs-tiny my-3">
                                     {% if ad.mileage %}
