@@ -18,7 +18,7 @@ class LoginForm(FlaskForm):
         DataRequired('Пожалуйста, введите логин.')
     ])
     password = PasswordField('Пароль', validators=[
-        DataRequired('Пожалуйста, введите пароль.')
+        # DataRequired('Пожалуйста, введите пароль.')
     ])
     submit = SubmitField('Войти')
 
