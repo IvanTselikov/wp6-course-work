@@ -435,13 +435,16 @@ class AdActionConfirmForm(FlaskForm):
 
 
 class EditProfileForm(FlaskForm):
+    user_login = HiddenField()
+
     photo = FileField(
-        label='Фото профиля',
+        label='Изменить фото профиля',
         description='допустимые форматы - PNG, JPG, JPEG',
         validators=[
             FileAllowed(['png', 'jpg', 'jpeg'], 'Недопустимый формат файла.')
         ]
     )
+    delete_photo = BooleanField(label='Удалить фото профиля')
 
     first_name = StringField(
         label='Имя*',
@@ -466,30 +469,6 @@ class EditProfileForm(FlaskForm):
         ]
     )
 
-    login = StringField(
-        label='Логин*',
-        description='длина логина - от 6 до 20 символов (буквы, цифры, подчёркивание)',
-        validators=[
-            DataRequired('Пожалуйста, введите логин.'),
-            Length(min=6, message='Логин слишком короткий.'),
-            Length(max=20, message='Логин слишком длинный.'),
-            regexp(r'^\w+$', message='Логин может содержать только буквы, цифры, подчёркивания.')
-        ]
-    )
-
-    password = PasswordField(
-        label='Пароль*',
-        description='длина пароля - от 8 до 20 символов',
-        validators=[
-            DataRequired('Пожалуйста, введите пароль.'),
-            Length(min=8, message='Пароль слишком короткий.'),
-            Length(max=20, message='Пароль слишком длинный.'),
-            EqualTo('confirm_password', message='Пароли должны совпадать.')
-        ]
-    )
-
-    confirm_password = PasswordField('Повторите пароль*')
-
     email = StringField('Email',
         validators=[
             Optional(),
@@ -506,17 +485,26 @@ class EditProfileForm(FlaskForm):
 
     location = StringField('Населённый пункт')
 
-    submit = SubmitField('Зарегистрироваться')
-    
-    def validate_login(self, field):
-        user = User.query.filter_by(login=field.data).first()
-        if user is not None:
-            raise ValidationError(
-                'Пользователь с таким логином уже существует.')
+    new_password = PasswordField(
+        label='Новый пароль',
+        description='длина пароля - от 8 до 20 символов',
+        validators=[
+            Optional(),
+            Length(min=8, message='Пароль слишком короткий.'),
+            Length(max=20, message='Пароль слишком длинный.'),
+            EqualTo('confirm_new_password', message='Пароли должны совпадать.')
+        ]
+    )
+
+    confirm_new_password = PasswordField('Повторите пароль')
+
+    submit = SubmitField('Сохранить изменения')
     
     def validate_email(self, field):
-        email = User.query.filter_by(email=field.data).first()
-        if email is not None:
+        current_user_login = self.user_login.data
+        user_with_same_email = User.query.filter_by(email=field.data).first()
+        if user_with_same_email is not None\
+            and user_with_same_email.login != current_user_login:
             raise ValidationError(
                 'Данный email уже используется.')
     

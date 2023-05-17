@@ -453,4 +453,36 @@ $(document).ready(function() {
 
       modal.modal('show')
     })
+
+    // редактирование профиля
+    $('#edit-profile-form').on('submit', function(e) {
+      e.preventDefault()
+
+      const userLogin = window.location.pathname.substring(
+        window.location.pathname.lastIndexOf('/') + 1
+      )
+
+      $.ajax({
+        processData: false,
+        contentType: false,
+        data : new FormData(this),
+        type : 'put',
+        url : `/user/${userLogin}`,
+        success: () => {
+          // $('#edit-profile-form').modal('hide')
+          // $('#edit-profile-success-modal').modal('show')
+          window.location.reload()
+          // console.log('success')
+        },
+        error: response => {
+          console.log(response)
+          $(this).find('.error-block').text('')
+
+          errors = response.responseJSON
+          for (let key in errors) {
+            $(this).find(`[data-field="${key}"]`).text(errors[key].join('\n'))
+          }
+        }
+      })
+    })
 })

@@ -84,6 +84,16 @@ def remove_ad_photo(ad, photo_number):
     for filename in photo_filenames:
         os.remove(filename)
 
+def remove_profile_photo(user):
+    photo_filenames = glob(os.path.join(
+        app.config['UPLOADS_FOLDER'],
+        user.login,
+        '{}.*'.format(app.config['PROFILE_PHOTO_FILENAME'])
+    ))
+
+    for filename in photo_filenames:
+        os.remove(filename)
+
 def format_registration_date(registration_date):
     locale.setlocale(locale.LC_TIME, 'ru_RU')
 

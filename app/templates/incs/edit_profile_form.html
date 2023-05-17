@@ -1,0 +1,127 @@
+<div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="edit-profile-modal-label"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="edit-profile-modal-label">Редактирование профиля</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-profile-form" enctype="multipart/form-data" novalidate>
+                    {{ edit_profile_form.csrf_token(id="csrf-token-edit-profile") }}
+                    <div class="error-block text-danger" data-field="csrf-token"></div>
+
+                    {{ edit_profile_form.user_login(value=user.login) }}
+
+                    <div class="container-fluid">
+                        <div class="row gx-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ edit_profile_form.photo.label() }}
+                                    {{ edit_profile_form.photo(class="form-control") }}
+                                    <div class="form-text">{{ edit_profile_form.photo.description }}</div>
+                                    <div class="error-block text-danger" data-field="photo"></div>
+                                </div>
+
+                                <div class="mb-3 mb-md-4">
+                                    {{ edit_profile_form.delete_photo(class="form-check-input") }}
+                                    {{ edit_profile_form.delete_photo.label(class="form-check-label") }}
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ edit_profile_form.last_name.label() }}
+                                    {{ edit_profile_form.last_name(
+                                    class="form-control",
+                                    value=user.last_name,
+                                    autocomplete="off"
+                                    ) }}
+                                    <div class="error-block text-danger" data-field="last_name"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ edit_profile_form.first_name.label() }}
+                                    {{ edit_profile_form.first_name(
+                                    class="form-control",
+                                    value=user.first_name,
+                                    autocomplete="off"
+                                    ) }}
+                                    <div class="error-block text-danger" data-field="first_name"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ edit_profile_form.patronymic.label() }}
+                                    {{ edit_profile_form.patronymic(
+                                    class="form-control",
+                                    value=user.patronymic,
+                                    autocomplete="off"
+                                    ) }}
+                                    <div class="error-block text-danger" data-field="patronymic"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ edit_profile_form.email.label() }}
+                                    {{ edit_profile_form.email(
+                                    class="form-control",
+                                    id="email-edit-profile",
+                                    value=user.email,
+                                    autocomplete="off"
+                                    ) }}
+                                    <div class="error-block text-danger" data-field="email"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ edit_profile_form.phone_number.label() }}
+                                    {{ edit_profile_form.phone_number(
+                                    class="form-control",
+                                    value=user.phone_number,
+                                    autocomplete="off"
+                                    ) }}
+                                    <div class="error-block text-danger" data-field="phone_number"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ edit_profile_form.location.label() }}
+                                    {{ edit_profile_form.location(
+                                    class="form-control",
+                                    value=user.location.name,
+                                    list="location-datalist-edit-profile",
+                                    autocomplete="off"
+                                    )}}
+                                    <datalist class="location-datalist" id="location-datalist-edit-profile"></datalist>
+                                    <div class="error-block text-danger" data-field="location"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ edit_profile_form.new_password.label() }}
+                                    {{ edit_profile_form.new_password(
+                                    class="form-control",
+                                    autocomplete="off"
+                                    ) }}
+                                    <div class="form-text">{{ edit_profile_form.new_password.description }}</div>
+                                    <div class="error-block text-danger" data-field="new_password"></div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ edit_profile_form.confirm_new_password.label() }}
+                                    {{ edit_profile_form.confirm_new_password(class="form-control",
+                                    autocomplete="off")
+                                    }}
+                                    <div class="error-block text-danger" data-field="confirm_new_password"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-text ms-3 mt-3">* - поля, обязательные для заполнения</div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                {{ edit_profile_form.submit(
+                class="btn btn-danger",
+                form="edit-profile-form"
+                ) }}
+            </div>
+        </div>
+    </div>
+</div>
