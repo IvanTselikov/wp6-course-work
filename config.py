@@ -16,6 +16,8 @@ class Config(object):
     PHOTO_SMALL_PREFIX = '.small'
     PHOTO_TINY_PREFIX = '.tiny'
 
+    PHOTO_FILE_EXTENTIONS = ['png', 'jpg', 'jpeg']
+
     JSON_SORT_KEYS = False
 
 

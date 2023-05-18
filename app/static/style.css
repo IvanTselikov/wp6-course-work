@@ -4,6 +4,10 @@
     }
 }
 
+.error-block {
+    white-space: pre-line;
+}
+
 .fs-normal {
     font-size: 1rem !important;
 }
