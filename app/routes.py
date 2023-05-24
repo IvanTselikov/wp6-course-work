@@ -38,7 +38,7 @@ def index():
 
             kwargs.update({'photo_filename': photo_filename})
         
-        ad_form = AdForm()
+        ad_form = CreateAdForm()
         kwargs.update({ 'ad_form': ad_form })
     else:
         login_form = LoginForm()
@@ -356,7 +356,7 @@ def locations():
 @app.route('/ad', methods=['post'])
 @login_required
 def ad():
-    form = AdForm()
+    form = CreateAdForm()
     if form.validate():
         ad = Ad(
             car_id = form.modification.data,
@@ -491,7 +491,7 @@ def ads(ad_id):
 
             kwargs.update({'photo_filename': photo_filename})
         
-        ad_form = AdForm()
+        ad_form = CreateAdForm()
         kwargs.update({ 'ad_form': ad_form })
     else:
         login_form = LoginForm()
@@ -499,7 +499,7 @@ def ads(ad_id):
         kwargs.update({'login_form': login_form, 'signup_form': signup_form})
 
     filters_form = FiltersForm()
-    edit_ad_form = AdForm()
+    edit_ad_form = EditAdForm()
     kwargs.update({ 'filters_form': filters_form, 'edit_ad_form': edit_ad_form })
 
     ad = Ad.query.filter_by(id=ad_id).first()
@@ -554,7 +554,7 @@ def ad_json(ad_id):
 @app.route('/ad', methods=['put'])
 @login_required
 def update_ad():
-    form = AdForm()
+    form = EditAdForm()
     if form.validate():
         ad = Ad.query.filter_by(id=form.ad_id.data).first()
         if ad:
@@ -666,7 +666,7 @@ def open_user_page(user_login):
         kwargs.update({ 'ads': ads })
 
         if current_user.is_authenticated:
-            ad_form = AdForm()
+            ad_form = CreateAdForm()
             kwargs.update({ 'ad_form': ad_form })
 
             if current_user.login == user_login:

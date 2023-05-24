@@ -9,6 +9,8 @@ class Config(object):
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    JSON_SORT_KEYS = False
+
     # WTF_CSRF_ENABLED = False
 
     UPLOADS_FOLDER = os.path.join('app', 'static', 'uploads')
@@ -18,6 +20,5 @@ class Config(object):
 
     PHOTO_FILE_EXTENTIONS = ['png', 'jpg', 'jpeg']
 
-    JSON_SORT_KEYS = False
-
-
+    MIN_CAR_RELEASE_YEAR = 1900
+    ADS_PER_PAGE = [10, 50, 100]

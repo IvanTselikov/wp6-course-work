@@ -1,5 +1,8 @@
 from wtforms import SubmitField, BooleanField, HiddenField
+from wtforms.validators import ValidationError
+
 from app.forms import CreateAdForm
+from app.models import Ad
 
 
 class EditAdForm(CreateAdForm):
@@ -12,4 +15,6 @@ class EditAdForm(CreateAdForm):
     submit = SubmitField('Редактировать объявление')
 
     def validate_ad_id(self, field):
-        pass
+        ad = Ad.query.get(field.data)
+        if not ad:
+            raise ValidationError('Объявление не найдено.')

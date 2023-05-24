@@ -13,7 +13,9 @@ import phonenumbers
 class SignupForm(FlaskForm):
     photo = FileField(
         label='Фото профиля',
-        description='допустимые форматы - PNG, JPG, JPEG',
+        description='допустимые форматы - ' + ','.join(
+            app.config['PHOTO_FILE_EXTENTIONS']
+        ),
         validators=[
             FileAllowed(
                 app.config['PHOTO_FILE_EXTENTIONS'],
