@@ -1,8 +1,9 @@
 from wtforms import PasswordField, SubmitField, BooleanField, HiddenField
 from wtforms.validators import ValidationError, Length, EqualTo, Optional
 
-from app.forms import SignupForm
 from app.models import User
+
+from .signup_form import SignupForm
 
 
 class EditProfileForm(SignupForm):
