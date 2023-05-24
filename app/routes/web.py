@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, make_response
 from flask import jsonify, request
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -19,25 +18,19 @@ from sqlalchemy import or_, and_, func
 import os
 from glob import glob
 
+from humps import camelize
+
+from .functions import set_location_cookie, get_filtered_ads
+
 
 @app.route('/')
 @app.route('/index')
 @register_breadcrumb(app, '.', 'Главная')
 def index():
-    kwargs = {}
+    filters_form = FiltersForm()
+    kwargs = { 'filters_form': filters_form }
+
     if current_user.is_authenticated:
-        photo_filename = glob(os.path.join(
-            app.config['UPLOADS_FOLDER'],
-            current_user.login,
-            app.config['PROFILE_PHOTO_FILENAME'] + '.*'
-        ))
-
-        if photo_filename:
-            photo_filename = photo_filename[0]
-            photo_filename = os.path.join(*(photo_filename.split(os.path.sep)[1:]))
-
-            kwargs.update({'photo_filename': photo_filename})
-        
         ad_form = CreateAdForm()
         kwargs.update({ 'ad_form': ad_form })
     else:
@@ -45,139 +38,55 @@ def index():
         signup_form = SignupForm()
         kwargs.update({'login_form': login_form, 'signup_form': signup_form})
 
+    # фильтрация объявлений
+    filter_params = {
+        'page': parse_int_or_skip(request.args.get('page', default=1)),
+        'per_page': app.config['ADS_PER_PAGE_DEFAULT']
+    }
+
+    for key, value in request.cookies.items():
+        filter_params.update({ key: parse_int_or_skip(value) })
     
-    filters_form = FiltersForm()
-
-    filter_params = { k: parse_int_or_skip(v) for k, v in request.args.items() }
-
-    # значения по умолчанию для пропущенных параметров
-    filter_params.update({
-        'page': parse_int_or_skip(request.args.get('page'), default=1),
-        'per_page': parse_int_or_skip(request.args.get('per_page'), default=10),
-    })
-
-    if current_user.is_authenticated \
-        and current_user.location\
-        and not filter_params.keys() - ['page', 'per_page']:
-        # по умолчанию - объявления в текущем регионе
-        filter_params.update({ 'location': current_user.location.name })
+    ads, result_header = get_filtered_ads(filter_params)
     
-    # разбиваем запрос в поисковой строке на отдельные слова
-    search_params = (
-        list(map(lambda s: s.lower(), filter_params.get('search').split()))
-            if filter_params.get('search') else []
-    )
-    
-    ads = Ad.query\
-            .join(Modification).join(Serie).join(Generation)\
-            .join(Model).join(Mark).join(TransportType)\
-            .join(Color, isouter=True).join(Location, isouter=True)\
-            .filter(and_(
-                # фильтрация по запросу в поисковой строке
-                *[or_(
-                    func.lower(TransportType.name) == param,
-                    func.lower(Mark.name) == param,
-                    func.lower(Mark.name_rus) == param,
-                    func.lower(Model.name) == param,
-                    func.lower(Model.name_rus) == param,
-                    func.lower(Generation.name) == param,
-                    func.lower(Serie.name) == param,
-                    func.lower(Modification.name) == param,
-                    func.lower(Location.name) == param,
-                    Ad.release_year == param
-                ) for param in search_params]
-            ))\
-            .filter(and_(
-                # фильтрация по основным параметрам поиска
-                (Modification.id == filter_params.get('modification') 
-                    if filter_params.get('modification') else True),
-
-                (Serie.id == filter_params.get('serie')
-                    if filter_params.get('serie') else True),
-
-                (Generation.id == filter_params.get('generation')
-                    if filter_params.get('generation') else True),
-                    
-                (Model.id == filter_params.get('model')
-                    if filter_params.get('model') else True),
-            
-                (Mark.id == filter_params.get('mark')
-                    if filter_params.get('mark') else True),
-                
-                (TransportType.id == filter_params.get('transport_type')
-                    if filter_params.get('transport_type') else True)
-            ))\
-            .filter(and_(
-                # фильтрация по дополнительным параметрам поиска
-                (Color.id == filter_params.get('color')
-                    if filter_params.get('color') else True),
-
-                (Ad.price >= filter_params.get('price_begin')
-                    if filter_params.get('price_begin') else True),
-                
-                (Ad.price <= filter_params.get('price_end')
-                    if filter_params.get('price_end') else True),
-
-                (Ad.release_year >= filter_params.get('release_year_begin')
-                    if filter_params.get('release_year_begin') else True),
-                
-                (Ad.release_year <= filter_params.get('release_year_end')
-                    if filter_params.get('release_year_end') else True),
-
-                (Ad.mileage >= filter_params.get('mileage_begin')
-                    if filter_params.get('mileage_begin') else True),
-                
-                (Ad.mileage <= filter_params.get('mileage_end')
-                    if filter_params.get('mileage_end') else True),
-
-                (Ad.owners_count >= filter_params.get('owners_count_begin')
-                    if filter_params.get('owners_count_begin') else True),
-
-                (Ad.owners_count <= filter_params.get('owners_count_end')
-                    if filter_params.get('owners_count_end') else True),
-                
-                (Ad.is_broken == filter_params.get('is_broken')
-                    if filter_params.get('is_broken') in [0,1] else True),
-                
-                (Location.name == filter_params.get('location')
-                    if filter_params.get('location') else True),
-            ))\
-            .order_by(Ad.updated_at.desc())\
-            .paginate(
-                page=filter_params.get('page'),
-                per_page=filter_params.get('per_page'),
-                error_out=False
-    )
-
-    if current_user.is_authenticated:
-        ads_section_header = 'Рекомендуемые объявления'
-    else:
-        ads_section_header = 'Новые объявления на сайте'
-
-    if request.args.get('search'):
-        ads_section_header = 'Результаты поиска по запросу: "{}"'.format(
-            request.args.get('search').strip()
-        )
-
     kwargs.update({
-        'filters_form': filters_form,
-        'ads_section_header': ads_section_header,
-        'ads': ads
+        'ads': ads,
+        'ads_section_header': result_header
     })
 
     return render_template('index.html', **kwargs)
     
 
-@app.route('/filter', methods=['post'])
-def filter():
+@app.route('/filters', methods=['post'])
+def filters():
+    response = make_response(redirect(url_for('index')))
+
     filters_form = FiltersForm()
-    print(filters_form.data)
-    if filters_form.validate():
-        return {}, 200
-    return jsonify(filters_form.errors), 400
+    print('=================')
+    print(filters_form.reset)
+    print('=================')
+    if filters_form.reset.data:
+        # сброс фильтров
+        response.set_cookie('is_filtered', '', 0)
+        for field in filters_form:
+            response.set_cookie(field.name, '', 0)
+    elif filters_form.validate():
+        # установка фильтров
+        response.set_cookie('is_filtered', '1')
+        for field in filters_form:
+            if not field.name.startswith('csrf'):
+                if field.data:
+                    response.set_cookie(field.name, str(field.data))
+                else:
+                    response.set_cookie(field.name, '', 0)
+    else:
+        # ошибки в фильтрах
+        return jsonify(filters_form.errors), 400
+    
+    return response
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['post'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -193,7 +102,11 @@ def login():
             next_page = request.args.get('next')
             if not next_page or url_parse(next_page).netloc != '':
                 next_page = url_for('index')
-            return redirect(next_page)
+            
+            # при входе в аккаунт отображаются только объявления из региона пользователя
+            response = make_response(redirect(next_page))
+            set_location_cookie(response)
+            return response
     return jsonify(form.errors), 400
 
 

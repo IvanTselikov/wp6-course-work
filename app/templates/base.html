@@ -26,6 +26,9 @@
                     data-bs-toggle="modal" data-bs-target="#filtersModal">
                     <i class="fa fa-filter" aria-hidden="true"></i>
                     <span class="ms-2">Фильтры</span>
+                    {% if request.cookies.get('is_filtered') %}
+                    <sup class="text-danger">●</sup>
+                    {% endif %}
                 </button>
                 {{ filters_form.search(
                 class="form-control",
@@ -59,7 +62,8 @@
                         <span class="ms-2">{{ current_user.login }}</span>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownUser1">
-                        <li><a class="dropdown-item" href={{ url_for('open_user_page', user_login=current_user.login) }}>Профиль</a></li>
+                        <li><a class="dropdown-item" href={{ url_for('open_user_page', user_login=current_user.login)
+                                }}>Профиль</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>

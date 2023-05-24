@@ -166,6 +166,7 @@ class FiltersForm(FlaskForm):
 
     search = StringField('Найти...')
 
+    reset = SubmitField('Сбросить фильтры')
     submit = SubmitField('Применить фильтры')
 
     def __init__(self, *args, **kwargs):

@@ -22,3 +22,4 @@ class Config(object):
 
     MIN_CAR_RELEASE_YEAR = 1900
     ADS_PER_PAGE = [10, 50, 100]
+    ADS_PER_PAGE_DEFAULT = 10

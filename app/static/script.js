@@ -241,29 +241,27 @@ $(document).ready(function() {
 
     // применение фильтров поиска
     $('#filtersForm').on('submit', function(e) {
-      e.preventDefault()
+      if (e.originalEvent.submitter.id !== 'reset') {
+        e.preventDefault()
 
-      $.ajax({
-        type: 'post',
-        url: '/filter',
-        data: $(this).serialize(),
-        success: response => {
-          $(this).find('.error-block').text('')
-
-          // не отправляем csrf токен в get запросе
-          $(this).find('[name="csrf_token"]').attr('name', '')
-
-          window.location = '/?' + $(this).serialize()
-        },
-        error: response => {
-          $(this).find('.error-block').text('')
-
-          errors = response.responseJSON
-          for (let key in errors) {
-            $(this).find(`[data-field="${key}"]`).text(errors[key].join('\n'))
+        $.ajax({
+          type: 'post',
+          url: '/filters',
+          data: $(this).serialize(),
+          success: () => {
+            $(this).find('.error-block').text('')
+            window.location = '/'
+          },
+          error: response => {
+            $(this).find('.error-block').text('')
+  
+            errors = response.responseJSON
+            for (let key in errors) {
+              $(this).find(`[data-field="${key}"]`).text(errors[key].join('\n'))
+            }
           }
-        }
-      })
+        })
+      }
     })
 
     // отображение выбранных до перезагрузки страницы фильтров
