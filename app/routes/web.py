@@ -23,69 +23,6 @@ from humps import camelize
 from .functions import set_location_cookie, get_filtered_ads
 
 
-@app.route('/')
-@app.route('/index')
-@register_breadcrumb(app, '.', 'Главная')
-def index():
-    filters_form = FiltersForm()
-    kwargs = { 'filters_form': filters_form }
-
-    if current_user.is_authenticated:
-        ad_form = CreateAdForm()
-        kwargs.update({ 'ad_form': ad_form })
-    else:
-        login_form = LoginForm()
-        signup_form = SignupForm()
-        kwargs.update({'login_form': login_form, 'signup_form': signup_form})
-
-    # фильтрация объявлений
-    filter_params = {
-        'page': parse_int_or_skip(request.args.get('page', default=1)),
-        'per_page': app.config['ADS_PER_PAGE_DEFAULT']
-    }
-
-    for key, value in request.cookies.items():
-        filter_params.update({ key: parse_int_or_skip(value) })
-    
-    ads, result_header = get_filtered_ads(filter_params)
-    
-    kwargs.update({
-        'ads': ads,
-        'ads_section_header': result_header
-    })
-
-    return render_template('index.html', **kwargs)
-    
-
-@app.route('/filters', methods=['post'])
-def filters():
-    response = make_response(redirect(url_for('index')))
-
-    filters_form = FiltersForm()
-    print('=================')
-    print(filters_form.reset)
-    print('=================')
-    if filters_form.reset.data:
-        # сброс фильтров
-        response.set_cookie('is_filtered', '', 0)
-        for field in filters_form:
-            response.set_cookie(field.name, '', 0)
-    elif filters_form.validate():
-        # установка фильтров
-        response.set_cookie('is_filtered', '1')
-        for field in filters_form:
-            if not field.name.startswith('csrf'):
-                if field.data:
-                    response.set_cookie(field.name, str(field.data))
-                else:
-                    response.set_cookie(field.name, '', 0)
-    else:
-        # ошибки в фильтрах
-        return jsonify(filters_form.errors), 400
-    
-    return response
-
-
 @app.route('/login', methods=['post'])
 def login():
     if current_user.is_authenticated:

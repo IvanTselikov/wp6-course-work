@@ -12,6 +12,18 @@ var getUrlParameter = function getUrlParameter(sParam) {
   return false;
 }
 
+function getCookie(name) {
+  let matches = document.cookie.match(
+    new RegExp(
+      "(?:^|; )" +
+        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+        "=([^;]*)"
+    )
+  );
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+
 $(document).ready(function() {
     // запрос на регистрацию
     $('#signupForm').on('submit', function(e) {
@@ -241,7 +253,7 @@ $(document).ready(function() {
 
     // применение фильтров поиска
     $('#filtersForm').on('submit', function(e) {
-      if (e.originalEvent.submitter.id !== 'reset') {
+      if (e.originalEvent.submitter.name !== 'reset') {
         e.preventDefault()
 
         $.ajax({
@@ -265,16 +277,16 @@ $(document).ready(function() {
     })
 
     // отображение выбранных до перезагрузки страницы фильтров
-    resetSelect(formId='filtersForm', urlParamName='transport_type', needToTrigger=true)
-    resetSelect(formId='filtersForm', urlParamName='is_broken')
-    resetSelect(formId='filtersForm', urlParamName='per_page')
+    resetSelect(formId='filtersForm', cookieName='transport_type', needToTrigger=true)
+    resetSelect(formId='filtersForm', cookieName='is_broken')
+    resetSelect(formId='filtersForm', cookieName='per_page')
 
-    function resetSelect(formId, urlParamName, needToTrigger=false) {
-      const urlParamValue = getUrlParameter(urlParamName)
-      if (urlParamValue !== false) {
-        const select = $(`#${formId} [name="${urlParamName}"]`)
+    function resetSelect(formId, cookieName, needToTrigger=false) {
+      const cookieValue = getCookie(cookieName)
+      if (cookieValue !== undefined) {
+        const select = $(`#${formId} [name="${cookieName}"]`)
 
-        const index = select.find(`option[value="${urlParamValue}"]`).index()
+        const index = select.find(`option[value="${cookieValue}"]`).index()
         select.prop('selectedIndex', index)
 
         if (needToTrigger) {
@@ -282,11 +294,6 @@ $(document).ready(function() {
         }
       }
     }
-
-    // сброс фильтров
-    $('#resetFilters').on('click', function(e) {
-      window.location = '/?location='
-    })
 
     // действия с объявлениями
 

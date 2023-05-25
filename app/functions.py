@@ -42,13 +42,6 @@ def update_params(request, **kwargs):
 app.jinja_env.globals.update(update_params=update_params)
 
 
-def parse_int_or_skip(s, default=None):
-    try:
-        return int(s)
-    except:
-        return default or s
-
-
 def view_ad_dlc(*args, **kwargs):
     ad_id = request.view_args['ad_id']
     ad = Ad.query.get(ad_id)

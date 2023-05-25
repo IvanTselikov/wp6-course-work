@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
             </div>
             <div class="modal-body">
-                <form id="filtersForm" action={{ url_for('filters') }} method="post" novalidate>
+                <form action={{ url_for('filters') }} method="post" id="filtersForm" novalidate>
                     {{ filters_form.csrf_token(id="csrf-token-filters") }}
                     <div class="error-block text-danger" data-field="csrf_token"></div>
                     <div class="container">
@@ -140,14 +140,14 @@
                                         <div class="col-4">
                                             {{ filters_form.price_begin(
                                             class="form-control",
-                                            value=request.args.get('price_begin'),
+                                            value=request.cookies.get('price_begin'),
                                             placeholder=filters_form.price_begin.label.text
                                             ) }}
                                         </div>
                                         <div class="col-4">
                                             {{ filters_form.price_end(
                                             class="form-control",
-                                            value=request.args.get('price_end'),
+                                            value=request.cookies.get('price_end'),
                                             placeholder=filters_form.price_end.label.text
                                             ) }}
                                         </div>
@@ -165,7 +165,7 @@
                                             {{ filters_form.release_year_begin(
                                             class="form-control",
                                             id="year-begin-filters",
-                                            value=request.args.get('release_year_begin'),
+                                            value=request.cookies.get('release_year_begin'),
                                             placeholder=filters_form.release_year_begin.label.text
                                             ) }}
                                         </div>
@@ -173,7 +173,7 @@
                                             {{ filters_form.release_year_end(
                                             class="form-control",
                                             id="year-end-filters",
-                                            value=request.args.get('release_year_end'),
+                                            value=request.cookies.get('release_year_end'),
                                             placeholder=filters_form.release_year_end.label.text
                                             ) }}
                                         </div>
@@ -190,13 +190,13 @@
                                         <div class="col-4">
                                             {{ filters_form.mileage_begin(
                                             class="form-control",
-                                            value=request.args.get('mileage_begin'),
+                                            value=request.cookies.get('mileage_begin'),
                                             placeholder=filters_form.mileage_begin.label.text ) }}
                                         </div>
                                         <div class="col-4">
                                             {{ filters_form.mileage_end(
                                             class="form-control",
-                                            value=request.args.get('mileage_end'),
+                                            value=request.cookies.get('mileage_end'),
                                             placeholder=filters_form.mileage_end.label.text
                                             ) }}
                                         </div>
@@ -213,13 +213,13 @@
                                         <div class="col-4">
                                             {{ filters_form.owners_count_begin(
                                             class="form-control",
-                                            value=request.args.get('owners_count_begin'),
+                                            value=request.cookies.get('owners_count_begin'),
                                             placeholder=filters_form.owners_count_begin.label.text ) }}
                                         </div>
                                         <div class="col-4">
                                             {{ filters_form.owners_count_end(
                                             class="form-control",
-                                            value=request.args.get('owners_count_end'),
+                                            value=request.cookies.get('owners_count_end'),
                                             placeholder=filters_form.owners_count_end.label.text
                                             ) }}
                                         </div>
@@ -249,10 +249,7 @@
                                             {{ filters_form.location(
                                             class="form-control",
                                             id="locationFilters",
-                                            value=request.args.get('location')
-                                            if 'location' in request.args
-                                            else current_user.location.name
-                                            if current_user.is_authenticated,
+                                            value=request.cookies.get('location') or '',
                                             list="location-datalist-filters",
                                             autocomplete="off"
                                             ) }}
@@ -282,9 +279,8 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
 
                 {{ filters_form.reset(
-                class="btn btn-secondary",
-                value=filters_form.reset.label.text,
-                form="filtersForm"
+                    class="btn btn-secondary",
+                    form="filtersForm"
                 ) }}
 
                 {{ filters_form.submit(

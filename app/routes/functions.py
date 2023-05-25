@@ -11,6 +11,14 @@ def set_location_cookie(response):
     else:
         response.set_cookie('location', '', 0)
 
+
+def parse_int_or_skip(s, default=None):
+    try:
+        return int(s)
+    except:
+        return default or s
+
+
 def get_filtered_ads(filter_params):
     # разбиваем запрос в поисковой строке на отдельные слова
     search_params = (
