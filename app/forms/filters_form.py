@@ -164,7 +164,7 @@ class FiltersForm(FlaskForm):
         validate_choice=False
     )
 
-    search = StringField('Найти...')
+    # search = StringField('Найти...')
 
     reset = SubmitField('Сбросить фильтры')
     submit = SubmitField('Применить фильтры')

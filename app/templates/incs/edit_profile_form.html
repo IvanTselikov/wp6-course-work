@@ -8,8 +8,7 @@
             </div>
             <div class="modal-body">
                 <form id="edit-profile-form" enctype="multipart/form-data" novalidate>
-                    {{ edit_profile_form.csrf_token(id="csrf-token-edit-profile") }}
-                    <div class="error-block text-danger" data-field="csrf-token"></div>
+                    <div class="error-block text-danger" data-field="other"></div>
 
                     {{ edit_profile_form.user_login(value=user.login) }}
 

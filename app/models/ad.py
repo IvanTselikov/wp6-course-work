@@ -69,7 +69,9 @@ class Ad(db.Model):
     def __init__(self, *args, **kwargs):
         super(Ad, self).__init__(*args, **kwargs)
         self.assign_admin()
-        self.updated_ago = format_updated_at(self.updated_at)
+    
+    def updated_ago(self):
+        return format_updated_at(self.updated_at)
     
     def assign_admin(self, admin_id=None):
         if admin_id:

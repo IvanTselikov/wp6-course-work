@@ -7,7 +7,6 @@
             </div>
             <div class="modal-body py-4">
                 <form id="edit-ad-form" data-ad-id={{ ad.id }} novalidate>
-                    {{ edit_ad_form.csrf_token(id="csrf-token-edit-form") }}
                     <div class="error-block text-danger" data-field="csrf_token"></div>
                     <div class="error-block text-danger" data-field="other"></div>
 

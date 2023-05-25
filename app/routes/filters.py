@@ -20,8 +20,13 @@ def filters():
         response.set_cookie('is_filtered', '1')
 
         for field in filters_form:
-            if not field.name.startswith('csrf'):
+            if field.name != 'is_broken':
                 if field.data:
+                    response.set_cookie(field.name, str(field.data))
+                else:
+                    response.set_cookie(field.name, '', 0)
+            else:
+                if field.data != -1:
                     response.set_cookie(field.name, str(field.data))
                 else:
                     response.set_cookie(field.name, '', 0)

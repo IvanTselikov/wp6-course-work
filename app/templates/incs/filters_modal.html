@@ -7,8 +7,8 @@
             </div>
             <div class="modal-body">
                 <form action={{ url_for('filters') }} method="post" id="filtersForm" novalidate>
-                    {{ filters_form.csrf_token(id="csrf-token-filters") }}
-                    <div class="error-block text-danger" data-field="csrf_token"></div>
+                    <div class="error-block text-danger" data-field="other"></div>
+
                     <div class="container">
                         <div class="row g-3">
                             <div class="col-lg-6 mt-4">

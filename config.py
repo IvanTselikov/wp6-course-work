@@ -11,7 +11,7 @@ class Config(object):
 
     JSON_SORT_KEYS = False
 
-    # WTF_CSRF_ENABLED = False
+    WTF_CSRF_ENABLED = False
 
     UPLOADS_FOLDER = os.path.join('app', 'static', 'uploads')
     PROFILE_PHOTO_FILENAME = 'profile'

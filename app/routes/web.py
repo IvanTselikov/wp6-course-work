@@ -20,7 +20,7 @@ from glob import glob
 
 from humps import camelize
 
-from .functions import set_location_cookie, get_filtered_ads
+from .functions import set_location_cookie
 
 
 @app.route('/login', methods=['post'])
@@ -113,7 +113,9 @@ def signup():
             )
 
             # form.photo.data.save(os.path.join(user_storage_path, photo_filename))
-        return redirect(url_for('index'))
+        response = make_response(redirect(url_for('index')))
+        set_location_cookie(response)
+        return response
     return jsonify(form.errors), 400
 
 

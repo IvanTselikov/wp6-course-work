@@ -5,13 +5,16 @@ from sqlalchemy import or_, and_, func
 
 from app.models import Ad, Modification, Serie, Generation, Model, Mark,\
     TransportType, Color, Location
+from app.forms import FiltersForm
 
 
 def set_location_cookie(response):
-    if current_user.location:
+    if current_user.location and not\
+    (request.args.get('page') and int(request.args.get('page')) > 1 or\
+    request.cookies.get('page') and int(request.cookies.get('page')) > 1 or\
+    request.cookies.get('is_filtered') or request.cookies.get('search')):
+        response.set_cookie('is_filtered', '1')
         response.set_cookie('location', current_user.location.name)
-    else:
-        response.set_cookie('location', '', 0)
 
 
 def parse_int_or_skip(s, default=None):
@@ -109,10 +112,7 @@ def get_filtered_ads(filter_params):
             error_out=False
     )
 
-    if current_user.is_authenticated:
-        result_header = 'Рекомендуемые объявления'
-    else:
-        result_header = 'Новые объявления на сайте'
+    result_header = 'Новые объявления на сайте'
 
     if filter_params.get('search'):
         result_header = 'Результаты поиска по запросу: "{}"'.format(
@@ -120,3 +120,8 @@ def get_filtered_ads(filter_params):
         )
 
     return ads, result_header
+
+def set_location_recommendations(response):
+    if not (request.cookies.get('is_filtered') or request.cookies.get('search')):
+        r
+        set_location_cookie(response)

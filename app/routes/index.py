@@ -32,10 +32,10 @@ def index():
     
     page = request.args.get('page') or request.cookies.get('page') or 1
 
-    filter_params = {
+    filter_params.update({
         'page': parse_int_or_skip(page),
         'per_page': app.config['ADS_PER_PAGE_DEFAULT']
-    }
+    })
     
     # фильтрация объявлений
     ads, result_header = get_filtered_ads(filter_params)

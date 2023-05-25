@@ -8,7 +8,6 @@
             <div class="modal-body">
                 <div class="confirm-annotation"></div>
                 <form action="" method="post" id="ad-action-confirm-form" class="d-none" novalidate>
-                    {{ ad_action_confirm_form.csrf_token(id="csrf-token-ad-action-confirm") }}
                     {{ ad_action_confirm_form.message(class="form-control my-3", rows=5) }}
                 </form>
             </div>
