@@ -16,7 +16,7 @@
     <header class="px-3 py-4 mb-3 border-bottom fs-normal">
         <div class="mx-auto d-flex flex-column flex-md-row justify-content-center align-items-center"
             id="header-content">
-            <a href="/" class="d-flex align-items-center mb-4 mb-md-0 text-decoration-none">
+            <a href={{ url_for('index', page=1) }} class="d-flex align-items-center mb-4 mb-md-0 text-decoration-none">
                 <img src="/static/img/logo.svg" alt="logo" id="logo-img">
                 <span class="ms-3" id="logo-text">AutoAds</span>
             </a>

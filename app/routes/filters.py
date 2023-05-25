@@ -28,4 +28,6 @@ def filters():
     else:
         # ошибки на форме
         return jsonify(filters_form.errors), 400
+
+    response.set_cookie('page', '', 0)
     return response

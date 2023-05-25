@@ -1,4 +1,4 @@
-from flask import request, render_template
+from flask import request, render_template, make_response
 
 from flask_login import current_user
 from flask_breadcrumbs import register_breadcrumb
@@ -25,12 +25,17 @@ def index():
         kwargs.update({'login_form': login_form, 'signup_form': signup_form})
 
     # подготовка параметров фильтрации
-    filter_params = {
-        'page': parse_int_or_skip(request.args.get('page', default=1)),
-        'per_page': app.config['ADS_PER_PAGE_DEFAULT']
-    }
+    filter_params = {}
+
     for key, value in request.cookies.items():
         filter_params.update({ key: parse_int_or_skip(value) })
+    
+    page = request.args.get('page') or request.cookies.get('page') or 1
+
+    filter_params = {
+        'page': parse_int_or_skip(page),
+        'per_page': app.config['ADS_PER_PAGE_DEFAULT']
+    }
     
     # фильтрация объявлений
     ads, result_header = get_filtered_ads(filter_params)
@@ -40,4 +45,6 @@ def index():
         'ads_section_header': result_header
     })
 
-    return render_template('index.html', **kwargs)
+    response = make_response(render_template('index.html', **kwargs))
+    response.set_cookie('page', str(page))
+    return response

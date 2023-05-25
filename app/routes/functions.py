@@ -1,3 +1,5 @@
+from flask import request, url_for
+
 from flask_login import current_user
 from sqlalchemy import or_, and_, func
 
@@ -106,7 +108,6 @@ def get_filtered_ads(filter_params):
             per_page=filter_params.get('per_page'),
             error_out=False
     )
-
 
     if current_user.is_authenticated:
         result_header = 'Рекомендуемые объявления'
