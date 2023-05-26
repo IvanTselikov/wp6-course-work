@@ -74,7 +74,7 @@ class FiltersForm(FlaskForm):
             Optional(),
             NumberRange(
                 min=app.config['MIN_CAR_RELEASE_YEAR'],
-                max=get_current_year(),
+                max=dt.now().year,
                 message='Пожалуйста, укажите корректный минимальный год выпуска.'
             )
         ]
@@ -87,7 +87,7 @@ class FiltersForm(FlaskForm):
             Optional(),
             NumberRange(
                 min=app.config['MIN_CAR_RELEASE_YEAR'],
-                max=get_current_year(),
+                max=dt.now().year,
                 message='Пожалуйста, укажите корректный максимальный год выпуска.'
             )
         ]

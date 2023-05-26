@@ -8,6 +8,8 @@ from flask_wtf.file import FileAllowed
 from app.models import TransportType, PtsType, Generation
 from app.functions import *
 
+from datetime import datetime as dt
+
 
 class CreateAdForm(FlaskForm):
     transport_type = SelectField(
@@ -81,8 +83,8 @@ class CreateAdForm(FlaskForm):
         validators=[
             InputRequired('Пожалуйста, укажите год выпуска.'),
             NumberRange(
-                min=EARLIEST_RELEASE_YEAR,
-                max=get_current_year(),
+                min=app.config['MIN_CAR_RELEASE_YEAR'],
+                max=dt.now().year,
                 message='Пожалуйста, укажите корректный год выпуска.'
             )
         ]
