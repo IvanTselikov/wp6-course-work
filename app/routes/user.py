@@ -3,7 +3,7 @@ from flask import jsonify
 
 from app import app, db
 from app.forms import CreateAdForm, EditProfileForm, LoginForm, SignupForm, FiltersForm
-from app.models import User, AdStatus, Location
+from app.models import User, Ad, AdStatus, Location
 
 from werkzeug.utils import secure_filename
 
@@ -32,7 +32,7 @@ def get_user_page(user_login):
             'me_opened': [], 'me_checking': [], 'me_revision': [], 'me_blocked': []
         }
 
-        for ad in user.ads:
+        for ad in user.ads.order_by(Ad.updated_at.desc()):
             if ad.status_id == AdStatus.OPENED:
                 ads['opened'].append(ad)
             elif ad.status_id == AdStatus.CLOSED:

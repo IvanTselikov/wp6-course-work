@@ -9,11 +9,15 @@
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" href="/static/img/logo.svg" type="image/x-icon">
-    <title>Главная - AutoAds</title>
+    <title>
+        {% block title %}
+        AutoAds
+        {% endblock %}
+    </title>
 </head>
 
 <body>
-    <header class="px-3 py-4 mb-3 border-bottom fs-normal">
+    <header class="fixed-top px-3 py-4 border-bottom fs-normal">
         <div class="mx-auto d-flex flex-column flex-md-row justify-content-center align-items-center"
             id="header-content">
             <a href={{ url_for('index', page=1) }} class="d-flex align-items-center mb-4 mb-md-0 text-decoration-none">
@@ -31,9 +35,9 @@
                     {% endif %}
                 </button>
                 <form action={{ url_for('search') }} method="post" id="search-form"></form>
-                <input type="text" name="search" form="search-form" class="form-control" value="{{
-                    request.cookies.get('search').strip() if request.cookies.get('search') }}" placeholder="Поиск..."
-                    autocomplete="off" aria-label="Поиск">
+                <input type="text" name="search" form="search-form" class="form-control"
+                    value="{{ request.cookies.get('search') or '' }}" placeholder="Поиск..." autocomplete="off"
+                    aria-label="Поиск">
                 <button type="submit" form="search-form" class="btn btn-outline-secondary">
                     <i class="fa fa-search" aria-hidden="true"></i>
                 </button>
@@ -58,7 +62,7 @@
                         <span class="ms-2">{{ current_user.login }}</span>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownUser1">
-                        <li><a class="dropdown-item" href={{ url_for('open_user_page', user_login=current_user.login)
+                        <li><a class="dropdown-item" href={{ url_for('get_user_page', user_login=current_user.login)
                                 }}>Профиль</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -74,7 +78,90 @@
         </div>
     </header>
 
-    <main class="flex-grow-1">
+    <div class="fake-header px-3 py-4 mb-3 fs-normal">
+            <div class="mx-auto d-flex flex-column flex-md-row justify-content-center align-items-center"
+                id="header-content">
+                <a href={{ url_for('index', page=1) }} class="d-flex align-items-center mb-4 mb-md-0 text-decoration-none">
+                    <img src="/static/img/logo.svg" alt="logo" id="logo-img">
+                    <span class="ms-3" id="logo-text">AutoAds</span>
+                </a>
+    
+                <div class="input-group mb-4 mb-md-0 ms-md-5 me-md-4 w-100 flex-md-grow-1 d-flex" id="search-bar">
+                    <button type="button" class="btn btn-outline-secondary d-flex align-items-center px-3" id="filters-btn"
+                        data-bs-toggle="modal" data-bs-target="#filtersModal">
+                        <i class="fa fa-filter" aria-hidden="true"></i>
+                        <span class="ms-2">Фильтры</span>
+                        {% if request.cookies.get('is_filtered') %}
+                        <sup class="text-danger">●</sup>
+                        {% endif %}
+                    </button>
+                    <form action={{ url_for('search') }} method="post"></form>
+                    <input type="text" name="search" form="search-form" class="form-control"
+                        value="{{ request.cookies.get('search') or '' }}" placeholder="Поиск..." autocomplete="off"
+                        aria-label="Поиск">
+                    <button type="submit" form="search-form" class="btn btn-outline-secondary">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                </div>
+    
+                {% if current_user.is_anonymous %}
+                <div class="d-flex flex-row">
+                    <button type="button" class="btn btn-secondary me-4 me-md-2 px-4 px-md-3" data-bs-toggle="modal"
+                        data-bs-target="#login-modal">Вход</button>
+    
+                    <button type="button" class="btn btn-danger px-4" data-bs-toggle="modal"
+                        data-bs-target="#signup-modal">Регистрация</button>
+                </div>
+                {% else %}
+                <div class="d-flex mb-2 mb-md-0">
+                    <div class="dropdown text-end">
+                        <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle"
+                            id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="rounded-circle" id="profile-img"
+                                style="background-image: url('{{ url_for('images', user=current_user.login, size='tiny') }}');">
+                            </div>
+                            <span class="ms-2">{{ current_user.login }}</span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownUser1">
+                            <li><a class="dropdown-item" href={{ url_for('get_user_page', user_login=current_user.login)
+                                    }}>Профиль</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href={{ url_for('logout') }}>Выйти</a></li>
+                        </ul>
+                    </div>
+    
+                    <button class="btn btn-danger ms-5 ms-md-4 px-4 text-nowrap" data-bs-toggle="modal"
+                        data-bs-target="#newAdModal">Новое объявление</button>
+                    {% endif %}
+                </div>
+            </div>
+    </div>
+
+    <main class="flex-grow-1 my-5">
+        {% if breadcrumbs | length > 1 %}
+        <nav class="breadcrumb text-muted mb-5">
+            {% for breadcrumb in breadcrumbs %}
+            <a class="link-secondary" href="{{ breadcrumb.url }}">{{ breadcrumb.text }}</a>
+            {% if not loop.last %}
+            <span class="mx-1">&#62</span>
+            {% endif %}
+            {% endfor %}
+        </nav>
+        {% endif %}
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
         {% block content %}
         {% endblock %}
     </main>
@@ -108,19 +195,19 @@
 
     </footer>
 
+    {% include "incs/filters_modal.html" %}
+
     {% if login_form %}
-    {% include "incs/login_form.html" %}
+    {% include "incs/login_modal.html" %}
     {% endif %}
 
     {% if signup_form %}
-    {% include "incs/signup_form.html" %}
+    {% include "incs/signup_modal.html" %}
     {% endif %}
 
-    {% if not current_user.is_anonymous %}
-    {% include "incs/new_ad_form.html" %}
+    {% if current_user.is_authenticated %}
+    {% include "incs/create_ad_modal.html" %}
     {% endif %}
-
-    {% include "incs/filters_modal.html" %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
@@ -128,6 +215,7 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://kit.fontawesome.com/3f0ebccfe4.js" crossorigin="anonymous"></script>
     <script src="/static/script.js"></script>
+    <script src="/static/phoneinput.js"></script>
 </body>
 
 </html>

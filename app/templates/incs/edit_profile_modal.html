@@ -74,7 +74,8 @@
                                     {{ edit_profile_form.phone_number(
                                     class="form-control",
                                     value=user.phone_number,
-                                    autocomplete="off"
+                                    autocomplete="off",
+                                    data_tel_input="true"
                                     ) }}
                                     <div class="error-block text-danger" data-field="phone_number"></div>
                                 </div>
@@ -93,19 +94,34 @@
 
                                 <div class="mb-3">
                                     {{ edit_profile_form.new_password.label() }}
-                                    {{ edit_profile_form.new_password(
-                                    class="form-control",
-                                    autocomplete="off"
-                                    ) }}
+                                    <div class="input-group">
+                                        {{ edit_profile_form.new_password(
+                                        class="form-control",
+                                        autocomplete="off",
+                                        aria_describedby="show-password-edit-profile"
+                                        ) }}
+                                        <button class="show-password-button btn btn-outline-secondary" type="button"
+                                            id="show-password-edit-profile">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
                                     <div class="form-text">{{ edit_profile_form.new_password.description }}</div>
                                     <div class="error-block text-danger" data-field="new_password"></div>
                                 </div>
 
                                 <div class="mb-3">
                                     {{ edit_profile_form.confirm_new_password.label() }}
-                                    {{ edit_profile_form.confirm_new_password(class="form-control",
-                                    autocomplete="off")
-                                    }}
+                                    <div class="input-group">
+                                        {{ edit_profile_form.confirm_new_password(
+                                        class="form-control",
+                                        autocomplete="off",
+                                        aria_describedby="show-password-edit-profile-confirm"
+                                        ) }}
+                                        <button class="show-password-button btn btn-outline-secondary" type="button"
+                                            id="show-password-edit-profile-confirm">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
                                     <div class="error-block text-danger" data-field="confirm_new_password"></div>
                                 </div>
                             </div>

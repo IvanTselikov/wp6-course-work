@@ -24,18 +24,18 @@ class SignupForm(FlaskForm):
         ]
     )
 
-    first_name = StringField(
-        label='Имя*',
-        validators=[
-            DataRequired('Пожалуйста, введите ваше имя.'),
-            Length(max=100, message='Слишком длинное значение.')
-        ]
-    )
-
     last_name = StringField(
         label='Фамилия*',
         validators=[
             DataRequired('Пожалуйста, введите вашу фамилию.'),
+            Length(max=100, message='Слишком длинное значение.')
+        ]
+    )
+
+    first_name = StringField(
+        label='Имя*',
+        validators=[
+            DataRequired('Пожалуйста, введите ваше имя.'),
             Length(max=100, message='Слишком длинное значение.')
         ]
     )

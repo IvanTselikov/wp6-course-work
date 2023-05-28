@@ -6,7 +6,7 @@ from app import app
 def search():
     response = make_response(redirect(url_for('index')))
 
-    response.set_cookie('search', request.form.get('search'))
+    response.set_cookie('search', request.form.get('search').strip())
     response.set_cookie('page', '', 0)
 
     return response

@@ -82,13 +82,20 @@ def create_ad():
             vin = form.vin.data,
             pts_type_id = form.pts_type.data,
             owners_count = form.owners_count.data,
-            color_id = form.color.data,
+            color_id = form.color.data or None,
             is_broken = form.is_broken.data,
             mileage = form.mileage.data,
             seller_id = current_user.id,
             price = form.price.data,
             description = form.description.data.strip()
         )
+
+        # объявления администраторов публикуются сразу без модерации,
+        # остальные - проходят проверку администратором
+        if current_user.is_admin:
+            ad.status_id = AdStatus.OPENED 
+        else:
+            ad.assign_admin()
 
         location_name = form.location.data
         if location_name:
@@ -100,11 +107,6 @@ def create_ad():
                 location_id = new_location.id
             ad.location_id = location_id
 
-        # объявления администраторов публикуются сразу без модерации,
-        # остальные - проходят проверку администратором
-        if not current_user.is_admin:
-            ad.assign_admin()
-        
         db.session.add(ad)
         db.session.commit()
 
@@ -139,7 +141,7 @@ def create_ad():
     return jsonify(form.errors), 400
 
 
-@app.route('/ad', methods=['put'])
+@app.route('/ads', methods=['put'])
 @login_required
 def update_ad():
     form = EditAdForm()
@@ -151,13 +153,16 @@ def update_ad():
             ad.vin = form.vin.data
             ad.pts_type_id = form.pts_type.data
             ad.owners_count = form.owners_count.data
-            ad.color_id = form.color.data
+            ad.color_id = form.color.data or None
             ad.is_broken = form.is_broken.data
             ad.mileage = form.mileage.data
             ad.seller_id = current_user.id
             ad.price = form.price.data
             ad.description = form.description.data.strip()
-            ad.status_id = AdStatus.ON_CHECKING
+
+            ad.status_id = AdStatus.OPENED if current_user.is_admin\
+                else AdStatus.ON_CHECKING
+
             db.session.add(ad)
             db.session.commit()
 
@@ -216,12 +221,12 @@ def set_ad_status(ad_id, status_id):
     ):
         db.session.add(ad)
         db.session.commit()
-        return redirect(url_for('ads', ad_id=ad_id))
+        return redirect(url_for('get_ad', ad_id=ad_id))
 
     return {'error': ['Некорректный id объявления или статуса.']}, 405
 
 
-@app.route('/ad/<ad_id>', methods=['delete'])
+@app.route('/ads/<ad_id>', methods=['delete'])
 @login_required
 def delete_ad(ad_id):
     ad = Ad.query.filter_by(id=ad_id).first()

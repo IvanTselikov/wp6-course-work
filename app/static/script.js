@@ -1,17 +1,3 @@
-var getUrlParameter = function getUrlParameter(sParam) {
-  var sPageURL = window.location.search.substring(1),
-      sURLVariables = sPageURL.split('&'),
-      sParameterName,
-      i;
-  for (i = 0; i < sURLVariables.length; i++) {
-      sParameterName = sURLVariables[i].split('=');
-      if (sParameterName[0] === sParam) {
-          return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-      }
-  }
-  return false;
-}
-
 function getCookie(name) {
   let matches = document.cookie.match(
     new RegExp(
@@ -23,8 +9,39 @@ function getCookie(name) {
   return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
+function showErrors(form, response) {
+  form.find('.error-block').text('')
+
+  const errors = response.responseJSON
+  let isFocused = false
+  for (let key in errors) {
+    if (!isFocused) {
+      isFocused = true
+      const input = form.find('#' + key)
+      if (input) {
+        input.focus()
+      }
+    }
+    form.find(`[data-field="${key}"]`).text(errors[key].join('\n'))
+  }
+}
+
 
 $(document).ready(function() {
+    // показать/скрыть пароль
+    $('.show-password-button').on('click', function() {
+      const input = $(this).siblings('input')
+      if (input.attr('type') === 'password') {
+        // показать пароль
+        input.attr('type', 'text')
+        $(this).find('i').removeClass('fa-eye').addClass('fa-eye-slash')
+      } else {
+        // скрыть пароль
+        input.attr('type', 'password')
+        $(this).find('i').removeClass('fa-eye-slash').addClass('fa-eye')
+      }
+    })
+
     // запрос на регистрацию
     $('#signupForm').on('submit', function(e) {
         e.preventDefault()
@@ -36,16 +53,10 @@ $(document).ready(function() {
           type : 'post',
           url : '/signup',
           success: response => {
-            // document.write(response)
             window.location.reload()
           },
           error: response => {
-            $(this).find('.error-block').text('')
-
-            errors = response.responseJSON
-            for (let key in errors) {
-              $(this).find(`[data-field="${key}"]`).text(errors[key].join('\n'))
-            }
+            showErrors($(this), response)
           }
         })
     })
@@ -59,17 +70,10 @@ $(document).ready(function() {
         type : 'post',
         url : '/login',
         success: response => {
-          // document.write(response)
           window.location.reload()
         },
         error: response => {
-          // TODO: в метод
-          $(this).find('.error-block').text('')
-
-          errors = response.responseJSON
-          for (let key in errors) {
-            $(this).find(`[data-field="${key}"]`).text(errors[key].join('\n'))
-          }
+          showErrors($(this), response)
         }
       })
     })
@@ -100,7 +104,7 @@ $(document).ready(function() {
                 // после перезагрузки настройки фильтрации сохраняются
                 resetSelect(
                   formId='filtersForm',
-                  urlParamName=nextSelect.attr('name'),
+                  cookieName=nextSelect.attr('name'),
                   needToTrigger=true
                 )
               } else if ($(this).closest('form').attr('id') === 'edit-ad-form') {
@@ -228,18 +232,13 @@ $(document).ready(function() {
         contentType: false,
         data : new FormData(this),
         type : 'post',
-        url : '/ad',
+        url : '/ads',
         success: response => {
           $('#newAdModal').modal('hide')
           $('#createAdSuccessModal').modal('show')
         },
         error: response => {
-          $(this).find('.error-block').text('')
-
-          errors = response.responseJSON
-          for (let key in errors) {
-            $(this).find(`[data-field="${key}"]`).text(errors[key].join('\n'))
-          }
+          showErrors($(this), response)
         }
       })
     })
@@ -265,12 +264,7 @@ $(document).ready(function() {
             window.location = '/'
           },
           error: response => {
-            $(this).find('.error-block').text('')
-  
-            errors = response.responseJSON
-            for (let key in errors) {
-              $(this).find(`[data-field="${key}"]`).text(errors[key].join('\n'))
-            }
+            showErrors($(this), response)
           }
         })
       }
@@ -336,8 +330,9 @@ $(document).ready(function() {
     }
 
 
+    // публикация объявления (администратор)
     $('.publish-ad-button').on('click', function() {
-      ad_id = $(this).closest('.dropdown').data('ad-id') // TODO: предотвратить ошибку
+      ad_id = $(this).closest('.dropdown').data('ad-id')
       status_id = 1
 
       modal = createConfirmModal(
@@ -366,6 +361,7 @@ $(document).ready(function() {
       modal.modal('show')
     })
 
+    // блокировать объявление
     $('.block-ad-button').on('click', function() {
       ad_id = $(this).closest('.dropdown').data('ad-id')
       status_id = 5
@@ -385,7 +381,9 @@ $(document).ready(function() {
     // заполнение формы редактирования объявления
     let selectValues
 
-    resetEditAdForm()
+    if ($('#edit-ad-form').length) {
+      resetEditAdForm()
+    }
 
     function resetEditAdForm() {
       const ad_id = window.location.pathname.substring(
@@ -394,7 +392,8 @@ $(document).ready(function() {
   
       $.ajax({
         type: 'get',
-        url: `/ad_json/${ad_id}`,
+        contentType: 'application/json',
+        url: `/ads/${ad_id}`,
         success: response => {
           selectValues = response
           resetEditAdSelect('transport_type')
@@ -427,18 +426,13 @@ $(document).ready(function() {
         contentType: false,
         data : new FormData(this),
         type : 'put',
-        url : '/ad',
+        url : '/ads',
         success: response => {
           $('#edit-ad-modal').modal('hide')
           $('#editAdSuccessModal').modal('show')
         },
         error: response => {
-          $(this).find('.error-block').text('')
-
-          errors = response.responseJSON
-          for (let key in errors) {
-            $(this).find(`[data-field="${key}"]`).text(errors[key].join('\n'))
-          }
+          showErrors($(this), response)
         }
       })
     })
@@ -450,7 +444,7 @@ $(document).ready(function() {
       modal = createConfirmModal(
         title='Удаление объявления',
         annotation='Вы уверены, что хотите безвозвратно удалить объявление?',
-        action=`/ad/${ad_id}`,
+        action=`/ads/${ad_id}`,
         submitText='Удалить',
         showMessageInput=false,
         method='delete',
@@ -474,19 +468,10 @@ $(document).ready(function() {
         type : 'put',
         url : `/user/${userLogin}`,
         success: () => {
-          // $('#edit-profile-form').modal('hide')
-          // $('#edit-profile-success-modal').modal('show')
           window.location.reload()
-          // console.log('success')
         },
         error: response => {
-          console.log(response)
-          $(this).find('.error-block').text('')
-
-          errors = response.responseJSON
-          for (let key in errors) {
-            $(this).find(`[data-field="${key}"]`).text(errors[key].join('\n'))
-          }
+          showErrors($(this), response)
         }
       })
     })

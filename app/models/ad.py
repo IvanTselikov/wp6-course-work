@@ -24,7 +24,9 @@ class Ad(db.Model):
     price = db.Column(INTEGER(), nullable=False)
     description = db.Column(TEXT(), nullable=False, default=dt.utcnow)
     admin_id = db.Column(INTEGER(), db.ForeignKey('user.id'))
-    status_id = db.Column(TINYINT(), db.ForeignKey('ad_status.id'), nullable=False, default=3)
+    status_id = db.Column(
+        TINYINT(), db.ForeignKey('ad_status.id'), nullable=False, default=AdStatus.ON_CHECKING
+    )
     admin_message = db.Column(TEXT())
     updated_at = db.Column(DATETIME(), nullable=False, default=dt.utcnow)
 
@@ -65,10 +67,6 @@ class Ad(db.Model):
         'PtsType',
         backref=db.backref('ads', lazy='dynamic')
     )
-
-    def __init__(self, *args, **kwargs):
-        super(Ad, self).__init__(*args, **kwargs)
-        self.assign_admin()
     
     def updated_ago(self):
         return format_updated_at(self.updated_at)
@@ -76,7 +74,7 @@ class Ad(db.Model):
     def assign_admin(self, admin_id=None):
         if admin_id:
             self.admin_id = admin_id
-        elif not self.seller.is_admin:
+        else:
             # администратор назначается на объявление случайным образом
             # (объявления администратора не проходят модерацию)
             self.admin_id = User.query.filter_by(is_admin=1)\

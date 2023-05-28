@@ -6,7 +6,7 @@
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
         {% if current_user.id == ad.seller.id %}
         <li>
-            <form action={{ url_for('ad_status', ad_id=ad.id, status_id=1) }} method="post">
+            <form action={{ url_for('set_ad_status', ad_id=ad.id, status_id=1) }} method="post">
                 {% if ad.status_id == 2 %}
                 <button type="submit" class="open-ad-button dropdown-item text-success">Открыть</button>
                 {% else %}
@@ -25,7 +25,7 @@
         {% endif %}
 
         <li>
-            <form action={{ url_for('ad_status', ad_id=ad.id, status_id=2) }} method="post">
+            <form action={{ url_for('set_ad_status', ad_id=ad.id, status_id=2) }} method="post">
                 {% if ad.status_id == 1 %}
                 <button type="submit" class="close-ad-button dropdown-item text-danger">Закрыть</button>
                 {% else %}

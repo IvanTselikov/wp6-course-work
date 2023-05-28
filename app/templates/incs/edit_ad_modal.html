@@ -1,35 +1,35 @@
-<div class="modal fade" id="newAdModal" tabindex="-1" aria-labelledby="newAdModalLabel" aria-hidden="true">
+<div class="modal fade" id="edit-ad-modal" tabindex="-1" aria-labelledby="edit-ad-modal-label" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="newAdModalLabel">Создание объявления</h5>
+                <h5 class="modal-title" id="edit-ad-modal-label">Редактирование объявления</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
             </div>
             <div class="modal-body py-4">
-                <form id="newAdForm" novalidate>
+                <form id="edit-ad-form" data-ad-id={{ ad.id }} novalidate>
                     <div class="error-block text-danger" data-field="csrf_token"></div>
                     <div class="error-block text-danger" data-field="other"></div>
+
+                    {{ edit_ad_form.ad_id(value=ad.id) }}
 
                     <div class="container">
                         <div class="row gx-5">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    {{ ad_form.transport_type.label() }}
-                                    {{ ad_form.transport_type(
+                                    {{ edit_ad_form.transport_type.label() }}
+                                    {{ edit_ad_form.transport_type(
                                     class="form-control car-info-select",
-                                    id="transportTypeCreateAd",
-                                    data_next_select="#markCreateAd",
+                                    id="transportTypeEditAd",
                                     data_fill_next_method="/marks"
                                     ) }}
                                     <div class="error-block text-danger" data-field="transport_type"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.mark.label() }}
-                                    {{ ad_form.mark(
+                                    {{ edit_ad_form.mark.label() }}
+                                    {{ edit_ad_form.mark(
                                     class="form-control car-info-select",
-                                    id="markCreateAd",
-                                    data_next_select="#modelCreateAd",
+                                    id="markEditAd",
                                     data_fill_next_method="/models",
                                     disabled="true"
                                     ) }}
@@ -37,11 +37,10 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.model.label() }}
-                                    {{ ad_form.model(
+                                    {{ edit_ad_form.model.label() }}
+                                    {{ edit_ad_form.model(
                                     class="form-control car-info-select",
-                                    id="modelCreateAd",
-                                    data_next_select="#generationCreateAd",
+                                    id="modelEditAd",
                                     data_fill_next_method="/generations",
                                     disabled="true"
                                     ) }}
@@ -49,24 +48,22 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.generation.label() }}
-                                    {{ ad_form.generation(
+                                    {{ edit_ad_form.generation.label() }}
+                                    {{ edit_ad_form.generation(
                                     class="form-control car-info-select generation-select",
-                                    id="generationCreateAd",
-                                    data_next_select="#serieCreateAd",
+                                    id="generationEditAd",
                                     data_fill_next_method="/series",
-                                    data_year="#year-create-ad",
+                                    data_year="#year-edit-ad",
                                     disabled="true"
                                     ) }}
                                     <div class="error-block text-danger" data-field="generation"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.serie.label() }}
-                                    {{ ad_form.serie(
+                                    {{ edit_ad_form.serie.label() }}
+                                    {{ edit_ad_form.serie(
                                     class="form-control car-info-select",
-                                    id="serieCreateAd",
-                                    data_next_select="#modificationCreateAd",
+                                    id="serieEditAd",
                                     data_fill_next_method="/modifications",
                                     disabled="true"
                                     ) }}
@@ -74,107 +71,126 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.modification.label() }}
-                                    {{ ad_form.modification(
+                                    {{ edit_ad_form.modification.label() }}
+                                    {{ edit_ad_form.modification(
                                     class="form-control car-info-select",
-                                    id="modificationCreateAd",
+                                    id="modificationEditAd",
                                     disabled="true"
                                     ) }}
                                     <div class="error-block text-danger" data-field="modification"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.release_year.label() }}
-                                    {{ ad_form.release_year(
+                                    {{ edit_ad_form.release_year.label() }}
+                                    {{ edit_ad_form.release_year(
                                     class="form-control",
-                                    id="year-create-ad"
+                                    id="year-edit-ad",
+                                    value=ad.release_year
                                     ) }}
                                     <div class="error-block text-danger" data-field="release_year"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.mileage.label() }}
-                                    {{ ad_form.mileage(class="form-control", value="0")}}
+                                    {{ edit_ad_form.mileage.label() }}
+                                    {{ edit_ad_form.mileage(class="form-control", value=ad.mileage) }}
                                     <div class="error-block text-danger" data-field="mileage"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.pts_type.label() }}
-                                    {{ ad_form.pts_type(class="form-control")}}
+                                    {{ edit_ad_form.pts_type.label() }}
+                                    {{ edit_ad_form.pts_type(class="form-control") }}
                                     <div class="error-block text-danger" data-field="pts_type"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.owners_count.label() }}
-                                    {{ ad_form.owners_count(class="form-control", value="1")}}
+                                    {{ edit_ad_form.owners_count.label() }}
+                                    {{ edit_ad_form.owners_count(class="form-control", value=ad.owners_count) }}
                                     <div class="error-block text-danger" data-field="owners_count"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.is_broken.label() }}
-                                    {{ ad_form.is_broken(class="form-control")}}
+                                    {{ edit_ad_form.is_broken.label() }}
+                                    {{ edit_ad_form.is_broken(class="form-control", value=ad.is_broken) }}
                                     <div class="error-block text-danger" data-field="is_broken"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <div class="color-other color-square" id="color-square-create-ad"></div>
-                                    {{ ad_form.color.label() }}
-                                    {{ ad_form.color(
+                                    <div class="color-other color-square" id="color-square-edit-ad"></div>
+                                    {{ edit_ad_form.color.label() }}
+                                    {{ edit_ad_form.color(
                                     class="form-control color-picker",
-                                    id="color-create-ad",
-                                    data_square="#color-square-create-ad"
+                                    id="color-edit-ad",
+                                    data_square="#color-square-edit-ad"
                                     ) }}
                                     <div class="error-block text-danger" data-field="color"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.vin.label() }}
-                                    {{ ad_form.vin(class="form-control", autocomplete="off")}}
+                                    {{ edit_ad_form.vin.label() }}
+                                    {{ edit_ad_form.vin(class="form-control", autocomplete="off", value=ad.vin)}}
                                     <div class="error-block text-danger" data-field="vin"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.photo_1.label() }}
-                                    {{ ad_form.photo_1(class="form-control") }}
-                                    <div class="form-text">{{ ad_form.photo_1.description }}</div>
+                                    <label for="photo_1">Изменить главное фото</label>
+                                    {{ edit_ad_form.photo_1(
+                                        class="form-control",
+                                    ) }}
+                                    <div class="mt-2">
+                                        {{ edit_ad_form.delete_photo_1(class="form-check-input") }}
+                                        {{ edit_ad_form.delete_photo_1.label(class="form-check-label") }}
+                                    </div>
+                                    <div class="form-text">{{ edit_ad_form.photo_1.description }}</div>
                                     <div class="error-block text-danger" data-field="photo_1"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.photo_2.label() }}
-                                    {{ ad_form.photo_2(class="form-control") }}
+                                    <label for="photo_2">Изменить доп. фото 1</label>
+                                    {{ edit_ad_form.photo_2(
+                                        class="form-control",
+                                    ) }}
+                                    <div class="mt-2">
+                                        {{ edit_ad_form.delete_photo_2(class="form-check-input") }}
+                                        {{ edit_ad_form.delete_photo_2.label(class="form-check-label") }}
+                                    </div>
                                     <div class="error-block text-danger" data-field="photo_2"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.photo_3.label() }}
-                                    {{ ad_form.photo_3(class="form-control") }}
+                                    <label for="photo_3">Изменить доп. фото 2</label>
+                                    {{ edit_ad_form.photo_3(
+                                        class="form-control",
+                                    ) }}
+                                    <div class="mt-2">
+                                        {{ edit_ad_form.delete_photo_3(class="form-check-input") }}
+                                        {{ edit_ad_form.delete_photo_3.label(class="form-check-label") }}
+                                    </div>
                                     <div class="error-block text-danger" data-field="photo_3"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.price.label() }}
-                                    {{ ad_form.price(class="form-control") }}
+                                    {{ edit_ad_form.price.label() }}
+                                    {{ edit_ad_form.price(class="form-control", value=ad.price) }}
                                     <div class="error-block text-danger" data-field="price"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.location.label() }}
-                                    {{ ad_form.location(
+                                    {{ edit_ad_form.location.label() }}
+                                    {{ edit_ad_form.location(
                                     class="form-control",
-                                    id="locationCreateAd",
-                                    value=current_user.location.name,
-                                    list="location-datalist-create-ad",
+                                    id="locationEditAd",
+                                    value=ad.location.name if ad.location,
+                                    list="location-datalist-edit-ad",
                                     autocomplete="off"
                                     ) }}
-                                    <datalist class="location-datalist" id="location-datalist-create-ad"></datalist>
+                                    <datalist class="location-datalist" id="location-datalist-edit-ad"></datalist>
                                     <div class="error-block text-danger" data-field="location"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    {{ ad_form.description.label() }}
-                                    {{ ad_form.description(class="form-control", rows=10) }}
+                                    {{ edit_ad_form.description.label() }}
+                                    {{ edit_ad_form.description(class="form-control", rows=10, data=ad.description) }}
                                     <div class="error-block text-danger" data-field="description"></div>
                                 </div>
 
@@ -187,28 +203,34 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                {{ ad_form.submit(class="btn btn-danger", form="newAdForm") }}
+                {{ edit_ad_form.submit(class="btn btn-danger", form="edit-ad-form", value="Сохранить изменения") }}
             </div>
         </div>
     </div>
 </div>
 
 
-<div class="modal fade" id="createAdSuccessModal" tabindex="-1" aria-labelledby="creadeAdSuccessModalLabel"
+<div class="modal fade" id="editAdSuccessModal" tabindex="-1" aria-labelledby="editAdSuccessModalLabel"
     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="creadeAdSuccessModalLabel">Создание объявления</h5>
+                <h5 class="modal-title" id="editAdSuccessModalLabel">Редактирование объявления</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
             </div>
             <div class="modal-body d-flex flex-column justify-content-center align-items-center my-3">
                 <img src="/static/img/success.svg" alt="success" class="my-3">
-                <div class="mt-3" style="width: 90%;">Ваше объявление отправлено на проверку. После её прохождения оно
-                    будет опубликовано на сайте.</div>
+                <div class="mt-3" style="width: 90%;">
+                    {% if current_user.is_admin %}
+                    Объявление успешно отредактировано и опубликовано на сайте.
+                    {% else %}
+                    Ваше объявление отправлено на проверку. После её прохождения оно
+                    будет опубликовано на сайте.
+                    {% endif %}
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Вернуться на сайт</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="window.location.reload()">Вернуться на сайт</button>
             </div>
         </div>
     </div>

@@ -49,6 +49,11 @@ def get_filtered_ads(filter_params):
     )
 
     ads = Ad.query\
+        .filter(and_(
+            # отображаем только открытые объявления других пользователей
+            Ad.seller_id != current_user.id if current_user.is_authenticated else True,
+            Ad.status_id == AdStatus.OPENED
+        ))\
         .join(Modification).join(Serie).join(Generation)\
         .join(Model).join(Mark).join(TransportType)\
         .join(Color, isouter=True).join(Location, isouter=True)\
@@ -129,14 +134,7 @@ def get_filtered_ads(filter_params):
             error_out=False
     )
 
-    result_header = 'Новые объявления на сайте'
-
-    if filter_params.get('search'):
-        result_header = 'Результаты поиска по запросу: "{}"'.format(
-            filter_params.get('search').strip()
-        )
-
-    return ads, result_header
+    return ads
 
 
 def upload_photo(file_storage, path_origin, path_small=None, path_tiny=None):

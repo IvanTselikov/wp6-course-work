@@ -1,19 +1,20 @@
 {% extends "base.html" %}
+
+{% block title %}
+{{ ad.car.serie.generation.model.mark.name }}
+{{ ad.car.serie.generation.model.name }},
+{{ ad.release_year }}
+- AutoAds
+{% endblock %}
+
 {% block content %}
 
-<div class="ad-about my-5">
-    <div class="breadcrum text-muted">
-        {%- for breadcrumb in breadcrumbs -%}
-        <a class="link-secondary" href="{{ breadcrumb.url }}">{{ breadcrumb.text }}</a>
-        {{ '> ' if not loop.last }}
-        {%- endfor -%}
-    </div>
-
+<section class="ad-about">
     {% if ad.admin_message %}
-    <div class="alert {{ " alert-warning" if ad.status_id in [4, 5] else "alert-secondary" }} mt-3" role="alert">
-        <strong>Сообщение от администратора:</strong>
+    <section class="alert {{ " alert-warning" if ad.status_id in [4, 5] else "alert-secondary" }} mt-3" role="alert">
+        <h6>Сообщение от администратора:</h6>
         <div>{{ ad.admin_message }}</div>
-    </div>
+    </section>
     {% endif %}
 
     <div class="container-fluid mt-5">
@@ -51,7 +52,7 @@
                         <div class="container-fluid px-2">
                             <div class="row">
                                 <div class="col-3 col-md-3">
-                                    <a href={{ url_for('open_user_page', user_login=ad.seller.login) }}>
+                                    <a href={{ url_for('get_user_page', user_login=ad.seller.login) }}>
                                         <div class="rounded-circle ad-seller-profile-photo"
                                             style="background-image: url('{{ url_for('images', user=ad.seller.login, size='small') }}');">
                                         </div>
@@ -62,11 +63,11 @@
                                     <div>
                                         {{ ad.seller.first_name }} {{ ad.seller.patronymic }}
                                     </div>
-                                    <div class="ps-2">+7 (920) 222 22-22{# ad.seller.phone_number #}
+                                    <div class="ps-2">{{ ad.seller.phone_number }}
                                     </div>
                                 </div>
                                 <div class="col-4 col-md-4 d-flex align-items-center">
-                                    <a href={{ url_for('open_user_page', user_login=ad.seller.login) }}
+                                    <a href={{ url_for('get_user_page', user_login=ad.seller.login) }}
                                         class="btn btn-danger d-block w-100 text-nowrap">Профиль</a>
                                 </div>
                             </div>
@@ -188,9 +189,9 @@
     {% else %}
     <div class="ad-page-description mt-3 text-muted">Описание отсутствует.</div>
     {% endif %}
-</div>
+</section>
 
-{% include "incs/confirm_modal.html" %}
-{% include "incs/edit_ad_form.html" %}
+{% include "incs/ad_action_confirm_modal.html" %}
+{% include "incs/edit_ad_modal.html" %}
 
 {% endblock %}

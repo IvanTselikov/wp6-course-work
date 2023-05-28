@@ -2,8 +2,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectField, IntegerField
 from wtforms.validators import Optional, NumberRange
 
+from app import app
 from app.models import TransportType
-from app.functions import *
+
+from datetime import datetime as dt
 
 
 class FiltersForm(FlaskForm):

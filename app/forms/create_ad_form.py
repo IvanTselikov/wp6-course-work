@@ -5,8 +5,8 @@ from wtforms.validators import ValidationError, DataRequired, InputRequired, Len
     regexp, NumberRange, NoneOf
 from flask_wtf.file import FileAllowed
 
+from app import app
 from app.models import TransportType, PtsType, Generation
-from app.functions import *
 
 from datetime import datetime as dt
 
@@ -219,7 +219,7 @@ class CreateAdForm(FlaskForm):
         nrange_validator = list(filter(lambda v: isinstance(v, NumberRange), validators))[0]
 
         year_begin = year_begin or app.config['MIN_CAR_RELEASE_YEAR']
-        year_end = year_end or get_current_year()
+        year_end = year_end or dt.now().year
         nrange_validator.min = year_begin
         nrange_validator.max = year_end
 

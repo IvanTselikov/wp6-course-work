@@ -1,5 +1,5 @@
-<div class="card mb-5 ad-card">
-    <a href={{ url_for('ads', ad_id=ad.id) }} class="ad-link">
+<article class="card mb-5 ad-card">
+    <a href={{ url_for('get_ad', ad_id=ad.id) }} class="ad-link">
         <div class="row g-0 h-100">
             <div class="ad-banner col-6 h-100 rounded-start"
                 style="background-image: url('{{ url_for('images', ad=ad.id, photo=1, size='small') }}');">
@@ -44,4 +44,4 @@
             </div>
         </div>
     </a>
-</div>
+</article>

@@ -11,16 +11,22 @@
 
                     <div class="mb-3">
                         {{ login_form.login(
-                            size=32,
-                            class="form-control",
-                            placeholder=login_form.login.label.text,
-                            autocomplete="off"
+                        size=32,
+                        class="form-control",
+                        placeholder=login_form.login.label.text,
+                        autocomplete="off"
                         ) }}
                         <div class="error-block text-danger" data-field="login"></div>
                     </div>
                     <div class="mb-3">
-                        {{ login_form.password(size=32, class="form-control",
-                        placeholder=login_form.password.label.text) }}
+                        <div class="input-group">
+                            {{ login_form.password(size=32, class="form-control",
+                            placeholder=login_form.password.label.text, aria_describedby="show-password-login") }}
+                            <button class="show-password-button btn btn-outline-secondary" type="button"
+                                id="show-password-login">
+                                <i class="fa fa-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
                         <div class="error-block text-danger" data-field="password"></div>
                     </div>
                 </form>
@@ -28,9 +34,9 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                 {{ login_form.submit(
-                    class="btn btn-danger",
-                    id="submitLogin",
-                    form="loginForm"
+                class="btn btn-danger",
+                id="submitLogin",
+                form="loginForm"
                 ) }}
             </div>
         </div>

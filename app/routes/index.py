@@ -38,11 +38,10 @@ def index():
     })
     
     # фильтрация объявлений
-    ads, result_header = get_filtered_ads(filter_params)
+    ads = get_filtered_ads(filter_params)
     
     kwargs.update({
-        'ads': ads,
-        'ads_section_header': result_header
+        'ads': ads
     })
 
     response = make_response(render_template('index.html', **kwargs))

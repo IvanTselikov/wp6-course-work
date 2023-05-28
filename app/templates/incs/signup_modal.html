@@ -51,18 +51,36 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     {{ signup_form.password.label() }}
-                                    {{ signup_form.password(
-                                    class="form-control",
-                                    id="signupPassword",
-                                    autocomplete="off"
-                                    ) }}
+                                    <div class="input-group">
+                                        {{ signup_form.password(
+                                        class="form-control",
+                                        id="signupPassword",
+                                        autocomplete="off",
+                                        aria_describedby="show-password-signup"
+                                        ) }}
+                                        <button class="show-password-button btn btn-outline-secondary" type="button"
+                                            id="show-password-signup">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+
                                     <div class="form-text">{{ signup_form.password.description }}</div>
                                     <div class="error-block text-danger" data-field="password"></div>
                                 </div>
 
                                 <div class="mb-3">
                                     {{ signup_form.confirm_password.label() }}
-                                    {{ signup_form.confirm_password(class="form-control", autocomplete="off") }}
+                                    <div class="input-group">
+                                        {{ signup_form.confirm_password(
+                                        class="form-control",
+                                        autocomplete="off",
+                                        aria_describedby="show-password-signup-confirm"
+                                        ) }}
+                                        <button class="show-password-button btn btn-outline-secondary" type="button"
+                                            id="show-password-signup-confirm">
+                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
                                     <div class="error-block text-danger" data-field="confirm_password"></div>
                                 </div>
 
@@ -74,7 +92,8 @@
 
                                 <div class="mb-3">
                                     {{ signup_form.phone_number.label() }}
-                                    {{ signup_form.phone_number(class="form-control", autocomplete="off") }}
+                                    {{ signup_form.phone_number(class="form-control", autocomplete="off",
+                                    data_tel_input="true") }}
                                     <div class="error-block text-danger" data-field="phone_number"></div>
                                 </div>
 
