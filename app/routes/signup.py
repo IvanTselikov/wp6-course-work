@@ -1,4 +1,4 @@
-from flask import redirect, url_for, make_response, jsonify
+from flask import redirect, url_for, jsonify, make_response
 
 from app import app, db
 from app.forms import SignupForm
@@ -78,8 +78,9 @@ def signup():
                 path_small=path_small,
                 path_tiny=path_tiny
             )
-
+        
         response = make_response(redirect(url_for('index')))
         set_location_cookie(response)
+
         return response
     return jsonify(form.errors), 400

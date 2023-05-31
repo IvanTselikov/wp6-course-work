@@ -78,6 +78,18 @@ $(document).ready(function() {
       })
     })
 
+    // запрос на выход из аккаунта
+    $('#logout-form').on('submit', function(e) {
+      e.preventDefault()
+
+      $.ajax({
+        url : '/logout',
+        success: () => {
+          window.location.reload()
+        }
+      })
+    })
+
     // заполнение информации об автомобиле на формах
     $('#newAdForm, #filtersForm, #edit-ad-form').each(function() {
       const selects = $(this).find('.car-info-select')

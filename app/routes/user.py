@@ -1,4 +1,4 @@
-from flask import render_template, flash
+from flask import render_template, flash, redirect, url_for
 from flask import jsonify
 
 from app import app, db
@@ -44,7 +44,7 @@ def get_user_page(user_login):
             elif ad.status_id == AdStatus.BLOCKED:
                 ads['blocked'].append(ad)
 
-        for ad in user.moderated_ads:
+        for ad in user.moderated_ads.order_by(Ad.updated_at.desc()):
             if ad.status_id == AdStatus.OPENED:
                 ads['me_opened'].append(ad)
             elif ad.status_id == AdStatus.ON_CHECKING:
@@ -74,7 +74,7 @@ def get_user_page(user_login):
 
         return render_template('profile.html', **kwargs)
 
-    return {}, 404
+    return redirect(url_for('errors', code=404))
 
 
 @app.route('/user/<user_login>', methods=['put'])

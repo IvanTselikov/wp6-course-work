@@ -7,3 +7,4 @@ from .logout import logout
 from .ad import get_ad, create_ad, update_ad, set_ad_status, delete_ad
 from .user import get_user_page, update_user
 from .other import *
+from .errors import errors

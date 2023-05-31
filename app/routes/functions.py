@@ -1,32 +1,20 @@
-from flask import request, url_for
+from flask import request
 
 from flask_login import current_user
 from sqlalchemy import or_, and_, func
 
-from app.models import Ad, Modification, Serie, Generation, Model, Mark,\
-    TransportType, Color, Location, User
-from app.forms import FiltersForm
-
-from PIL import Image
-
 from app import app
-
-from flask import jsonify, request
-from app.models import *
+from app.models import Ad, Modification, Serie, Generation, Model, Mark,\
+    TransportType, Color, Location, User, AdStatus
 
 from PIL import Image
-from datetime import datetime as dt
-import time
-
-from werkzeug.utils import secure_filename
-
 import os
 from glob import glob
-
 import locale
 
+
 def set_location_cookie(response):
-    if current_user.location and not\
+    if current_user.is_authenticated and current_user.location and not\
     (request.args.get('page') and int(request.args.get('page')) > 1 or\
     request.cookies.get('page') and int(request.cookies.get('page')) > 1 or\
     request.cookies.get('is_filtered') or request.cookies.get('search')):

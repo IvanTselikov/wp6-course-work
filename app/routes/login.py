@@ -1,4 +1,4 @@
-from flask import request, redirect, url_for, make_response, jsonify
+from flask import request, redirect, url_for, make_response, jsonify, flash
 
 from app import app
 from app.forms import LoginForm
@@ -24,12 +24,10 @@ def login():
             return jsonify(errors), 400
         else:
             login_user(user)
-            next_page = request.args.get('next')
-            if not next_page or url_parse(next_page).netloc != '':
-                next_page = url_for('index')
-            
+
             # при входе в аккаунт отображаются только объявления из региона пользователя
-            response = make_response(redirect(next_page))
+            response = make_response(redirect(url_for('index')))
             set_location_cookie(response)
+
             return response
     return jsonify(form.errors), 400

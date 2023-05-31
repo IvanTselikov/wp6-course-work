@@ -20,9 +20,11 @@ from .functions import upload_photo, parse_int_or_skip, view_ad_dlc, remove_ad_p
 @register_breadcrumb(app, '.ad', '',
                     dynamic_list_constructor=view_ad_dlc)
 def get_ad(ad_id):
-    if request.content_type == 'application/json':
-        ad = Ad.query.filter_by(id=ad_id).first()
-        if ad:
+    ad = Ad.query.filter_by(id=ad_id).first()
+
+    if ad and (ad.status_id == AdStatus.OPENED or current_user.is_authenticated and\
+    (current_user.id == ad.seller_id or current_user.is_admin)):
+        if request.content_type == 'application/json':
             return jsonify({
                 'transport_type': ad.car.serie.generation.model.mark.transport_type.id,
                 'mark': ad.car.serie.generation.model.mark.id,
@@ -35,40 +37,38 @@ def get_ad(ad_id):
                 'description': ad.description,
                 'pts_type': ad.pts_type_id
             })
-        return {}, 404
-    else:
-        kwargs = {}
-        if current_user.is_authenticated:
-            photo_filename = glob(os.path.join(
-                app.config['UPLOADS_FOLDER'],
-                current_user.login,
-                app.config['PROFILE_PHOTO_FILENAME'] + '.*'
-            ))
-
-            if photo_filename:
-                photo_filename = photo_filename[0]
-                photo_filename = os.path.join(*(photo_filename.split(os.path.sep)[1:]))
-
-                kwargs.update({'photo_filename': photo_filename})
-            
-            ad_form = CreateAdForm()
-            kwargs.update({ 'ad_form': ad_form })
         else:
-            login_form = LoginForm()
-            signup_form = SignupForm()
-            kwargs.update({'login_form': login_form, 'signup_form': signup_form})
+            kwargs = { 'ad': ad }
+            if current_user.is_authenticated:
+                photo_filename = glob(os.path.join(
+                    app.config['UPLOADS_FOLDER'],
+                    current_user.login,
+                    app.config['PROFILE_PHOTO_FILENAME'] + '.*'
+                ))
 
-        filters_form = FiltersForm()
-        edit_ad_form = EditAdForm()
-        kwargs.update({ 'filters_form': filters_form, 'edit_ad_form': edit_ad_form })
+                if photo_filename:
+                    photo_filename = photo_filename[0]
+                    photo_filename = os.path.join(*(photo_filename.split(os.path.sep)[1:]))
 
-        ad = Ad.query.filter_by(id=ad_id).first()
-        kwargs.update({ 'ad': ad })
+                    kwargs.update({'photo_filename': photo_filename})
+                
+                ad_form = CreateAdForm()
+                kwargs.update({ 'ad_form': ad_form })
+            else:
+                login_form = LoginForm()
+                signup_form = SignupForm()
+                kwargs.update({'login_form': login_form, 'signup_form': signup_form})
 
-        ad_action_confirm_form = AdActionConfirmForm()
-        kwargs.update({ 'ad_action_confirm_form': ad_action_confirm_form })
+            filters_form = FiltersForm()
+            edit_ad_form = EditAdForm()
+            kwargs.update({ 'filters_form': filters_form, 'edit_ad_form': edit_ad_form })
 
-        return render_template('ad.html', **kwargs)
+            ad_action_confirm_form = AdActionConfirmForm()
+            kwargs.update({ 'ad_action_confirm_form': ad_action_confirm_form })
+
+            return render_template('ad.html', **kwargs)
+    else:
+        return redirect(url_for('errors', code=404))
 
 
 @app.route('/ads', methods=['post'])

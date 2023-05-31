@@ -278,16 +278,18 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
 
-                {{ filters_form.reset(
-                    class="btn btn-secondary",
-                    form="filtersForm"
-                ) }}
-
-                {{ filters_form.submit(
-                class="btn btn-danger",
-                id="submitFilters",
-                form="filtersForm"
-                ) }}
+                <div class="d-flex">
+                    {{ filters_form.submit(
+                        class="btn btn-danger order-2",
+                        id="submitFilters",
+                        form="filtersForm"
+                        ) }}
+                    
+                    {{ filters_form.reset(
+                        class="btn btn-secondary order-1 me-2",
+                        form="filtersForm"
+                    ) }}
+                </div>
             </div>
         </div>
     </div>
